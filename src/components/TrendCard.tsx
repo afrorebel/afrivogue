@@ -52,9 +52,16 @@ const TrendCard = ({ trend, index }: TrendCardProps) => {
 
       <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
         <time className="font-body text-xs text-muted-foreground">{trend.timestamp}</time>
-        <Link to={`/trend/${trend.id}`} className="font-body text-xs font-medium text-gold transition-transform group-hover:translate-x-1">
-          Read more →
-        </Link>
+        <div className="flex items-center gap-3">
+          {trend.contentTier === "Premium Long-Form" && (
+            <Link to={`/editorial/${trend.id}`} className="font-body text-[10px] font-bold uppercase tracking-wider text-gold/70 transition-colors hover:text-gold">
+              ◆ Editorial
+            </Link>
+          )}
+          <Link to={`/trend/${trend.id}`} className="font-body text-xs font-medium text-gold transition-transform group-hover:translate-x-1">
+            Read more →
+          </Link>
+        </div>
       </div>
     </article>
   );

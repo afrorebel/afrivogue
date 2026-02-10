@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import TrendDetail from "./pages/TrendDetail";
 import StoryMode from "./pages/StoryMode";
+import PremiumEditorial from "./pages/PremiumEditorial";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/trend/:id" element={<TrendDetail />} />
           <Route path="/story/:id" element={<StoryMode />} />
+          <Route path="/editorial/:id" element={<PremiumEditorial />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
