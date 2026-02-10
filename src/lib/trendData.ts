@@ -96,6 +96,17 @@ export const trends: Trend[] = [
     contentTier: "Daily Brief",
     timestamp: "2026-02-10",
   },
+  {
+    id: "9",
+    headline: "The Invisible Loom: How African Textile Philosophy Is Quietly Rewriting Global Fashion's Soul",
+    culturalSignificance: "Beneath the surface spectacle of seasonal collections and viral runway moments lies a tectonic shift that few in the Western fashion establishment have fully reckoned with. African textile philosophy — the understanding that cloth carries memory, that weave encodes identity, that pattern is a form of language — is migrating from the margins of 'inspiration' to the structural centre of how the world's most consequential designers think about garment-making. This is not appropriation dressed in reverence. This is absorption, the kind that reshapes an industry's intellectual foundations without asking permission. From the aso-oke revival in Lagos to the kente reinterpretation studios of Kumasi, from the indigo vats of Kano to the bogolan cooperatives of Bamako, a generation of makers is insisting that their craft traditions are not source material for others — they are complete aesthetic systems, self-sufficient and sovereign. The implications extend far beyond fashion. When a Parisian atelier studies the mathematics of Yoruba adire resist-dyeing to inform its approach to surface design, when a Milanese house restructures its supply chain to partner directly with Ghanaian weavers rather than merely photographing their work, the power geometry of global luxury shifts in ways that cannot be reversed. We are witnessing the early chapters of a story that will take decades to fully unfold — one in which the philosophical traditions of African making become inseparable from the future vocabulary of global design.",
+    geoRelevance: "Global",
+    urgency: "Slow-Burn",
+    category: "Fashion",
+    contentTier: "Premium Long-Form",
+    timestamp: "2026-02-10",
+    imageHint: "african textile weaving",
+  },
 ];
 
 export const categories: Category[] = ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Business"];
