@@ -35,6 +35,12 @@ const TrendCard = ({ trend, index }: TrendCardProps) => {
         </span>
       </div>
 
+      <div className="mb-3">
+        <span className="font-body text-[10px] italic tracking-wide text-gold/70">
+          {trend.contentTier}
+        </span>
+      </div>
+
       <h3 className="mb-3 font-display text-xl font-bold leading-tight text-foreground transition-colors group-hover:text-gold md:text-2xl">
         {trend.headline}
       </h3>
