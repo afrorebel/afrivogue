@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { Trend } from "@/lib/trendData";
 
 const urgencyStyles: Record<string, string> = {
@@ -51,9 +52,9 @@ const TrendCard = ({ trend, index }: TrendCardProps) => {
 
       <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
         <time className="font-body text-xs text-muted-foreground">{trend.timestamp}</time>
-        <span className="font-body text-xs font-medium text-gold transition-transform group-hover:translate-x-1">
+        <Link to={`/trend/${trend.id}`} className="font-body text-xs font-medium text-gold transition-transform group-hover:translate-x-1">
           Read more →
-        </span>
+        </Link>
       </div>
     </article>
   );
