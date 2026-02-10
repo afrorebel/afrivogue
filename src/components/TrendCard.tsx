@@ -58,6 +58,11 @@ const TrendCard = ({ trend, index }: TrendCardProps) => {
               ◆ Editorial
             </Link>
           )}
+          {trend.contentTier === "Cultural Forecast" && (
+            <Link to="/forecast" className="font-body text-[10px] font-bold uppercase tracking-wider text-gold/70 transition-colors hover:text-gold">
+              ◇ Forecast
+            </Link>
+          )}
           <Link to={`/trend/${trend.id}`} className="font-body text-xs font-medium text-gold transition-transform group-hover:translate-x-1">
             Read more →
           </Link>
