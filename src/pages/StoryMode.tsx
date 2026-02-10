@@ -176,7 +176,7 @@ const StoryMode = () => {
       </div>
 
       {/* Card area */}
-      <div className="relative flex flex-1 items-center justify-center overflow-hidden px-6 py-8">
+      <div className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-4 sm:px-6 sm:py-8">
         <AnimatePresence custom={direction} mode="wait">
           <motion.div
             key={activeIndex}
@@ -189,7 +189,7 @@ const StoryMode = () => {
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={0.15}
             onDragEnd={handleDragEnd}
-            className="absolute flex w-full max-w-2xl cursor-grab items-center justify-center active:cursor-grabbing"
+            className="absolute flex w-full max-w-2xl cursor-grab items-center justify-center px-2 active:cursor-grabbing"
             style={{ touchAction: "none" }}
           >
             <StoryCard card={card} trend={trend} />
@@ -241,7 +241,7 @@ function StoryCard({ card, trend }: { card: StoryCardData; trend: Trend }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6 }}
-          className="font-display text-3xl font-bold leading-tight text-foreground md:text-5xl lg:text-6xl"
+          className="font-display text-2xl font-bold leading-tight text-foreground sm:text-3xl md:text-5xl lg:text-6xl"
         >
           {card.title}
         </motion.h1>
@@ -249,13 +249,13 @@ function StoryCard({ card, trend }: { card: StoryCardData; trend: Trend }) {
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ delay: 0.7, duration: 0.5 }}
-          className="mt-8 h-px w-24 bg-gold"
+          className="mt-6 h-px w-16 bg-gold sm:mt-8 sm:w-24"
         />
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
-          className="mt-6 max-w-lg font-body text-base leading-relaxed text-muted-foreground md:text-lg"
+          className="mt-4 max-w-lg font-body text-sm leading-relaxed text-muted-foreground sm:mt-6 sm:text-base md:text-lg"
         >
           {card.body}
         </motion.p>
@@ -263,7 +263,7 @@ function StoryCard({ card, trend }: { card: StoryCardData; trend: Trend }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.5 }}
           transition={{ delay: 1.2 }}
-          className="mt-10 font-body text-[10px] uppercase tracking-[0.2em] text-muted-foreground"
+          className="mt-6 font-body text-[10px] uppercase tracking-[0.2em] text-muted-foreground sm:mt-10"
         >
           Swipe up to continue
         </motion.span>
@@ -278,7 +278,7 @@ function StoryCard({ card, trend }: { card: StoryCardData; trend: Trend }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.15 }}
-          className="mb-8 font-display text-7xl leading-none text-gold/30"
+          className="mb-6 font-display text-5xl leading-none text-gold/30 sm:mb-8 sm:text-7xl"
         >
           "
         </motion.span>
@@ -286,7 +286,7 @@ function StoryCard({ card, trend }: { card: StoryCardData; trend: Trend }) {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6 }}
-          className="max-w-lg font-display text-xl italic leading-relaxed text-foreground/90 md:text-2xl lg:text-3xl"
+          className="max-w-lg font-display text-lg italic leading-relaxed text-foreground/90 sm:text-xl md:text-2xl lg:text-3xl"
         >
           {card.body}
         </motion.blockquote>
@@ -294,7 +294,7 @@ function StoryCard({ card, trend }: { card: StoryCardData; trend: Trend }) {
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ delay: 0.7 }}
-          className="mt-8 h-px w-16 bg-gold/50"
+          className="mt-6 h-px w-16 bg-gold/50 sm:mt-8"
         />
         <motion.span
           initial={{ opacity: 0 }}
@@ -323,7 +323,7 @@ function StoryCard({ card, trend }: { card: StoryCardData; trend: Trend }) {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mb-8 font-display text-2xl font-bold text-foreground md:text-3xl"
+          className="mb-6 font-display text-xl font-bold text-foreground sm:mb-8 sm:text-2xl md:text-3xl"
         >
           {card.title}
         </motion.h2>
@@ -331,9 +331,9 @@ function StoryCard({ card, trend }: { card: StoryCardData; trend: Trend }) {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 }}
-          className="w-full max-w-md rounded-lg border border-gold/20 bg-card p-8"
+          className="w-full max-w-md rounded-lg border border-gold/20 bg-card p-5 sm:p-8"
         >
-          <p className="font-display text-lg italic leading-relaxed text-foreground/80 md:text-xl">
+          <p className="font-display text-base italic leading-relaxed text-foreground/80 sm:text-lg md:text-xl">
             {card.body}
           </p>
           <div className="mt-6 h-px w-full bg-border" />
@@ -360,7 +360,7 @@ function StoryCard({ card, trend }: { card: StoryCardData; trend: Trend }) {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mb-6 font-display text-2xl font-bold text-foreground md:text-3xl"
+          className="mb-4 font-display text-xl font-bold text-foreground sm:mb-6 sm:text-2xl md:text-3xl"
         >
           {card.title}
         </motion.h2>
@@ -368,7 +368,7 @@ function StoryCard({ card, trend }: { card: StoryCardData; trend: Trend }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="max-w-lg font-body text-base leading-relaxed text-muted-foreground md:text-lg"
+          className="max-w-lg font-body text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg"
         >
           {card.body}
         </motion.p>
@@ -376,7 +376,7 @@ function StoryCard({ card, trend }: { card: StoryCardData; trend: Trend }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9 }}
-          className="mt-10 flex flex-col items-center gap-3"
+          className="mt-8 flex flex-col items-center gap-3 sm:mt-10"
         >
           <div className="font-display text-lg font-bold text-foreground">
             AFRI<span className="text-gold">VOGUE</span>
@@ -410,7 +410,7 @@ function StoryCard({ card, trend }: { card: StoryCardData; trend: Trend }) {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.5 }}
-        className="mb-6 font-display text-2xl font-bold text-foreground md:text-3xl"
+        className="mb-4 font-display text-xl font-bold text-foreground sm:mb-6 sm:text-2xl md:text-3xl"
       >
         {card.title}
       </motion.h2>
@@ -418,13 +418,13 @@ function StoryCard({ card, trend }: { card: StoryCardData; trend: Trend }) {
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
         transition={{ delay: 0.5 }}
-        className="mb-8 h-px w-16 bg-gold/40"
+        className="mb-6 h-px w-16 bg-gold/40 sm:mb-8"
       />
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.5 }}
-        className="max-w-lg font-body text-base leading-[1.9] text-muted-foreground md:text-lg"
+        className="max-w-lg font-body text-sm leading-[1.9] text-muted-foreground sm:text-base md:text-lg"
       >
         {card.body}
       </motion.p>
