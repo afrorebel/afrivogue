@@ -1,22 +1,26 @@
-import { categories, urgencyLevels, geoOptions } from "@/lib/trendData";
-import type { Category, Urgency, GeoRelevance } from "@/lib/trendData";
+import { categories, urgencyLevels, geoOptions, contentTiers } from "@/lib/trendData";
+import type { Category, Urgency, GeoRelevance, ContentTier } from "@/lib/trendData";
 
 interface FilterBarProps {
   activeCategory: Category | "All";
   activeUrgency: Urgency | "All";
   activeGeo: GeoRelevance | "All";
+  activeContentTier: ContentTier | "All";
   onCategoryChange: (c: Category | "All") => void;
   onUrgencyChange: (u: Urgency | "All") => void;
   onGeoChange: (g: GeoRelevance | "All") => void;
+  onContentTierChange: (t: ContentTier | "All") => void;
 }
 
 const FilterBar = ({
   activeCategory,
   activeUrgency,
   activeGeo,
+  activeContentTier,
   onCategoryChange,
   onUrgencyChange,
   onGeoChange,
+  onContentTierChange,
 }: FilterBarProps) => {
   const pill = (active: boolean) =>
     `cursor-pointer rounded-sm border px-3 py-1.5 font-body text-xs font-medium uppercase tracking-wider transition-all duration-200 ${
@@ -71,6 +75,21 @@ const FilterBar = ({
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Content Tier */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="mr-2 font-body text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          Format
+        </span>
+        <button className={pill(activeContentTier === "All")} onClick={() => onContentTierChange("All")}>
+          All
+        </button>
+        {contentTiers.map((t) => (
+          <button key={t} className={pill(activeContentTier === t)} onClick={() => onContentTierChange(t)}>
+            {t}
+          </button>
+        ))}
       </div>
     </div>
   );

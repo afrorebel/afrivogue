@@ -4,21 +4,23 @@ import HeroSection from "@/components/HeroSection";
 import FilterBar from "@/components/FilterBar";
 import TrendCard from "@/components/TrendCard";
 import { trends } from "@/lib/trendData";
-import type { Category, Urgency, GeoRelevance } from "@/lib/trendData";
+import type { Category, Urgency, GeoRelevance, ContentTier } from "@/lib/trendData";
 
 const Index = () => {
   const [category, setCategory] = useState<Category | "All">("All");
   const [urgency, setUrgency] = useState<Urgency | "All">("All");
   const [geo, setGeo] = useState<GeoRelevance | "All">("All");
+  const [contentTier, setContentTier] = useState<ContentTier | "All">("All");
 
   const filtered = useMemo(() => {
     return trends.filter((t) => {
       if (category !== "All" && t.category !== category) return false;
       if (urgency !== "All" && t.urgency !== urgency) return false;
       if (geo !== "All" && t.geoRelevance !== geo) return false;
+      if (contentTier !== "All" && t.contentTier !== contentTier) return false;
       return true;
     });
-  }, [category, urgency, geo]);
+  }, [category, urgency, geo, contentTier]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -30,9 +32,11 @@ const Index = () => {
           activeCategory={category}
           activeUrgency={urgency}
           activeGeo={geo}
+          activeContentTier={contentTier}
           onCategoryChange={setCategory}
           onUrgencyChange={setUrgency}
           onGeoChange={setGeo}
+          onContentTierChange={setContentTier}
         />
 
         <div className="mt-10 grid gap-6 px-6 md:grid-cols-2 md:px-16 lg:px-24 xl:grid-cols-3">
