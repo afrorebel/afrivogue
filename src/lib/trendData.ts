@@ -1,6 +1,7 @@
 export type Category = "Fashion" | "Beauty" | "Luxury" | "Art & Design" | "Culture" | "Business";
 export type Urgency = "Breaking" | "Emerging" | "Slow-Burn";
 export type GeoRelevance = "Africa" | "Diaspora" | "Global";
+export type ContentTier = "Daily Brief" | "Editorial Feature" | "Premium Long-Form" | "Cultural Forecast" | "Story Mode";
 
 export interface Trend {
   id: string;
@@ -9,6 +10,7 @@ export interface Trend {
   geoRelevance: GeoRelevance;
   urgency: Urgency;
   category: Category;
+  contentTier: ContentTier;
   timestamp: string;
   imageHint?: string;
 }
@@ -21,6 +23,7 @@ export const trends: Trend[] = [
     geoRelevance: "Africa",
     urgency: "Breaking",
     category: "Fashion",
+    contentTier: "Editorial Feature",
     timestamp: "2026-02-10",
   },
   {
@@ -30,6 +33,7 @@ export const trends: Trend[] = [
     geoRelevance: "Diaspora",
     urgency: "Emerging",
     category: "Beauty",
+    contentTier: "Cultural Forecast",
     timestamp: "2026-02-09",
   },
   {
@@ -39,6 +43,7 @@ export const trends: Trend[] = [
     geoRelevance: "Global",
     urgency: "Slow-Burn",
     category: "Art & Design",
+    contentTier: "Premium Long-Form",
     timestamp: "2026-02-08",
   },
   {
@@ -48,6 +53,7 @@ export const trends: Trend[] = [
     geoRelevance: "Global",
     urgency: "Breaking",
     category: "Culture",
+    contentTier: "Story Mode",
     timestamp: "2026-02-10",
   },
   {
@@ -57,6 +63,7 @@ export const trends: Trend[] = [
     geoRelevance: "Africa",
     urgency: "Emerging",
     category: "Luxury",
+    contentTier: "Editorial Feature",
     timestamp: "2026-02-07",
   },
   {
@@ -66,6 +73,7 @@ export const trends: Trend[] = [
     geoRelevance: "Diaspora",
     urgency: "Slow-Burn",
     category: "Business",
+    contentTier: "Premium Long-Form",
     timestamp: "2026-02-06",
   },
   {
@@ -75,6 +83,7 @@ export const trends: Trend[] = [
     geoRelevance: "Global",
     urgency: "Emerging",
     category: "Beauty",
+    contentTier: "Daily Brief",
     timestamp: "2026-02-09",
   },
   {
@@ -84,6 +93,7 @@ export const trends: Trend[] = [
     geoRelevance: "Africa",
     urgency: "Breaking",
     category: "Business",
+    contentTier: "Daily Brief",
     timestamp: "2026-02-10",
   },
 ];
@@ -91,3 +101,4 @@ export const trends: Trend[] = [
 export const categories: Category[] = ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Business"];
 export const urgencyLevels: Urgency[] = ["Breaking", "Emerging", "Slow-Burn"];
 export const geoOptions: GeoRelevance[] = ["Africa", "Diaspora", "Global"];
+export const contentTiers: ContentTier[] = ["Daily Brief", "Editorial Feature", "Premium Long-Form", "Cultural Forecast", "Story Mode"];
