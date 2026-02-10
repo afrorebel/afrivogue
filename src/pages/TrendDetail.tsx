@@ -132,6 +132,12 @@ const TrendDetail = () => {
           <div className="mt-6 flex items-center gap-4">
             <time className="font-body text-sm text-muted-foreground">{trend.timestamp}</time>
             <span className="h-px flex-1 bg-border" />
+            <Link
+              to={`/story/${trend.id}`}
+              className="flex items-center gap-2 rounded-sm border border-gold/30 px-4 py-2 font-body text-xs font-medium uppercase tracking-[0.15em] text-gold transition-all hover:border-gold hover:bg-gold hover:text-primary-foreground"
+            >
+              ◆ Story Mode
+            </Link>
           </div>
         </div>
       </header>
