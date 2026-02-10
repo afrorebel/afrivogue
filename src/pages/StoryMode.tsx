@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { motion, AnimatePresence, type PanInfo } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, type PanInfo } from "framer-motion";
 import { trends } from "@/lib/trendData";
 import type { Trend } from "@/lib/trendData";
 
@@ -85,6 +85,95 @@ const cardVariants = {
   }),
 };
 
+/* ── Ambient floating particles ── */
+function AmbientBackground({ activeIndex, totalCards }: { activeIndex: number; totalCards: number }) {
+  const progress = totalCards > 1 ? activeIndex / (totalCards - 1) : 0;
+
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 18 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 3 + 1,
+        duration: Math.random() * 12 + 10,
+        delay: Math.random() * -20,
+        opacity: Math.random() * 0.15 + 0.05,
+      })),
+    []
+  );
+
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {/* Radial glow that shifts with progress */}
+      <motion.div
+        className="absolute inset-0"
+        animate={{
+          background: `radial-gradient(ellipse 60% 50% at ${50 + progress * 10}% ${40 + progress * 20}%, hsl(var(--gold) / 0.06) 0%, transparent 70%)`,
+        }}
+        transition={{ duration: 1.2, ease: "easeOut" }}
+      />
+
+      {/* Floating dust particles */}
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-full"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            backgroundColor: "hsl(var(--gold))",
+            opacity: p.opacity,
+          }}
+          animate={{
+            y: [0, -30, 0],
+            x: [0, Math.sin(p.id) * 15, 0],
+            opacity: [p.opacity, p.opacity * 1.8, p.opacity],
+          }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: p.delay,
+          }}
+        />
+      ))}
+
+      {/* Subtle vignette */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_50%,hsl(var(--background))_100%)]" />
+    </div>
+  );
+}
+
+/* ── Parallax wrapper: subtle mouse-follow on desktop ── */
+function ParallaxWrapper({ children }: { children: React.ReactNode }) {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { stiffness: 100, damping: 30, mass: 0.5 };
+  const x = useSpring(useTransform(mouseX, [-0.5, 0.5], [12, -12]), springConfig);
+  const y = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), springConfig);
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [2, -2]), springConfig);
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-2, 2]), springConfig);
+
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX / window.innerWidth - 0.5);
+      mouseY.set(e.clientY / window.innerHeight - 0.5);
+    };
+    window.addEventListener("mousemove", handleMove);
+    return () => window.removeEventListener("mousemove", handleMove);
+  }, [mouseX, mouseY]);
+
+  return (
+    <motion.div style={{ x, y, rotateX, rotateY, perspective: 800 }} className="w-full">
+      {children}
+    </motion.div>
+  );
+}
+
 const StoryMode = () => {
   const { id } = useParams<{ id: string }>();
   const trend = trends.find((t) => t.id === id);
@@ -143,7 +232,9 @@ const StoryMode = () => {
   const card = cards[activeIndex];
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-background">
+    <div className="fixed inset-0 z-50 flex flex-col bg-background overflow-hidden">
+      {/* Ambient background */}
+      <AmbientBackground activeIndex={activeIndex} totalCards={totalCards} />
       {/* Top bar */}
       <div className="relative z-10 flex items-center justify-between px-6 py-4">
         <Link
@@ -192,7 +283,9 @@ const StoryMode = () => {
             className="absolute flex w-full max-w-2xl cursor-grab items-center justify-center px-2 active:cursor-grabbing"
             style={{ touchAction: "none" }}
           >
-            <StoryCard card={card} trend={trend} />
+            <ParallaxWrapper>
+              <StoryCard card={card} trend={trend} />
+            </ParallaxWrapper>
           </motion.div>
         </AnimatePresence>
       </div>
