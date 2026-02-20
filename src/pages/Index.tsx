@@ -52,14 +52,19 @@ const Index = () => {
           </div>
         )}
 
-        <footer className="mt-24 border-t border-border px-6 py-10 md:px-16 lg:px-24">
+        <footer id="about" className="mt-24 border-t border-border px-6 py-10 md:px-16 lg:px-24">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="font-display text-lg font-bold text-foreground">
               AFRI<span className="text-gold">VOGUE</span>
             </div>
-            <p className="font-body text-xs text-muted-foreground">
-              © 2026 Afrivogue. Global Trend Intelligence Engine.
-            </p>
+            <div className="flex flex-col items-center gap-1 text-center md:items-end">
+              <p className="font-body text-xs text-muted-foreground">
+                © 2026 Afrivogue. Global Trend Intelligence Engine.
+              </p>
+              <p className="font-body text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60">
+                Africa &amp; the Diaspora · Luxury · Culture · Foresight
+              </p>
+            </div>
           </div>
         </footer>
       </main>
