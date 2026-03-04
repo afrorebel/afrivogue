@@ -3,8 +3,10 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import FilterBar from "@/components/FilterBar";
 import TrendCard from "@/components/TrendCard";
-import { trends } from "@/lib/trendData";
+import { useTrends } from "@/hooks/useTrends";
+import { trends as fallbackTrends } from "@/lib/trendData";
 import type { Category, Urgency, GeoRelevance, ContentTier } from "@/lib/trendData";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
   const [category, setCategory] = useState<Category | "All">("All");
@@ -12,15 +14,39 @@ const Index = () => {
   const [geo, setGeo] = useState<GeoRelevance | "All">("All");
   const [contentTier, setContentTier] = useState<ContentTier | "All">("All");
 
+  const { data: dbTrends, isLoading } = useTrends();
+
+  // Use DB trends if available, fall back to hardcoded data
+  const allTrends = useMemo(() => {
+    if (dbTrends && dbTrends.length > 0) {
+      return dbTrends;
+    }
+    // Fallback: map hardcoded trends to same shape
+    return fallbackTrends.map((t) => ({
+      id: t.id,
+      headline: t.headline,
+      cultural_significance: t.culturalSignificance,
+      geo_relevance: t.geoRelevance,
+      urgency: t.urgency,
+      category: t.category,
+      content_tier: t.contentTier,
+      created_at: t.timestamp,
+      image_hint: t.imageHint || null,
+      published: true,
+      updated_at: t.timestamp,
+      editorial_content: null,
+    }));
+  }, [dbTrends]);
+
   const filtered = useMemo(() => {
-    return trends.filter((t) => {
+    return allTrends.filter((t) => {
       if (category !== "All" && t.category !== category) return false;
       if (urgency !== "All" && t.urgency !== urgency) return false;
-      if (geo !== "All" && t.geoRelevance !== geo) return false;
-      if (contentTier !== "All" && t.contentTier !== contentTier) return false;
+      if (geo !== "All" && t.geo_relevance !== geo) return false;
+      if (contentTier !== "All" && t.content_tier !== contentTier) return false;
       return true;
     });
-  }, [category, urgency, geo, contentTier]);
+  }, [allTrends, category, urgency, geo, contentTier]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -39,13 +65,29 @@ const Index = () => {
           onContentTierChange={setContentTier}
         />
 
-        <div className="mt-10 grid gap-6 px-6 md:grid-cols-2 md:px-16 lg:px-24 xl:grid-cols-3">
-          {filtered.map((trend, i) => (
-            <TrendCard key={trend.id} trend={trend} index={i} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="mt-10 grid gap-6 px-6 md:grid-cols-2 md:px-16 lg:px-24 xl:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="rounded-lg border border-border bg-card overflow-hidden">
+                <Skeleton className="h-48 w-full" />
+                <div className="p-6 space-y-3">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-6 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="mt-10 grid gap-6 px-6 md:grid-cols-2 md:px-16 lg:px-24 xl:grid-cols-3">
+            {filtered.map((trend, i) => (
+              <TrendCard key={trend.id} trend={trend} index={i} />
+            ))}
+          </div>
+        )}
 
-        {filtered.length === 0 && (
+        {!isLoading && filtered.length === 0 && (
           <div className="mt-16 text-center">
             <p className="font-display text-xl text-muted-foreground">No trends match your filters.</p>
             <p className="mt-2 font-body text-sm text-muted-foreground">Try broadening your selection.</p>

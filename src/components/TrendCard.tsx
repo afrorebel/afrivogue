@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import type { Trend } from "@/lib/trendData";
+import { getCategoryImage } from "@/lib/categoryImages";
 
 const urgencyStyles: Record<string, string> = {
   Breaking: "urgency-breaking",
@@ -13,59 +13,94 @@ const geoStyles: Record<string, string> = {
   Global: "geo-global",
 };
 
+export interface TrendCardData {
+  id: string;
+  headline: string;
+  cultural_significance?: string;
+  culturalSignificance?: string;
+  geo_relevance?: string;
+  geoRelevance?: string;
+  urgency: string;
+  category: string;
+  content_tier?: string;
+  contentTier?: string;
+  created_at?: string;
+  timestamp?: string;
+  image_hint?: string | null;
+  imageHint?: string;
+}
+
 interface TrendCardProps {
-  trend: Trend;
+  trend: TrendCardData;
   index: number;
 }
 
 const TrendCard = ({ trend, index }: TrendCardProps) => {
+  const significance = trend.cultural_significance || trend.culturalSignificance || "";
+  const geo = trend.geo_relevance || trend.geoRelevance || "";
+  const tier = trend.content_tier || trend.contentTier || "";
+  const date = trend.created_at || trend.timestamp || "";
+  const displayDate = date ? new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : "";
+
   return (
     <article
-      className="group flex flex-col rounded-lg border border-border bg-card p-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_30px_-10px_hsl(var(--gold)/0.15)] animate-fade-up"
+      className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all duration-300 hover:border-gold/40 hover:shadow-[0_0_30px_-10px_hsl(var(--gold)/0.15)] animate-fade-up"
       style={{ animationDelay: `${index * 80}ms` }}
     >
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        <span className={`rounded-sm px-2.5 py-1 font-body text-[10px] font-bold uppercase tracking-wider ${urgencyStyles[trend.urgency]}`}>
-          {trend.urgency}
-        </span>
-        <span className={`rounded-sm px-2.5 py-1 font-body text-[10px] font-bold uppercase tracking-wider ${geoStyles[trend.geoRelevance]}`}>
-          {trend.geoRelevance}
-        </span>
-        <span className="ml-auto font-body text-[10px] uppercase tracking-wider text-muted-foreground">
-          {trend.category}
-        </span>
+      {/* Featured Image */}
+      <div className="relative h-48 overflow-hidden">
+        <img
+          src={getCategoryImage(trend.category)}
+          alt={trend.headline}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
+        <div className="absolute bottom-3 left-3 flex flex-wrap items-center gap-2">
+          <span className={`rounded-sm px-2.5 py-1 font-body text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm ${urgencyStyles[trend.urgency] || ""}`}>
+            {trend.urgency}
+          </span>
+          <span className={`rounded-sm px-2.5 py-1 font-body text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm ${geoStyles[geo] || ""}`}>
+            {geo}
+          </span>
+        </div>
       </div>
 
-      <div className="mb-3">
-        <span className="font-body text-[10px] italic tracking-wide text-gold/70">
-          {trend.contentTier}
-        </span>
-      </div>
+      <div className="flex flex-1 flex-col p-6">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="font-body text-[10px] italic tracking-wide text-gold/70">
+            {tier}
+          </span>
+          <span className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">
+            {trend.category}
+          </span>
+        </div>
 
-      <h3 className="mb-3 font-display text-xl font-bold leading-tight text-foreground transition-colors group-hover:text-gold md:text-2xl">
-        {trend.headline}
-      </h3>
+        <h3 className="mb-3 font-display text-xl font-bold leading-tight text-foreground transition-colors group-hover:text-gold md:text-2xl">
+          {trend.headline}
+        </h3>
 
-      <p className="flex-1 font-body text-sm leading-relaxed text-muted-foreground">
-        {trend.culturalSignificance}
-      </p>
+        <p className="flex-1 font-body text-sm leading-relaxed text-muted-foreground line-clamp-3">
+          {significance}
+        </p>
 
-      <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
-        <time className="font-body text-xs text-muted-foreground">{trend.timestamp}</time>
-        <div className="flex items-center gap-3">
-          {trend.contentTier === "Premium Long-Form" && (
-            <Link to={`/editorial/${trend.id}`} className="font-body text-[10px] font-bold uppercase tracking-wider text-gold/70 transition-colors hover:text-gold">
-              ◆ Editorial
+        <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
+          <time className="font-body text-xs text-muted-foreground">{displayDate}</time>
+          <div className="flex items-center gap-3">
+            {tier === "Premium Long-Form" && (
+              <Link to={`/editorial/${trend.id}`} className="font-body text-[10px] font-bold uppercase tracking-wider text-gold/70 transition-colors hover:text-gold">
+                ◆ Editorial
+              </Link>
+            )}
+            {tier === "Cultural Forecast" && (
+              <Link to="/forecast" className="font-body text-[10px] font-bold uppercase tracking-wider text-gold/70 transition-colors hover:text-gold">
+                ◇ Forecast
+              </Link>
+            )}
+            <Link to={`/trend/${trend.id}`} className="font-body text-xs font-medium text-gold transition-transform group-hover:translate-x-1">
+              Read more →
             </Link>
-          )}
-          {trend.contentTier === "Cultural Forecast" && (
-            <Link to="/forecast" className="font-body text-[10px] font-bold uppercase tracking-wider text-gold/70 transition-colors hover:text-gold">
-              ◇ Forecast
-            </Link>
-          )}
-          <Link to={`/trend/${trend.id}`} className="font-body text-xs font-medium text-gold transition-transform group-hover:translate-x-1">
-            Read more →
-          </Link>
+          </div>
         </div>
       </div>
     </article>

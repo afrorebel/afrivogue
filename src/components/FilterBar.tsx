@@ -34,7 +34,7 @@ const FilterBar = ({
       {/* Categories */}
       <div className="flex flex-wrap items-center gap-2">
         <span className="mr-2 font-body text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          Sector
+          Category
         </span>
         <button className={pill(activeCategory === "All")} onClick={() => onCategoryChange("All")}>
           All
