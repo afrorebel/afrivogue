@@ -219,7 +219,7 @@ const CulturalForecast = () => {
           className="mb-8 inline-flex items-center gap-2 font-body text-xs font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:text-gold"
         >
           <ArrowLeft className="h-3 w-3" />
-          Intelligence Hub
+          Afrivogue Feed
         </Link>
 
         <div className="max-w-3xl">

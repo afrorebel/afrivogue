@@ -15,6 +15,10 @@ export interface DbTrend {
   image_hint: string | null;
   published: boolean;
   editorial_content: any;
+  featured_image_url: string | null;
+  images: string[];
+  source_url: string | null;
+  source_name: string | null;
 }
 
 export function useTrends() {
@@ -32,11 +36,10 @@ export function useTrends() {
       if (error) throw error;
       return data as DbTrend[];
     },
-    refetchInterval: 60_000, // 1 minute polling
+    refetchInterval: 60_000,
     staleTime: 30_000,
   });
 
-  // Realtime subscription
   useEffect(() => {
     const channel = supabase
       .channel("trends-realtime")
