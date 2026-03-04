@@ -3,6 +3,8 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import FilterBar from "@/components/FilterBar";
 import TrendCard from "@/components/TrendCard";
+import LeadGenWidget from "@/components/LeadGenWidget";
+import NewsletterPopup from "@/components/NewsletterPopup";
 import { useTrends } from "@/hooks/useTrends";
 import { trends as fallbackTrends } from "@/lib/trendData";
 import type { Category, Urgency, GeoRelevance, ContentTier } from "@/lib/trendData";
@@ -16,12 +18,10 @@ const Index = () => {
 
   const { data: dbTrends, isLoading } = useTrends();
 
-  // Use DB trends if available, fall back to hardcoded data
   const allTrends = useMemo(() => {
     if (dbTrends && dbTrends.length > 0) {
       return dbTrends;
     }
-    // Fallback: map hardcoded trends to same shape
     return fallbackTrends.map((t) => ({
       id: t.id,
       headline: t.headline,
@@ -35,6 +35,10 @@ const Index = () => {
       published: true,
       updated_at: t.timestamp,
       editorial_content: null,
+      featured_image_url: null,
+      images: [],
+      source_url: null,
+      source_name: null,
     }));
   }, [dbTrends]);
 
@@ -52,6 +56,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <HeroSection />
+      <NewsletterPopup />
 
       <main className="py-12">
         <FilterBar
@@ -80,11 +85,29 @@ const Index = () => {
             ))}
           </div>
         ) : (
-          <div className="mt-10 grid gap-6 px-6 md:grid-cols-2 md:px-16 lg:px-24 xl:grid-cols-3">
-            {filtered.map((trend, i) => (
-              <TrendCard key={trend.id} trend={trend} index={i} />
-            ))}
-          </div>
+          <>
+            <div className="mt-10 grid gap-6 px-6 md:grid-cols-2 md:px-16 lg:px-24 xl:grid-cols-3">
+              {filtered.slice(0, 6).map((trend, i) => (
+                <TrendCard key={trend.id} trend={trend} index={i} />
+              ))}
+            </div>
+
+            {/* Lead gen banner after first 6 cards */}
+            {filtered.length > 3 && (
+              <div className="px-6 md:px-16 lg:px-24">
+                <LeadGenWidget variant="banner" />
+              </div>
+            )}
+
+            {/* Remaining cards */}
+            {filtered.length > 6 && (
+              <div className="mt-6 grid gap-6 px-6 md:grid-cols-2 md:px-16 lg:px-24 xl:grid-cols-3">
+                {filtered.slice(6).map((trend, i) => (
+                  <TrendCard key={trend.id} trend={trend} index={i + 6} />
+                ))}
+              </div>
+            )}
+          </>
         )}
 
         {!isLoading && filtered.length === 0 && (
@@ -101,7 +124,7 @@ const Index = () => {
             </div>
             <div className="flex flex-col items-center gap-1 text-center md:items-end">
               <p className="font-body text-xs text-muted-foreground">
-                © 2026 Afrivogue. Global Trend Intelligence Engine.
+                © 2026 Afrivogue. All rights reserved.
               </p>
               <p className="font-body text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60">
                 Africa &amp; the Diaspora · Luxury · Culture · Foresight

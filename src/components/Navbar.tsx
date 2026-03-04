@@ -21,7 +21,6 @@ const Navbar = () => {
           AFRI<span className="text-gold">VOGUE</span>
         </Link>
 
-        {/* Desktop links */}
         <div className="hidden items-center gap-8 font-body text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground md:flex">
           {navLinks.map((l) => (
             <Link key={l.label} to={l.href} className="transition-colors hover:text-gold">
@@ -30,9 +29,8 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Right side: pulse + hamburger */}
         <div className="flex items-center gap-4">
-          <div className="h-2 w-2 rounded-full bg-gold animate-pulse" title="Live intelligence" />
+          <div className="h-2 w-2 rounded-full bg-gold animate-pulse" title="Live feed" />
           <button
             onClick={() => setOpen(!open)}
             className="flex items-center justify-center text-foreground md:hidden"
@@ -43,7 +41,6 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Mobile overlay menu */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -83,7 +80,7 @@ const Navbar = () => {
                 transition={{ delay: 0.5 }}
                 className="font-body text-[10px] uppercase tracking-[0.2em] text-muted-foreground"
               >
-                Global Trend Intelligence
+                Afrivogue Feed
               </motion.p>
             </div>
           </motion.div>

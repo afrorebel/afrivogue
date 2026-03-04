@@ -14,7 +14,7 @@ const HeroSection = () => {
 
       <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-12 md:px-16 lg:px-24">
         <p className="mb-3 font-body text-xs font-semibold uppercase tracking-[0.3em] text-gold">
-          Global Trend Intelligence
+          Afrivogue Feed
         </p>
         <h1 className="max-w-3xl font-display text-4xl font-bold leading-[1.1] text-foreground md:text-6xl lg:text-7xl">
           The Pulse of African &amp; Global Fashion

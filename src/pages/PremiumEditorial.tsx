@@ -58,7 +58,7 @@ const PremiumEditorial = () => {
           <h1 className="font-display text-3xl font-bold text-foreground">Editorial Not Found</h1>
           <p className="mt-3 font-body text-muted-foreground">This piece may not yet be available.</p>
           <Link to="/" className="mt-6 inline-block font-body text-sm text-gold hover:text-terracotta">
-            ← Return to Intelligence Feed
+            ← Return to Afrivogue Feed
           </Link>
         </div>
       </div>
@@ -282,7 +282,7 @@ const PremiumEditorial = () => {
             AFRI<span className="text-gold">VOGUE</span>
           </div>
           <p className="font-body text-xs text-muted-foreground">
-            © 2026 Afrivogue. Global Trend Intelligence Engine.
+            © 2026 Afrivogue. All rights reserved.
           </p>
         </div>
       </footer>

@@ -21,7 +21,7 @@ const URGENCIES = ["Breaking", "Emerging", "Slow-Burn"];
 const GEO_OPTIONS = ["Africa", "Diaspora", "Global"];
 const CONTENT_TIERS = ["Daily Brief", "Editorial Feature", "Premium Long-Form", "Cultural Forecast", "Story Mode"];
 
-const emptyTrend: Partial<TablesInsert<"trends">> = {
+const emptyTrend: Partial<TablesInsert<"trends">> & { source_url?: string; source_name?: string; featured_image_url?: string } = {
   headline: "",
   cultural_significance: "",
   geo_relevance: "Africa",
@@ -30,6 +30,9 @@ const emptyTrend: Partial<TablesInsert<"trends">> = {
   content_tier: "Daily Brief",
   image_hint: "",
   published: false,
+  source_url: "",
+  source_name: "",
+  featured_image_url: "",
 };
 
 const AdminTrends = () => {
@@ -48,12 +51,12 @@ const AdminTrends = () => {
   });
 
   const upsert = useMutation({
-    mutationFn: async (values: Partial<TablesInsert<"trends">>) => {
+    mutationFn: async (values: any) => {
       if (editing) {
         const { error } = await supabase.from("trends").update(values).eq("id", editing.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("trends").insert(values as TablesInsert<"trends">);
+        const { error } = await supabase.from("trends").insert(values);
         if (error) throw error;
       }
     },
@@ -87,6 +90,9 @@ const AdminTrends = () => {
       content_tier: t.content_tier,
       image_hint: t.image_hint || "",
       published: t.published,
+      source_url: (t as any).source_url || "",
+      source_name: (t as any).source_name || "",
+      featured_image_url: (t as any).featured_image_url || "",
     });
     setOpen(true);
   };
@@ -153,6 +159,22 @@ const AdminTrends = () => {
                   </Select>
                 </div>
               </div>
+
+              {/* New fields */}
+              <div className="space-y-2">
+                <Label>Featured Image URL</Label>
+                <Input value={form.featured_image_url || ""} onChange={(e) => setForm({ ...form, featured_image_url: e.target.value })} placeholder="https://... (leave empty to use category image)" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Source Name</Label>
+                  <Input value={form.source_name || ""} onChange={(e) => setForm({ ...form, source_name: e.target.value })} placeholder="e.g. Vogue Business" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Source URL</Label>
+                  <Input value={form.source_url || ""} onChange={(e) => setForm({ ...form, source_url: e.target.value })} placeholder="https://..." />
+                </div>
+              </div>
               <div className="space-y-2">
                 <Label>Image Hint</Label>
                 <Input value={form.image_hint || ""} onChange={(e) => setForm({ ...form, image_hint: e.target.value })} />
@@ -181,6 +203,7 @@ const AdminTrends = () => {
               <TableHead>Headline</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Urgency</TableHead>
+              <TableHead>Source</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="w-24">Actions</TableHead>
             </TableRow>
@@ -188,9 +211,10 @@ const AdminTrends = () => {
           <TableBody>
             {trends.map((t) => (
               <TableRow key={t.id}>
-                <TableCell className="max-w-[300px] truncate font-medium">{t.headline}</TableCell>
+                <TableCell className="max-w-[250px] truncate font-medium">{t.headline}</TableCell>
                 <TableCell>{t.category}</TableCell>
                 <TableCell>{t.urgency}</TableCell>
+                <TableCell className="text-xs text-muted-foreground">{(t as any).source_name || "—"}</TableCell>
                 <TableCell>
                   <Badge variant={t.published ? "default" : "secondary"}>
                     {t.published ? "Published" : "Draft"}

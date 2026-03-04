@@ -62,6 +62,27 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_subscribers: {
+        Row: {
+          email: string
+          id: string
+          source: string | null
+          subscribed_at: string
+        }
+        Insert: {
+          email: string
+          id?: string
+          source?: string | null
+          subscribed_at?: string
+        }
+        Update: {
+          email?: string
+          id?: string
+          source?: string | null
+          subscribed_at?: string
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           key: string
@@ -87,11 +108,15 @@ export type Database = {
           created_at: string
           cultural_significance: string
           editorial_content: Json | null
+          featured_image_url: string | null
           geo_relevance: string
           headline: string
           id: string
           image_hint: string | null
+          images: Json | null
           published: boolean
+          source_name: string | null
+          source_url: string | null
           updated_at: string
           urgency: string
         }
@@ -101,11 +126,15 @@ export type Database = {
           created_at?: string
           cultural_significance: string
           editorial_content?: Json | null
+          featured_image_url?: string | null
           geo_relevance: string
           headline: string
           id?: string
           image_hint?: string | null
+          images?: Json | null
           published?: boolean
+          source_name?: string | null
+          source_url?: string | null
           updated_at?: string
           urgency: string
         }
@@ -115,11 +144,15 @@ export type Database = {
           created_at?: string
           cultural_significance?: string
           editorial_content?: Json | null
+          featured_image_url?: string | null
           geo_relevance?: string
           headline?: string
           id?: string
           image_hint?: string | null
+          images?: Json | null
           published?: boolean
+          source_name?: string | null
+          source_url?: string | null
           updated_at?: string
           urgency?: string
         }

@@ -395,7 +395,7 @@ function StoryCard({ card, trend }: { card: StoryCardData; trend: Trend }) {
           transition={{ delay: 0.9 }}
           className="mt-4 font-body text-xs uppercase tracking-[0.2em] text-gold/60"
         >
-          — Afrivogue Intelligence
+          — Afrivogue
         </motion.span>
       </div>
     );
@@ -475,13 +475,13 @@ function StoryCard({ card, trend }: { card: StoryCardData; trend: Trend }) {
             AFRI<span className="text-gold">VOGUE</span>
           </div>
           <span className="font-body text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            Global Trend Intelligence
+            Afrivogue Feed
           </span>
           <Link
             to="/"
             className="mt-4 font-body text-xs font-medium text-gold transition-colors hover:text-foreground"
           >
-            ← Return to Intelligence Feed
+            ← Return to Afrivogue Feed
           </Link>
         </motion.div>
       </div>
