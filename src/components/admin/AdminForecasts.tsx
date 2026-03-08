@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Zap, CheckCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 
@@ -32,6 +32,7 @@ const AdminForecasts = () => {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Forecast | null>(null);
   const [form, setForm] = useState(emptyForecast);
+  const [pipelineRunning, setPipelineRunning] = useState(false);
 
   const { data: forecasts = [], isLoading } = useQuery({
     queryKey: ["admin-forecasts"],
@@ -71,6 +72,20 @@ const AdminForecasts = () => {
     },
   });
 
+  const runPipeline = async () => {
+    setPipelineRunning(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("ingest-forecasts");
+      if (error) throw error;
+      toast({ title: "Pipeline complete", description: `Ingested ${data?.ingested || 0} new forecasts` });
+      qc.invalidateQueries({ queryKey: ["admin-forecasts"] });
+    } catch (e: any) {
+      toast({ title: "Pipeline error", description: e.message, variant: "destructive" });
+    } finally {
+      setPipelineRunning(false);
+    }
+  };
+
   const openEdit = (f: Forecast) => {
     setEditing(f);
     setForm({
@@ -89,70 +104,76 @@ const AdminForecasts = () => {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="font-display text-xl font-bold">Cultural Forecasts</h2>
-        <Dialog open={open} onOpenChange={(v) => { if (!v) closeDialog(); else setOpen(true); }}>
-          <DialogTrigger asChild>
-            <Button size="sm"><Plus className="mr-1 h-4 w-4" /> New Forecast</Button>
-          </DialogTrigger>
-          <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
-            <DialogHeader><DialogTitle>{editing ? "Edit Forecast" : "New Forecast"}</DialogTitle></DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label>Title</Label>
-                <Input value={form.title || ""} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
-              </div>
-              <div className="space-y-2">
-                <Label>Projection</Label>
-                <Textarea rows={3} value={form.projection || ""} onChange={(e) => setForm({ ...form, projection: e.target.value })} required />
-              </div>
-              <div className="space-y-2">
-                <Label>Evidence</Label>
-                <Textarea rows={3} value={form.evidence || ""} onChange={(e) => setForm({ ...form, evidence: e.target.value })} required />
-              </div>
-              <div className="space-y-2">
-                <Label>Implications</Label>
-                <Textarea rows={3} value={form.implications || ""} onChange={(e) => setForm({ ...form, implications: e.target.value })} required />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={runPipeline} disabled={pipelineRunning}>
+            <Zap className="mr-1 h-4 w-4" />
+            {pipelineRunning ? "Running…" : "Run Pipeline"}
+          </Button>
+          <Dialog open={open} onOpenChange={(v) => { if (!v) closeDialog(); else setOpen(true); }}>
+            <DialogTrigger asChild>
+              <Button size="sm"><Plus className="mr-1 h-4 w-4" /> New Forecast</Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
+              <DialogHeader><DialogTitle>{editing ? "Edit Forecast" : "New Forecast"}</DialogTitle></DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Domain</Label>
-                  <Select value={form.domain} onValueChange={(v) => setForm({ ...form, domain: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{DOMAINS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
-                  </Select>
+                  <Label>Title</Label>
+                  <Input value={form.title || ""} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
                 </div>
                 <div className="space-y-2">
-                  <Label>Horizon</Label>
-                  <Select value={form.horizon} onValueChange={(v) => setForm({ ...form, horizon: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{HORIZONS.map((h) => <SelectItem key={h} value={h}>{h}</SelectItem>)}</SelectContent>
-                  </Select>
+                  <Label>Projection</Label>
+                  <Textarea rows={3} value={form.projection || ""} onChange={(e) => setForm({ ...form, projection: e.target.value })} required />
                 </div>
                 <div className="space-y-2">
-                  <Label>Signal Strength</Label>
-                  <Select value={form.signal_strength} onValueChange={(v) => setForm({ ...form, signal_strength: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{SIGNALS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-                  </Select>
+                  <Label>Evidence</Label>
+                  <Textarea rows={3} value={form.evidence || ""} onChange={(e) => setForm({ ...form, evidence: e.target.value })} required />
                 </div>
                 <div className="space-y-2">
-                  <Label>Region</Label>
-                  <Select value={form.region} onValueChange={(v) => setForm({ ...form, region: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{REGIONS.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
-                  </Select>
+                  <Label>Implications</Label>
+                  <Textarea rows={3} value={form.implications || ""} onChange={(e) => setForm({ ...form, implications: e.target.value })} required />
                 </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch checked={!!form.published} onCheckedChange={(v) => setForm({ ...form, published: v })} />
-                <Label>Published</Label>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={closeDialog}>Cancel</Button>
-                <Button type="submit" disabled={upsert.isPending}>{editing ? "Update" : "Create"}</Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Domain</Label>
+                    <Select value={form.domain} onValueChange={(v) => setForm({ ...form, domain: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>{DOMAINS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Horizon</Label>
+                    <Select value={form.horizon} onValueChange={(v) => setForm({ ...form, horizon: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>{HORIZONS.map((h) => <SelectItem key={h} value={h}>{h}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Signal Strength</Label>
+                    <Select value={form.signal_strength} onValueChange={(v) => setForm({ ...form, signal_strength: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>{SIGNALS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Region</Label>
+                    <Select value={form.region} onValueChange={(v) => setForm({ ...form, region: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>{REGIONS.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={!!form.published} onCheckedChange={(v) => setForm({ ...form, published: v })} />
+                  <Label>Published</Label>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button type="button" variant="outline" onClick={closeDialog}>Cancel</Button>
+                  <Button type="submit" disabled={upsert.isPending}>{editing ? "Update" : "Create"}</Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {isLoading ? (
@@ -166,6 +187,7 @@ const AdminForecasts = () => {
               <TableHead>Title</TableHead>
               <TableHead>Domain</TableHead>
               <TableHead>Signal</TableHead>
+              <TableHead>Horizon</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="w-24">Actions</TableHead>
             </TableRow>
@@ -176,6 +198,7 @@ const AdminForecasts = () => {
                 <TableCell className="max-w-[300px] truncate font-medium">{f.title}</TableCell>
                 <TableCell>{f.domain}</TableCell>
                 <TableCell>{f.signal_strength}</TableCell>
+                <TableCell>{f.horizon}</TableCell>
                 <TableCell>
                   <Badge variant={f.published ? "default" : "secondary"}>
                     {f.published ? "Published" : "Draft"}
