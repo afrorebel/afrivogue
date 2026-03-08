@@ -114,6 +114,8 @@ export type Database = {
           id: string
           image_hint: string | null
           images: Json | null
+          needs_review: boolean
+          original_source_content: string | null
           published: boolean
           source_name: string | null
           source_url: string | null
@@ -132,6 +134,8 @@ export type Database = {
           id?: string
           image_hint?: string | null
           images?: Json | null
+          needs_review?: boolean
+          original_source_content?: string | null
           published?: boolean
           source_name?: string | null
           source_url?: string | null
@@ -150,6 +154,8 @@ export type Database = {
           id?: string
           image_hint?: string | null
           images?: Json | null
+          needs_review?: boolean
+          original_source_content?: string | null
           published?: boolean
           source_name?: string | null
           source_url?: string | null
