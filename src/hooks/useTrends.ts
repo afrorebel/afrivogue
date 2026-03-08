@@ -19,6 +19,8 @@ export interface DbTrend {
   images: string[];
   source_url: string | null;
   source_name: string | null;
+  needs_review: boolean;
+  original_source_content: string | null;
 }
 
 export function useTrends() {
