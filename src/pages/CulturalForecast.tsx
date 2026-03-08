@@ -189,18 +189,45 @@ const ForecastCard = ({
 
 /* ─────────────────── page ─────────────────── */
 const CulturalForecast = () => {
+  const { data: dbForecasts } = useQuery({
+    queryKey: ["forecasts-public"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("forecasts")
+        .select("*")
+        .eq("published", true)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data || []).map((f: any) => ({
+        id: f.id,
+        title: f.title,
+        projection: f.projection,
+        evidence: f.evidence,
+        implications: f.implications,
+        domain: f.domain as ForecastDomain,
+        horizon: f.horizon as ForecastHorizon,
+        signalStrength: f.signal_strength as ForecastSignalStrength,
+        region: f.region as "Africa" | "Diaspora" | "Global",
+        publishedDate: new Date(f.published_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+      })) as CulturalForecast[];
+    },
+    staleTime: 30_000,
+  });
+
+  const allForecasts = dbForecasts && dbForecasts.length > 0 ? dbForecasts : staticForecasts;
+
   const [domain, setDomain] = useState<ForecastDomain | "All">("All");
   const [horizon, setHorizon] = useState<ForecastHorizon | "All">("All");
   const [signal, setSignal] = useState<ForecastSignalStrength | "All">("All");
 
   const filtered = useMemo(() => {
-    return forecasts.filter((f) => {
+    return allForecasts.filter((f) => {
       if (domain !== "All" && f.domain !== domain) return false;
       if (horizon !== "All" && f.horizon !== horizon) return false;
       if (signal !== "All" && f.signalStrength !== signal) return false;
       return true;
     });
-  }, [domain, horizon, signal]);
+  }, [domain, horizon, signal, allForecasts]);
 
   const pill = (active: boolean) =>
     `cursor-pointer rounded-sm border px-3 py-1.5 font-body text-xs font-medium uppercase tracking-wider transition-all duration-200 ${
