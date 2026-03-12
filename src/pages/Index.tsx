@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import FilterBar from "@/components/FilterBar";
@@ -11,10 +12,20 @@ import type { Category, Urgency, GeoRelevance, ContentTier } from "@/lib/trendDa
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
+  const [searchParams] = useSearchParams();
+  const catParam = searchParams.get("cat");
+
   const [category, setCategory] = useState<Category | "All">("All");
   const [urgency, setUrgency] = useState<Urgency | "All">("All");
   const [geo, setGeo] = useState<GeoRelevance | "All">("All");
   const [contentTier, setContentTier] = useState<ContentTier | "All">("All");
+
+  // Sync URL ?cat= param to category filter
+  useEffect(() => {
+    if (catParam) {
+      setCategory(catParam as Category);
+    }
+  }, [catParam]);
 
   const { data: dbTrends, isLoading } = useTrends();
 
@@ -92,14 +103,12 @@ const Index = () => {
               ))}
             </div>
 
-            {/* Lead gen banner after first 6 cards */}
             {filtered.length > 3 && (
               <div className="px-6 md:px-16 lg:px-24">
                 <LeadGenWidget variant="banner" />
               </div>
             )}
 
-            {/* Remaining cards */}
             {filtered.length > 6 && (
               <div className="mt-6 grid gap-6 px-6 md:grid-cols-2 md:px-16 lg:px-24 xl:grid-cols-3">
                 {filtered.slice(6).map((trend, i) => (
