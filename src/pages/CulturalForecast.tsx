@@ -220,6 +220,10 @@ const CulturalForecast = () => {
   const [domain, setDomain] = useState<ForecastDomain | "All">("All");
   const [horizon, setHorizon] = useState<ForecastHorizon | "All">("All");
   const [signal, setSignal] = useState<ForecastSignalStrength | "All">("All");
+  const [openFilter, setOpenFilter] = useState<"category" | "horizon" | "signal" | null>(null);
+
+  const toggleFilter = (key: "category" | "horizon" | "signal") =>
+    setOpenFilter(openFilter === key ? null : key);
 
   const filtered = useMemo(() => {
     return allForecasts.filter((f) => {
@@ -236,6 +240,21 @@ const CulturalForecast = () => {
         ? "border-gold bg-gold text-primary-foreground"
         : "border-border bg-transparent text-muted-foreground hover:border-gold/40 hover:text-foreground"
     }`;
+
+  const headerBtn = (key: "category" | "horizon" | "signal", label: string, activeValue: string) => (
+    <button
+      onClick={() => toggleFilter(key)}
+      className="flex items-center gap-1.5 font-body text-[11px] font-semibold uppercase tracking-[0.15em] text-foreground/80 hover:text-foreground transition-colors"
+    >
+      <span>{label}</span>
+      {activeValue !== "All" && (
+        <span className="rounded-sm bg-gold/20 px-1.5 py-0.5 text-[10px] text-gold">{activeValue}</span>
+      )}
+      <ChevronDown
+        className={`h-3 w-3 transition-transform duration-200 ${openFilter === key ? "rotate-180" : ""}`}
+      />
+    </button>
+  );
 
   return (
     <div className="relative min-h-screen bg-background">
