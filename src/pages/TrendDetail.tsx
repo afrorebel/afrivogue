@@ -7,6 +7,7 @@ import TrendCard from "@/components/TrendCard";
 import ImageCarousel from "@/components/ImageCarousel";
 import LeadGenWidget from "@/components/LeadGenWidget";
 import { Skeleton } from "@/components/ui/skeleton";
+import { linkifyText } from "@/lib/linkify";
 
 const urgencyStyles: Record<string, string> = {
   Breaking: "urgency-breaking",
@@ -160,7 +161,7 @@ const TrendDetail = () => {
         <div className="grid gap-12 lg:grid-cols-[1fr_280px]">
           <div className="space-y-10">
             <p className="font-display text-xl leading-relaxed text-foreground/90 md:text-2xl">
-              {firstHalf}
+              {linkifyText(firstHalf)}
             </p>
 
             {/* Image carousel if post has images */}
@@ -175,7 +176,7 @@ const TrendDetail = () => {
 
             {secondHalf && (
               <p className="font-body text-base leading-[1.85] text-muted-foreground">
-                {secondHalf}
+                {linkifyText(secondHalf)}
               </p>
             )}
 
