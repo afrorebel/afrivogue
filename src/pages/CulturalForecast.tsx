@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, TrendingUp, Globe, Clock, Signal } from "lucide-react";
+import { ArrowLeft, Globe, Clock, Signal, TrendingUp, ChevronDown } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -219,6 +219,10 @@ const CulturalForecast = () => {
   const [domain, setDomain] = useState<ForecastDomain | "All">("All");
   const [horizon, setHorizon] = useState<ForecastHorizon | "All">("All");
   const [signal, setSignal] = useState<ForecastSignalStrength | "All">("All");
+  const [openFilter, setOpenFilter] = useState<"category" | "horizon" | "signal" | null>(null);
+
+  const toggleFilter = (key: "category" | "horizon" | "signal") =>
+    setOpenFilter(openFilter === key ? null : key);
 
   const filtered = useMemo(() => {
     return allForecasts.filter((f) => {
@@ -235,6 +239,21 @@ const CulturalForecast = () => {
         ? "border-gold bg-gold text-primary-foreground"
         : "border-border bg-transparent text-muted-foreground hover:border-gold/40 hover:text-foreground"
     }`;
+
+  const headerBtn = (key: "category" | "horizon" | "signal", label: string, activeValue: string) => (
+    <button
+      onClick={() => toggleFilter(key)}
+      className="flex items-center gap-1.5 font-body text-[11px] font-semibold uppercase tracking-[0.15em] text-foreground/80 hover:text-foreground transition-colors"
+    >
+      <span>{label}</span>
+      {activeValue !== "All" && (
+        <span className="rounded-sm bg-gold/20 px-1.5 py-0.5 text-[10px] text-gold">{activeValue}</span>
+      )}
+      <ChevronDown
+        className={`h-3 w-3 transition-transform duration-200 ${openFilter === key ? "rotate-180" : ""}`}
+      />
+    </button>
+  );
 
   return (
     <div className="relative min-h-screen bg-background">
@@ -281,51 +300,55 @@ const CulturalForecast = () => {
       </header>
 
       {/* Filters */}
-      <section className="relative z-10 space-y-4 px-6 md:px-16 lg:px-24">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="mr-2 font-body text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Domain
-          </span>
-          <button className={pill(domain === "All")} onClick={() => setDomain("All")}>
-            All
-          </button>
-          {forecastDomains.map((d) => (
-            <button key={d} className={pill(domain === d)} onClick={() => setDomain(d)}>
-              {d}
-            </button>
-          ))}
+      <div className="relative z-10 px-6 md:px-16 lg:px-24 space-y-2">
+        <div className="flex flex-wrap items-center gap-4 md:gap-6">
+          {headerBtn("category", "Category", domain)}
+          <span className="hidden md:block h-4 w-px bg-border" />
+          {headerBtn("horizon", "Horizon", horizon)}
+          <span className="hidden md:block h-4 w-px bg-border" />
+          {headerBtn("signal", "Signal", signal)}
         </div>
 
-        <div className="flex flex-wrap items-center gap-6">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="mr-2 font-body text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Horizon
-            </span>
-            <button className={pill(horizon === "All")} onClick={() => setHorizon("All")}>
-              All
-            </button>
-            {forecastHorizons.map((h) => (
-              <button key={h} className={pill(horizon === h)} onClick={() => setHorizon(h)}>
-                {h}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="mr-2 font-body text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Signal
-            </span>
-            <button className={pill(signal === "All")} onClick={() => setSignal("All")}>
-              All
-            </button>
-            {signalStrengths.map((s) => (
-              <button key={s} className={pill(signal === s)} onClick={() => setSignal(s)}>
-                {s}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
+        <AnimatePresence>
+          {openFilter && (
+            <motion.div
+              key={openFilter}
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="flex flex-wrap items-center gap-2 pt-2 pb-1">
+                {openFilter === "category" && (
+                  <>
+                    <button className={pill(domain === "All")} onClick={() => setDomain("All")}>All</button>
+                    {forecastDomains.map((d) => (
+                      <button key={d} className={pill(domain === d)} onClick={() => setDomain(d)}>{d}</button>
+                    ))}
+                  </>
+                )}
+                {openFilter === "horizon" && (
+                  <>
+                    <button className={pill(horizon === "All")} onClick={() => setHorizon("All")}>All</button>
+                    {forecastHorizons.map((h) => (
+                      <button key={h} className={pill(horizon === h)} onClick={() => setHorizon(h)}>{h}</button>
+                    ))}
+                  </>
+                )}
+                {openFilter === "signal" && (
+                  <>
+                    <button className={pill(signal === "All")} onClick={() => setSignal("All")}>All</button>
+                    {signalStrengths.map((s) => (
+                      <button key={s} className={pill(signal === s)} onClick={() => setSignal(s)}>{s}</button>
+                    ))}
+                  </>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Cards grid */}
       <section className="relative z-10 mt-10 px-6 pb-24 md:px-16 lg:px-24">
