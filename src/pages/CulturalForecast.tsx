@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, TrendingUp, Globe, Clock, Signal } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { supabase } from "@/integrations/supabase/client";
+import { ChevronDown } from "lucide-react";
 import {
   forecasts as staticForecasts,
   forecastDomains,
