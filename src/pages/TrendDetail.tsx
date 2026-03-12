@@ -176,7 +176,7 @@ const TrendDetail = () => {
 
             {secondHalf && (
               <p className="font-body text-base leading-[1.85] text-muted-foreground">
-                {secondHalf}
+                {linkifyText(secondHalf)}
               </p>
             )}
 

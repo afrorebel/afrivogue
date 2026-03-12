@@ -81,9 +81,11 @@ const TrendCard = ({ trend, index }: TrendCardProps) => {
           </span>
         </div>
 
-        <h3 className="mb-3 font-display text-xl font-bold leading-tight text-foreground transition-colors group-hover:text-gold md:text-2xl">
-          {trend.headline}
-        </h3>
+      <Link to={`/trend/${trend.id}`}>
+          <h3 className="mb-3 font-display text-xl font-bold leading-tight text-foreground transition-colors group-hover:text-gold md:text-2xl">
+            {trend.headline}
+          </h3>
+        </Link>
 
         <p className="flex-1 font-body text-sm leading-relaxed text-muted-foreground line-clamp-3">
           {significance}
