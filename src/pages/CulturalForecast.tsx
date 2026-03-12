@@ -301,43 +301,55 @@ const CulturalForecast = () => {
       </header>
 
       {/* Filters */}
-      <section className="relative z-10 space-y-4 px-6 md:px-16 lg:px-24">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="mr-2 font-body text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Domain
-          </span>
-          <button className={pill(domain === "All")} onClick={() => setDomain("All")}>
-            All
-          </button>
-          {forecastDomains.map((d) => (
-            <button key={d} className={pill(domain === d)} onClick={() => setDomain(d)}>
-              {d}
-            </button>
-          ))}
+      <div className="relative z-10 px-6 md:px-16 lg:px-24 space-y-2">
+        <div className="flex flex-wrap items-center gap-4 md:gap-6">
+          {headerBtn("category", "Category", domain)}
+          <span className="hidden md:block h-4 w-px bg-border" />
+          {headerBtn("horizon", "Horizon", horizon)}
+          <span className="hidden md:block h-4 w-px bg-border" />
+          {headerBtn("signal", "Signal", signal)}
         </div>
 
-        <div className="flex flex-wrap items-center gap-6">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="mr-2 font-body text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Horizon
-            </span>
-            <button className={pill(horizon === "All")} onClick={() => setHorizon("All")}>
-              All
-            </button>
-            {forecastHorizons.map((h) => (
-              <button key={h} className={pill(horizon === h)} onClick={() => setHorizon(h)}>
-                {h}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="mr-2 font-body text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Signal
-            </span>
-            <button className={pill(signal === "All")} onClick={() => setSignal("All")}>
-              All
-            </button>
+        <AnimatePresence>
+          {openFilter && (
+            <motion.div
+              key={openFilter}
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="flex flex-wrap items-center gap-2 pt-2 pb-1">
+                {openFilter === "category" && (
+                  <>
+                    <button className={pill(domain === "All")} onClick={() => setDomain("All")}>All</button>
+                    {forecastDomains.map((d) => (
+                      <button key={d} className={pill(domain === d)} onClick={() => setDomain(d)}>{d}</button>
+                    ))}
+                  </>
+                )}
+                {openFilter === "horizon" && (
+                  <>
+                    <button className={pill(horizon === "All")} onClick={() => setHorizon("All")}>All</button>
+                    {forecastHorizons.map((h) => (
+                      <button key={h} className={pill(horizon === h)} onClick={() => setHorizon(h)}>{h}</button>
+                    ))}
+                  </>
+                )}
+                {openFilter === "signal" && (
+                  <>
+                    <button className={pill(signal === "All")} onClick={() => setSignal("All")}>All</button>
+                    {signalStrengths.map((s) => (
+                      <button key={s} className={pill(signal === s)} onClick={() => setSignal(s)}>{s}</button>
+                    ))}
+                  </>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
             {signalStrengths.map((s) => (
               <button key={s} className={pill(signal === s)} onClick={() => setSignal(s)}>
                 {s}
