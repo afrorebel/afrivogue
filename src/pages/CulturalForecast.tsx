@@ -350,14 +350,6 @@ const CulturalForecast = () => {
           )}
         </AnimatePresence>
       </div>
-            {signalStrengths.map((s) => (
-              <button key={s} className={pill(signal === s)} onClick={() => setSignal(s)}>
-                {s}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Cards grid */}
       <section className="relative z-10 mt-10 px-6 pb-24 md:px-16 lg:px-24">
