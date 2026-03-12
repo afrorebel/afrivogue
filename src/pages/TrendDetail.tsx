@@ -7,6 +7,7 @@ import TrendCard from "@/components/TrendCard";
 import ImageCarousel from "@/components/ImageCarousel";
 import LeadGenWidget from "@/components/LeadGenWidget";
 import { Skeleton } from "@/components/ui/skeleton";
+import { linkifyText } from "@/lib/linkify";
 
 const urgencyStyles: Record<string, string> = {
   Breaking: "urgency-breaking",
