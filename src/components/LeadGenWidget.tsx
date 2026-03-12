@@ -45,27 +45,27 @@ const LeadGenWidget = ({ variant = "inline", category }: LeadGenWidgetProps) => 
 
   if (variant === "banner") {
     return (
-      <div className="my-10 rounded-lg border border-border bg-card/80 p-8">
-        <div className="flex flex-col items-center gap-6 md:flex-row md:justify-between">
-          <div>
+      <div className="my-10 w-full rounded-lg border border-border bg-card/80 px-5 py-6 sm:px-8 sm:py-8">
+        <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-center md:justify-between">
+          <div className="min-w-0 flex-1">
             <p className="font-body text-[10px] font-bold uppercase tracking-[0.3em] text-gold">
               {category ? `${category} Insider` : "Afrivogue Insider"}
             </p>
-            <h3 className="mt-1 font-display text-xl font-bold text-foreground">
+            <h3 className="mt-1 font-display text-lg font-bold leading-snug text-foreground sm:text-xl">
               Get curated {category?.toLowerCase() || "trend"} insights weekly
             </h3>
-            <p className="mt-1 font-body text-sm text-muted-foreground">
+            <p className="mt-1 font-body text-xs text-muted-foreground sm:text-sm">
               Join 10,000+ industry leaders receiving our editorial briefings.
             </p>
           </div>
-          <form onSubmit={handleSubmit} className="flex w-full gap-2 md:w-auto">
+          <form onSubmit={handleSubmit} className="flex w-full flex-col gap-2 sm:flex-row md:w-auto md:shrink-0">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
               required
-              className="flex-1 rounded-sm border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none md:w-64"
+              className="w-full rounded-sm border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none md:w-56 lg:w-64"
             />
             <button
               type="submit"
