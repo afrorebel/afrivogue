@@ -145,6 +145,12 @@ const TrendDetail = () => {
               {new Date(trend.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
             </time>
             <span className="h-px flex-1 bg-border" />
+            <Link
+              to={`/story/${trend.id}`}
+              className="flex items-center gap-2 rounded-sm border border-gold/30 px-4 py-2 font-body text-xs font-medium uppercase tracking-[0.15em] text-gold transition-all hover:border-gold hover:bg-gold hover:text-primary-foreground"
+            >
+              ◆ Story Mode
+            </Link>
           </div>
         </div>
       </header>
