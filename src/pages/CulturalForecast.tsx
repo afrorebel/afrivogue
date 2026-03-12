@@ -2,10 +2,9 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Globe, Clock, Signal, TrendingUp } from "lucide-react";
+import { ArrowLeft, Globe, Clock, Signal, TrendingUp, ChevronDown } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronDown } from "lucide-react";
 import {
   forecasts as staticForecasts,
   forecastDomains,
