@@ -12,6 +12,7 @@ import CulturalForecast from "./pages/CulturalForecast";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import Contact from "./pages/Contact";
+import Editorials from "./pages/Editorials";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/trend/:id" element={<TrendDetail />} />
             <Route path="/story/:id" element={<StoryMode />} />
             <Route path="/editorial/:id" element={<PremiumEditorial />} />
+            <Route path="/editorials" element={<Editorials />} />
             <Route path="/forecast" element={<CulturalForecast />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />
