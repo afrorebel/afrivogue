@@ -12,6 +12,7 @@ import CulturalForecast from "./pages/CulturalForecast";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import Contact from "./pages/Contact";
+import Editorials from "./pages/Editorials";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
