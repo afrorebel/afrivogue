@@ -11,6 +11,7 @@ import PremiumEditorial from "./pages/PremiumEditorial";
 import CulturalForecast from "./pages/CulturalForecast";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
