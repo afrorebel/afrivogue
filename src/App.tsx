@@ -30,6 +30,7 @@ const App = () => (
             <Route path="/trend/:id" element={<TrendDetail />} />
             <Route path="/story/:id" element={<StoryMode />} />
             <Route path="/editorial/:id" element={<PremiumEditorial />} />
+            <Route path="/editorials" element={<Editorials />} />
             <Route path="/forecast" element={<CulturalForecast />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />
