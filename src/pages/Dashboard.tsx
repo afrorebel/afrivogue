@@ -378,7 +378,4 @@ const Dashboard = () => {
   );
 };
 
-// Need to import Input here
-import { Input } from "@/components/ui/input";
-
 export default Dashboard;
