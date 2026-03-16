@@ -81,6 +81,19 @@ const Navbar = () => {
                 </motion.div>
               ))}
               <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: navLinks.length * 0.08 }}
+              >
+                <Link
+                  to={user ? "/dashboard" : "/auth"}
+                  onClick={() => setOpen(false)}
+                  className="font-display text-2xl font-bold uppercase tracking-[0.15em] text-gold transition-colors hover:text-gold/80"
+                >
+                  {user ? "Dashboard" : "Join"}
+                </Link>
+              </motion.div>
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
