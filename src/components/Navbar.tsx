@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useAuth } from "@/hooks/useAuth";
 
 const navLinks = [
   { label: "Trends", href: "/" },
@@ -14,6 +15,7 @@ const navLinks = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
 
   return (
     <>
@@ -32,6 +34,15 @@ const Navbar = () => {
 
         <div className="flex items-center gap-4">
           <div className="h-2 w-2 rounded-full bg-gold animate-pulse" title="Live feed" />
+          {user ? (
+            <Link to="/dashboard" className="hidden items-center gap-1 font-body text-xs font-medium uppercase tracking-[0.2em] text-gold transition-colors hover:text-gold/80 md:flex">
+              <User className="h-4 w-4" /> Dashboard
+            </Link>
+          ) : (
+            <Link to="/auth" className="hidden font-body text-xs font-medium uppercase tracking-[0.2em] text-gold transition-colors hover:text-gold/80 md:flex">
+              Join
+            </Link>
+          )}
           <button
             onClick={() => setOpen(!open)}
             className="flex items-center justify-center text-foreground md:hidden"
@@ -69,6 +80,19 @@ const Navbar = () => {
                   </Link>
                 </motion.div>
               ))}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: navLinks.length * 0.08 }}
+              >
+                <Link
+                  to={user ? "/dashboard" : "/auth"}
+                  onClick={() => setOpen(false)}
+                  className="font-display text-2xl font-bold uppercase tracking-[0.15em] text-gold transition-colors hover:text-gold/80"
+                >
+                  {user ? "Dashboard" : "Join"}
+                </Link>
+              </motion.div>
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

@@ -14,6 +14,10 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Contact from "./pages/Contact";
 import Editorials from "./pages/Editorials";
 import About from "./pages/About";
+import AuthPage from "./pages/AuthPage";
+import Dashboard from "./pages/Dashboard";
+import PublicProfile from "./pages/PublicProfile";
+import MembershipPage from "./pages/MembershipPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +36,10 @@ const App = () => (
             <Route path="/editorial/:id" element={<PremiumEditorial />} />
             <Route path="/editorials" element={<Editorials />} />
             <Route path="/forecast" element={<CulturalForecast />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile/:userId" element={<PublicProfile />} />
+            <Route path="/membership" element={<MembershipPage />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/contact" element={<Contact />} />
