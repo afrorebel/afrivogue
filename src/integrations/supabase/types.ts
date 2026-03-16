@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      article_submissions: {
+        Row: {
+          admin_notes: string | null
+          category: string
+          content: string
+          created_at: string
+          id: string
+          images: Json | null
+          points_awarded: number | null
+          status: string
+          tags: Json | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          category: string
+          content: string
+          created_at?: string
+          id?: string
+          images?: Json | null
+          points_awarded?: number | null
+          status?: string
+          tags?: Json | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          category?: string
+          content?: string
+          created_at?: string
+          id?: string
+          images?: Json | null
+          points_awarded?: number | null
+          status?: string
+          tags?: Json | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       forecasts: {
         Row: {
           created_at: string
@@ -83,6 +128,136 @@ export type Database = {
         }
         Relationships: []
       }
+      points_history: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          reason: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          reason?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      reading_history: {
+        Row: {
+          id: string
+          read_at: string
+          trend_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          read_at?: string
+          trend_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          read_at?: string
+          trend_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reading_history_trend_id_fkey"
+            columns: ["trend_id"]
+            isOneToOne: false
+            referencedRelation: "trends"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          referred_id: string
+          referrer_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referred_id: string
+          referrer_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referred_id?: string
+          referrer_id?: string
+        }
+        Relationships: []
+      }
+      saved_articles: {
+        Row: {
+          id: string
+          saved_at: string
+          trend_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          saved_at?: string
+          trend_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          saved_at?: string
+          trend_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_articles_trend_id_fkey"
+            columns: ["trend_id"]
+            isOneToOne: false
+            referencedRelation: "trends"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       site_settings: {
         Row: {
           key: string
@@ -114,6 +289,7 @@ export type Database = {
           id: string
           image_hint: string | null
           images: Json | null
+          members_only: boolean
           needs_review: boolean
           original_source_content: string | null
           published: boolean
@@ -134,6 +310,7 @@ export type Database = {
           id?: string
           image_hint?: string | null
           images?: Json | null
+          members_only?: boolean
           needs_review?: boolean
           original_source_content?: string | null
           published?: boolean
@@ -154,6 +331,7 @@ export type Database = {
           id?: string
           image_hint?: string | null
           images?: Json | null
+          members_only?: boolean
           needs_review?: boolean
           original_source_content?: string | null
           published?: boolean
@@ -161,6 +339,48 @@ export type Database = {
           source_url?: string | null
           updated_at?: string
           urgency?: string
+        }
+        Relationships: []
+      }
+      user_points: {
+        Row: {
+          points: number
+          total_earned: number
+          total_withdrawn: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          points?: number
+          total_earned?: number
+          total_withdrawn?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          points?: number
+          total_earned?: number
+          total_withdrawn?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          categories: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          categories?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          categories?: Json
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -178,6 +398,36 @@ export type Database = {
         Update: {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      withdrawals: {
+        Row: {
+          created_at: string
+          dollar_amount: number
+          id: string
+          points_amount: number
+          processed_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dollar_amount: number
+          id?: string
+          points_amount: number
+          processed_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dollar_amount?: number
+          id?: string
+          points_amount?: number
+          processed_at?: string | null
+          status?: string
           user_id?: string
         }
         Relationships: []
