@@ -34,6 +34,15 @@ const Navbar = () => {
 
         <div className="flex items-center gap-4">
           <div className="h-2 w-2 rounded-full bg-gold animate-pulse" title="Live feed" />
+          {user ? (
+            <Link to="/dashboard" className="hidden items-center gap-1 font-body text-xs font-medium uppercase tracking-[0.2em] text-gold transition-colors hover:text-gold/80 md:flex">
+              <User className="h-4 w-4" /> Dashboard
+            </Link>
+          ) : (
+            <Link to="/auth" className="hidden font-body text-xs font-medium uppercase tracking-[0.2em] text-gold transition-colors hover:text-gold/80 md:flex">
+              Join
+            </Link>
+          )}
           <button
             onClick={() => setOpen(!open)}
             className="flex items-center justify-center text-foreground md:hidden"
