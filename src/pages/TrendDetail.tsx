@@ -265,6 +265,7 @@ const TrendDetail = () => {
           </aside>
         </div>
       </article>
+      )}
 
       {/* Related trends */}
       {relatedTrends.length > 0 && (
