@@ -31,6 +31,7 @@ function extractPullQuote(text: string): string {
 
 const TrendDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const { subscribed, isAdmin } = useAuth();
 
   const { data: trend, isLoading } = useQuery({
     queryKey: ["trend-detail", id],
