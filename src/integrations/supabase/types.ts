@@ -107,6 +107,50 @@ export type Database = {
         }
         Relationships: []
       }
+      moodboard_items: {
+        Row: {
+          approved: boolean
+          caption: string
+          category: string
+          created_at: string
+          id: string
+          image_url: string
+          related_trend_id: string | null
+          submitted_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          approved?: boolean
+          caption?: string
+          category: string
+          created_at?: string
+          id?: string
+          image_url: string
+          related_trend_id?: string | null
+          submitted_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approved?: boolean
+          caption?: string
+          category?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          related_trend_id?: string | null
+          submitted_by?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moodboard_items_related_trend_id_fkey"
+            columns: ["related_trend_id"]
+            isOneToOne: false
+            referencedRelation: "trends"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       newsletter_subscribers: {
         Row: {
           email: string
@@ -254,6 +298,35 @@ export type Database = {
             columns: ["trend_id"]
             isOneToOne: false
             referencedRelation: "trends"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_moodboard_items: {
+        Row: {
+          id: string
+          moodboard_item_id: string
+          saved_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          moodboard_item_id: string
+          saved_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          moodboard_item_id?: string
+          saved_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_moodboard_items_moodboard_item_id_fkey"
+            columns: ["moodboard_item_id"]
+            isOneToOne: false
+            referencedRelation: "moodboard_items"
             referencedColumns: ["id"]
           },
         ]

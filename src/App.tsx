@@ -18,6 +18,7 @@ import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
 import PublicProfile from "./pages/PublicProfile";
 import MembershipPage from "./pages/MembershipPage";
+import GlobalMoodboard from "./pages/GlobalMoodboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile/:userId" element={<PublicProfile />} />
             <Route path="/membership" element={<MembershipPage />} />
+            <Route path="/moodboard" element={<GlobalMoodboard />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/contact" element={<Contact />} />
