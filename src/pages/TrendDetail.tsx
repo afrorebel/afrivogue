@@ -2,10 +2,12 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { getCategoryImage } from "@/lib/categoryImages";
+import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import TrendCard from "@/components/TrendCard";
 import ImageCarousel from "@/components/ImageCarousel";
 import LeadGenWidget from "@/components/LeadGenWidget";
+import Paywall from "@/components/Paywall";
 import { Skeleton } from "@/components/ui/skeleton";
 import { linkifyText } from "@/lib/linkify";
 
