@@ -160,6 +160,11 @@ const TrendDetail = () => {
       </header>
 
       {/* Article body */}
+      {trend.members_only && !subscribed && !isAdmin ? (
+        <div className="mx-auto max-w-4xl px-6 py-16 md:px-16">
+          <Paywall previewContent={trend.cultural_significance} />
+        </div>
+      ) : (
       <article className="mx-auto max-w-4xl px-6 py-16 md:px-16">
         <div className="grid gap-12 lg:grid-cols-[1fr_280px]">
           <div className="space-y-10">
