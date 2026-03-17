@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 const navLinks = [
   { label: "Trends", href: "/" },
   { label: "Editorials", href: "/editorials" },
+  { label: "Moodboard", href: "/moodboard" },
   { label: "Forecast", href: "/forecast" },
   { label: "Story Mode", href: "/story/4" },
   { label: "About", href: "/about" },

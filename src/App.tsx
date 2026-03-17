@@ -18,6 +18,7 @@ import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
 import PublicProfile from "./pages/PublicProfile";
 import MembershipPage from "./pages/MembershipPage";
+import GlobalMoodboard from "./pages/GlobalMoodboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
