@@ -2,10 +2,12 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { getCategoryImage } from "@/lib/categoryImages";
+import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import TrendCard from "@/components/TrendCard";
 import ImageCarousel from "@/components/ImageCarousel";
 import LeadGenWidget from "@/components/LeadGenWidget";
+import Paywall from "@/components/Paywall";
 import { Skeleton } from "@/components/ui/skeleton";
 import { linkifyText } from "@/lib/linkify";
 
@@ -29,6 +31,7 @@ function extractPullQuote(text: string): string {
 
 const TrendDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const { subscribed, isAdmin } = useAuth();
 
   const { data: trend, isLoading } = useQuery({
     queryKey: ["trend-detail", id],
@@ -157,6 +160,11 @@ const TrendDetail = () => {
       </header>
 
       {/* Article body */}
+      {trend.members_only && !subscribed && !isAdmin ? (
+        <div className="mx-auto max-w-4xl px-6 py-16 md:px-16">
+          <Paywall previewContent={trend.cultural_significance} />
+        </div>
+      ) : (
       <article className="mx-auto max-w-4xl px-6 py-16 md:px-16">
         <div className="grid gap-12 lg:grid-cols-[1fr_280px]">
           <div className="space-y-10">
@@ -257,6 +265,7 @@ const TrendDetail = () => {
           </aside>
         </div>
       </article>
+      )}
 
       {/* Related trends */}
       {relatedTrends.length > 0 && (
