@@ -19,6 +19,7 @@ import Dashboard from "./pages/Dashboard";
 import PublicProfile from "./pages/PublicProfile";
 import MembershipPage from "./pages/MembershipPage";
 import GlobalMoodboard from "./pages/GlobalMoodboard";
+import SubmitArticle from "./pages/SubmitArticle";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
