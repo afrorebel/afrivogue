@@ -7,6 +7,7 @@ import { LogOut } from "lucide-react";
 import AdminTrends from "@/components/admin/AdminTrends";
 import AdminForecasts from "@/components/admin/AdminForecasts";
 import AdminSiteSettings from "@/components/admin/AdminSiteSettings";
+import AdminUsers from "@/components/admin/AdminUsers";
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
