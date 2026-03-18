@@ -67,6 +67,25 @@ const PremiumEditorial = () => {
       </div>
     );
   }
+  // Gate premium editorial content behind paywall
+  if (!subscribed && !isAdmin) {
+    return (
+      <div className="min-h-screen bg-background">
+        <nav className="relative z-10 flex items-center justify-between px-6 py-6 md:px-16">
+          <Link to="/" className="font-display text-lg font-bold text-foreground">
+            AFRI<span className="text-gold">VOGUE</span>
+          </Link>
+          <Link to={`/trend/${id}`} className="font-body text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground transition-colors hover:text-gold">
+            ← Back to Brief
+          </Link>
+        </nav>
+        <div className="mx-auto max-w-3xl px-6 pt-8 pb-20 md:px-12">
+          <h1 className="font-display text-3xl font-bold text-foreground mb-4">{content.opening.title}</h1>
+          <Paywall previewContent={content.opening.body} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
