@@ -320,6 +320,11 @@ const Dashboard = () => {
             </div>
           </TabsContent>
 
+          {/* Referrals Tab */}
+          <TabsContent value="referrals">
+            <ReferralWidget />
+          </TabsContent>
+
           {/* Preferences Tab */}
           <TabsContent value="preferences">
             <p className="mb-4 font-body text-sm text-muted-foreground">Select your preferred categories to personalize your feed.</p>
