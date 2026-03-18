@@ -50,6 +50,7 @@ const editorialContent = {
 
 const PremiumEditorial = () => {
   const { id } = useParams<{ id: string }>();
+  const { subscribed, isAdmin } = useAuth();
   const trend = trends.find((t) => t.id === id);
   const content = editorialContent[id as keyof typeof editorialContent];
 
