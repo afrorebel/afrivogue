@@ -8,6 +8,7 @@ import TrendCard from "@/components/TrendCard";
 import ImageCarousel from "@/components/ImageCarousel";
 import LeadGenWidget from "@/components/LeadGenWidget";
 import Paywall from "@/components/Paywall";
+import Comments from "@/components/Comments";
 import { Skeleton } from "@/components/ui/skeleton";
 import { linkifyText } from "@/lib/linkify";
 
