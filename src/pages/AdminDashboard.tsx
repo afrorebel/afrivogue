@@ -7,6 +7,7 @@ import { LogOut } from "lucide-react";
 import AdminTrends from "@/components/admin/AdminTrends";
 import AdminForecasts from "@/components/admin/AdminForecasts";
 import AdminSiteSettings from "@/components/admin/AdminSiteSettings";
+import AdminUsers from "@/components/admin/AdminUsers";
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -48,6 +49,7 @@ const AdminDashboard = () => {
           <TabsList className="mb-6">
             <TabsTrigger value="trends">Trends</TabsTrigger>
             <TabsTrigger value="forecasts">Forecasts</TabsTrigger>
+            <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="site">Site Settings</TabsTrigger>
           </TabsList>
 
@@ -56,6 +58,9 @@ const AdminDashboard = () => {
           </TabsContent>
           <TabsContent value="forecasts">
             <AdminForecasts />
+          </TabsContent>
+          <TabsContent value="users">
+            <AdminUsers />
           </TabsContent>
           <TabsContent value="site">
             <AdminSiteSettings />

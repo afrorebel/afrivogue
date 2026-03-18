@@ -1,6 +1,8 @@
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { trends } from "@/lib/trendData";
+import { useAuth } from "@/hooks/useAuth";
+import Paywall from "@/components/Paywall";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -48,6 +50,7 @@ const editorialContent = {
 
 const PremiumEditorial = () => {
   const { id } = useParams<{ id: string }>();
+  const { subscribed, isAdmin } = useAuth();
   const trend = trends.find((t) => t.id === id);
   const content = editorialContent[id as keyof typeof editorialContent];
 
@@ -60,6 +63,25 @@ const PremiumEditorial = () => {
           <Link to="/" className="mt-6 inline-block font-body text-sm text-gold hover:text-terracotta">
             ← Return to Afrivogue Feed
           </Link>
+        </div>
+      </div>
+    );
+  }
+  // Gate premium editorial content behind paywall
+  if (!subscribed && !isAdmin) {
+    return (
+      <div className="min-h-screen bg-background">
+        <nav className="relative z-10 flex items-center justify-between px-6 py-6 md:px-16">
+          <Link to="/" className="font-display text-lg font-bold text-foreground">
+            AFRI<span className="text-gold">VOGUE</span>
+          </Link>
+          <Link to={`/trend/${id}`} className="font-body text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground transition-colors hover:text-gold">
+            ← Back to Brief
+          </Link>
+        </nav>
+        <div className="mx-auto max-w-3xl px-6 pt-8 pb-20 md:px-12">
+          <h1 className="font-display text-3xl font-bold text-foreground mb-4">{content.opening.title}</h1>
+          <Paywall previewContent={content.opening.body} />
         </div>
       </div>
     );

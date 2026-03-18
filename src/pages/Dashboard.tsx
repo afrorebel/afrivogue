@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, User, BookOpen, Heart, Star, Award, DollarSign, Settings } from "lucide-react";
+import { LogOut, User, BookOpen, Heart, Star, Award, DollarSign, Settings, PenSquare } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import ReferralWidget from "@/components/ReferralWidget";
 
 const POINTS_TO_DOLLAR = 0.01; // 1 point = $0.01
 const MIN_WITHDRAWAL = 50; // $50 minimum
@@ -131,6 +132,9 @@ const Dashboard = () => {
             AFRI<span className="text-gold">VOGUE</span>
           </Link>
           <div className="flex items-center gap-4">
+            <Link to="/submit" className="font-body text-xs text-gold hover:text-gold/80 flex items-center gap-1">
+              <PenSquare className="h-3 w-3" /> Submit Article
+            </Link>
             <Link to={`/profile/${user.id}`} className="font-body text-xs text-muted-foreground hover:text-gold">
               Profile
             </Link>
@@ -177,6 +181,7 @@ const Dashboard = () => {
             <TabsTrigger value="saved">Saved Articles</TabsTrigger>
             <TabsTrigger value="history">Reading History</TabsTrigger>
             <TabsTrigger value="points">Points & Earnings</TabsTrigger>
+            <TabsTrigger value="referrals">Referrals</TabsTrigger>
             <TabsTrigger value="preferences">Preferences</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
@@ -316,6 +321,11 @@ const Dashboard = () => {
                 <li>📝 Get an article published — 200 points</li>
               </ul>
             </div>
+          </TabsContent>
+
+          {/* Referrals Tab */}
+          <TabsContent value="referrals">
+            <ReferralWidget />
           </TabsContent>
 
           {/* Preferences Tab */}
