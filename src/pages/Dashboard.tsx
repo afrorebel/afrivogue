@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, User, BookOpen, Heart, Star, Award, DollarSign, Settings } from "lucide-react";
+import { LogOut, User, BookOpen, Heart, Star, Award, DollarSign, Settings, PenSquare } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import ReferralWidget from "@/components/ReferralWidget";
 
 const POINTS_TO_DOLLAR = 0.01; // 1 point = $0.01
 const MIN_WITHDRAWAL = 50; // $50 minimum
