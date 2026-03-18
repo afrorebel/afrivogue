@@ -49,6 +49,7 @@ const AdminDashboard = () => {
           <TabsList className="mb-6">
             <TabsTrigger value="trends">Trends</TabsTrigger>
             <TabsTrigger value="forecasts">Forecasts</TabsTrigger>
+            <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="site">Site Settings</TabsTrigger>
           </TabsList>
 
@@ -57,6 +58,9 @@ const AdminDashboard = () => {
           </TabsContent>
           <TabsContent value="forecasts">
             <AdminForecasts />
+          </TabsContent>
+          <TabsContent value="users">
+            <AdminUsers />
           </TabsContent>
           <TabsContent value="site">
             <AdminSiteSettings />

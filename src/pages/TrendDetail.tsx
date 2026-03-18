@@ -265,6 +265,9 @@ const TrendDetail = () => {
             </div>
           </aside>
         </div>
+
+        {/* Comments section */}
+        <Comments trendId={trend.id} />
       </article>
       )}
 

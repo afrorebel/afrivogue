@@ -132,6 +132,9 @@ const Dashboard = () => {
             AFRI<span className="text-gold">VOGUE</span>
           </Link>
           <div className="flex items-center gap-4">
+            <Link to="/submit" className="font-body text-xs text-gold hover:text-gold/80 flex items-center gap-1">
+              <PenSquare className="h-3 w-3" /> Submit Article
+            </Link>
             <Link to={`/profile/${user.id}`} className="font-body text-xs text-muted-foreground hover:text-gold">
               Profile
             </Link>

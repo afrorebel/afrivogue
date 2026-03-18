@@ -43,6 +43,7 @@ const App = () => (
             <Route path="/profile/:userId" element={<PublicProfile />} />
             <Route path="/membership" element={<MembershipPage />} />
             <Route path="/moodboard" element={<GlobalMoodboard />} />
+            <Route path="/submit" element={<SubmitArticle />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/contact" element={<Contact />} />
