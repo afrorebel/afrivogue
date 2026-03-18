@@ -1,6 +1,8 @@
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { trends } from "@/lib/trendData";
+import { useAuth } from "@/hooks/useAuth";
+import Paywall from "@/components/Paywall";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 40 },
