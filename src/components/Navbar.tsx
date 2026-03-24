@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Menu, X, User } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
+import logoLight from "@/assets/afrivogue-logo-dark.png";
 
 const navLinks = [
   { label: "Trends", href: "/" },
