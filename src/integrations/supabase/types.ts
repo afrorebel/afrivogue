@@ -509,6 +509,33 @@ export type Database = {
           },
         ]
       }
+      trivia_scores: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          score: number
+          total_questions: number
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          score?: number
+          total_questions?: number
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          score?: number
+          total_questions?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_points: {
         Row: {
           points: number
