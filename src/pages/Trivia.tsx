@@ -59,6 +59,8 @@ const swipeVariants = {
 };
 
 const Trivia = () => {
+  const { user } = useAuth();
+  const qc = useQueryClient();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -66,6 +68,7 @@ const Trivia = () => {
   const [score, setScore] = useState(0);
   const [answered, setAnswered] = useState<Set<number>>(new Set());
   const [filterCategory, setFilterCategory] = useState<string>("All");
+  const [scoreSaved, setScoreSaved] = useState(false);
 
   const { data: questions = [], isLoading } = useQuery({
     queryKey: ["trivia-questions"],
