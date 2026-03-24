@@ -7,6 +7,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import TrendDetail from "./pages/TrendDetail";
 import StoryMode from "./pages/StoryMode";
+import Trivia from "./pages/Trivia";
 import PremiumEditorial from "./pages/PremiumEditorial";
 import CulturalForecast from "./pages/CulturalForecast";
 import AdminLogin from "./pages/AdminLogin";
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/trend/:id" element={<TrendDetail />} />
             <Route path="/story/:id" element={<StoryMode />} />
+            <Route path="/trivia" element={<Trivia />} />
             <Route path="/editorial/:id" element={<PremiumEditorial />} />
             <Route path="/editorials" element={<Editorials />} />
             <Route path="/forecast" element={<CulturalForecast />} />
