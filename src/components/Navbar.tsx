@@ -11,7 +11,6 @@ const navLinks = [
   { label: "Editorials", href: "/editorials" },
   { label: "Moodboard", href: "/moodboard" },
   { label: "Forecast", href: "/forecast" },
-  { label: "Trivia", href: "/trivia" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
@@ -36,9 +35,7 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="hidden md:flex">
-            <SearchDialog />
-          </div>
+          <SearchDialog />
           <ThemeToggle />
           <div className="h-2 w-2 rounded-full bg-gold animate-pulse" title="Live feed" />
           {user ? (

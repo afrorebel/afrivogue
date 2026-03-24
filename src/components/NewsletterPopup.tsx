@@ -11,8 +11,9 @@ const NewsletterPopup = () => {
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    const alreadySubscribed = localStorage.getItem("afrivogue_newsletter");
-    if (alreadySubscribed) return;
+    const lastShown = localStorage.getItem("afrivogue_newsletter_ts");
+    const TWELVE_HOURS = 12 * 60 * 60 * 1000;
+    if (lastShown && Date.now() - parseInt(lastShown, 10) < TWELVE_HOURS) return;
 
     const timer = setTimeout(() => setShow(true), 25000);
     return () => clearTimeout(timer);
@@ -45,7 +46,7 @@ const NewsletterPopup = () => {
       toast({ title: "Welcome to Afrivogue", description: "You're now on the insider list." });
     }
 
-    localStorage.setItem("afrivogue_newsletter", "true");
+    localStorage.setItem("afrivogue_newsletter_ts", Date.now().toString());
     setShow(false);
   };
 

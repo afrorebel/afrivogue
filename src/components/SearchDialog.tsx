@@ -22,6 +22,7 @@ const SearchDialog = () => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [searching, setSearching] = useState(false);
   const navigate = useNavigate();
 
   // Keyboard shortcut
@@ -41,6 +42,8 @@ const SearchDialog = () => {
       setResults([]);
       return;
     }
+
+    setSearching(true);
 
     const [trendsRes, forecastsRes] = await Promise.all([
       supabase
@@ -70,10 +73,12 @@ const SearchDialog = () => {
     }));
 
     setResults([...trendResults, ...forecastResults]);
+    setSearching(false);
   }, []);
 
+  // Real-time search as user types
   useEffect(() => {
-    const timer = setTimeout(() => search(query), 250);
+    const timer = setTimeout(() => search(query), 150);
     return () => clearTimeout(timer);
   }, [query, search]);
 
@@ -91,13 +96,10 @@ const SearchDialog = () => {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 rounded-sm border border-border px-3 py-1.5 font-body text-xs text-muted-foreground transition-colors hover:border-gold/40 hover:text-foreground"
+        className="flex items-center justify-center rounded-sm p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+        aria-label="Search"
       >
-        <Search className="h-3.5 w-3.5" />
-        <span className="hidden md:inline">Search</span>
-        <kbd className="ml-1 hidden rounded border border-border bg-muted px-1.5 py-0.5 font-body text-[10px] text-muted-foreground md:inline">
-          ⌘K
-        </kbd>
+        <Search className="h-4 w-4" />
       </button>
 
       <CommandDialog open={open} onOpenChange={setOpen}>
@@ -107,7 +109,12 @@ const SearchDialog = () => {
           onValueChange={setQuery}
         />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
+          {searching && query.length >= 2 && (
+            <p className="px-4 py-3 text-center font-body text-xs text-muted-foreground">Searching…</p>
+          )}
+          {!searching && query.length >= 2 && results.length === 0 && (
+            <CommandEmpty>No results found.</CommandEmpty>
+          )}
           {results.filter((r) => r.type === "trend").length > 0 && (
             <CommandGroup heading="Trends">
               {results
