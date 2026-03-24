@@ -40,13 +40,14 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     if (!user) return;
 
-    const [profileRes, pointsRes, savedRes, historyRes, prefsRes, withdrawRes] = await Promise.all([
+    const [profileRes, pointsRes, savedRes, historyRes, prefsRes, withdrawRes, favAuthorsRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", user.id).single(),
       supabase.from("user_points").select("*").eq("user_id", user.id).single(),
       supabase.from("saved_articles").select("*, trends(headline, category, featured_image_url)").eq("user_id", user.id).order("saved_at", { ascending: false }).limit(20),
       supabase.from("reading_history").select("*, trends(headline, category, featured_image_url)").eq("user_id", user.id).order("read_at", { ascending: false }).limit(20),
       supabase.from("user_preferences").select("*").eq("user_id", user.id).single(),
       supabase.from("withdrawals").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
+      supabase.from("favorite_authors").select("author_id").eq("user_id", user.id),
     ]);
 
     if (profileRes.data) setProfile(profileRes.data);
