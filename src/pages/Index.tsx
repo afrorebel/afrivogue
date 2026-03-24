@@ -5,6 +5,8 @@ import FilterBar from "@/components/FilterBar";
 import TrendCard from "@/components/TrendCard";
 import LeadGenWidget from "@/components/LeadGenWidget";
 import NewsletterPopup from "@/components/NewsletterPopup";
+import TrendingTicker from "@/components/TrendingTicker";
+import Footer from "@/components/Footer";
 import { useTrends } from "@/hooks/useTrends";
 import { trends as fallbackTrends } from "@/lib/trendData";
 import type { Category, Urgency, GeoRelevance, ContentTier } from "@/lib/trendData";
@@ -56,6 +58,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <HeroSection />
+      <TrendingTicker />
       <NewsletterPopup />
 
       <main className="py-12">
@@ -92,14 +95,12 @@ const Index = () => {
               ))}
             </div>
 
-            {/* Lead gen banner after first 6 cards */}
             {filtered.length > 3 && (
               <div className="px-6 md:px-16 lg:px-24">
                 <LeadGenWidget variant="banner" />
               </div>
             )}
 
-            {/* Remaining cards */}
             {filtered.length > 6 && (
               <div className="mt-6 grid gap-6 px-6 md:grid-cols-2 md:px-16 lg:px-24 xl:grid-cols-3">
                 {filtered.slice(6).map((trend, i) => (
@@ -116,23 +117,9 @@ const Index = () => {
             <p className="mt-2 font-body text-sm text-muted-foreground">Try broadening your selection.</p>
           </div>
         )}
-
-        <footer id="about" className="mt-24 border-t border-border px-6 py-10 md:px-16 lg:px-24">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <div className="font-display text-lg font-bold text-foreground">
-              AFRI<span className="text-gold">VOGUE</span>
-            </div>
-            <div className="flex flex-col items-center gap-1 text-center md:items-end">
-              <p className="font-body text-xs text-muted-foreground">
-                © 2026 Afrivogue. All rights reserved.
-              </p>
-              <p className="font-body text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60">
-                Africa &amp; the Diaspora · Luxury · Culture · Foresight
-              </p>
-            </div>
-          </div>
-        </footer>
       </main>
+
+      <Footer />
     </div>
   );
 };

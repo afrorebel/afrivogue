@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { Menu, X, User } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
+import SearchDialog from "@/components/SearchDialog";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const navLinks = [
   { label: "Trends", href: "/" },
@@ -33,7 +35,11 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <div className="hidden md:flex">
+            <SearchDialog />
+          </div>
+          <ThemeToggle />
           <div className="h-2 w-2 rounded-full bg-gold animate-pulse" title="Live feed" />
           {user ? (
             <Link to="/dashboard" className="hidden items-center gap-1 font-body text-xs font-medium uppercase tracking-[0.2em] text-gold transition-colors hover:text-gold/80 md:flex">
