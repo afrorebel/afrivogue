@@ -11,6 +11,7 @@ const navLinks = [
   { label: "Editorials", href: "/editorials" },
   { label: "Moodboard", href: "/moodboard" },
   { label: "Forecast", href: "/forecast" },
+  { label: "Voices", href: "/contributors" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];

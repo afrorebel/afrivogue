@@ -21,6 +21,8 @@ import PublicProfile from "./pages/PublicProfile";
 import MembershipPage from "./pages/MembershipPage";
 import GlobalMoodboard from "./pages/GlobalMoodboard";
 import SubmitArticle from "./pages/SubmitArticle";
+import Contributors from "./pages/Contributors";
+import AuthorProfile from "./pages/AuthorProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +48,8 @@ const App = () => (
             <Route path="/membership" element={<MembershipPage />} />
             <Route path="/moodboard" element={<GlobalMoodboard />} />
             <Route path="/submit" element={<SubmitArticle />} />
+            <Route path="/contributors" element={<Contributors />} />
+            <Route path="/author/:authorId" element={<AuthorProfile />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/contact" element={<Contact />} />

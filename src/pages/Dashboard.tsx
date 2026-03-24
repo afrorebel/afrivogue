@@ -23,6 +23,7 @@ const Dashboard = () => {
   const [readingHistory, setReadingHistory] = useState<any[]>([]);
   const [preferences, setPreferences] = useState<string[]>([]);
   const [withdrawals, setWithdrawals] = useState<any[]>([]);
+  const [favoriteAuthors, setFavoriteAuthors] = useState<any[]>([]);
   const [subscribed, setSubscribed] = useState(false);
   const [subEnd, setSubEnd] = useState<string | null>(null);
 
@@ -39,13 +40,14 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     if (!user) return;
 
-    const [profileRes, pointsRes, savedRes, historyRes, prefsRes, withdrawRes] = await Promise.all([
+    const [profileRes, pointsRes, savedRes, historyRes, prefsRes, withdrawRes, favAuthorsRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", user.id).single(),
       supabase.from("user_points").select("*").eq("user_id", user.id).single(),
       supabase.from("saved_articles").select("*, trends(headline, category, featured_image_url)").eq("user_id", user.id).order("saved_at", { ascending: false }).limit(20),
       supabase.from("reading_history").select("*, trends(headline, category, featured_image_url)").eq("user_id", user.id).order("read_at", { ascending: false }).limit(20),
       supabase.from("user_preferences").select("*").eq("user_id", user.id).single(),
       supabase.from("withdrawals").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
+      supabase.from("favorite_authors").select("author_id").eq("user_id", user.id),
     ]);
 
     if (profileRes.data) setProfile(profileRes.data);
@@ -54,6 +56,18 @@ const Dashboard = () => {
     if (historyRes.data) setReadingHistory(historyRes.data);
     if (prefsRes.data) setPreferences((prefsRes.data.categories as string[]) || []);
     if (withdrawRes.data) setWithdrawals(withdrawRes.data);
+
+    // Fetch favorite author profiles
+    if (favAuthorsRes.data && favAuthorsRes.data.length > 0) {
+      const authorIds = favAuthorsRes.data.map((f) => f.author_id);
+      const { data: authorProfiles } = await supabase
+        .from("profiles")
+        .select("*")
+        .in("id", authorIds);
+      setFavoriteAuthors(authorProfiles || []);
+    } else {
+      setFavoriteAuthors([]);
+    }
   };
 
   const checkSubscription = async () => {
@@ -185,6 +199,7 @@ const Dashboard = () => {
             <TabsTrigger value="history">Reading History</TabsTrigger>
             <TabsTrigger value="points">Points & Earnings</TabsTrigger>
             <TabsTrigger value="referrals">Referrals</TabsTrigger>
+            <TabsTrigger value="authors">Favorite Authors</TabsTrigger>
             <TabsTrigger value="preferences">Preferences</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
@@ -329,6 +344,40 @@ const Dashboard = () => {
           {/* Referrals Tab */}
           <TabsContent value="referrals">
             <ReferralWidget />
+          </TabsContent>
+
+          {/* Favorite Authors Tab */}
+          <TabsContent value="authors">
+            {favoriteAuthors.length === 0 ? (
+              <p className="font-body text-sm text-muted-foreground">
+                No favorite authors yet. Discover writers on our{" "}
+                <Link to="/contributors" className="text-gold hover:underline">Voices</Link> page.
+              </p>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2">
+                {favoriteAuthors.map((author: any) => (
+                  <Link
+                    key={author.id}
+                    to={`/author/${author.id}`}
+                    className="flex items-center gap-4 rounded-lg border border-border p-4 transition-colors hover:border-gold/50"
+                  >
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 bg-card">
+                      {author.avatar_url ? (
+                        <img src={author.avatar_url} alt="" className="h-full w-full rounded-full object-cover" />
+                      ) : (
+                        <User className="h-5 w-5 text-gold" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-body text-sm font-medium text-foreground">{author.display_name || "Afrivogue Writer"}</p>
+                      {author.bio && (
+                        <p className="font-body text-xs text-muted-foreground line-clamp-1">{author.bio}</p>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           {/* Preferences Tab */}
