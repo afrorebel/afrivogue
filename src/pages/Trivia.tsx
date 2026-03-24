@@ -1,9 +1,11 @@
 import { useState, useMemo, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { ChevronLeft, ChevronRight, Lightbulb, Check, X, RotateCcw, Sparkles } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import TriviaLeaderboard from "@/components/trivia/TriviaLeaderboard";
+import { useAuth } from "@/hooks/useAuth";
 
 interface TriviaQuestion {
   id: string;
