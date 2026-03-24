@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Globe, Clock, Signal, TrendingUp, ChevronDown } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { supabase } from "@/integrations/supabase/client";
+import { linkifyText } from "@/lib/linkify";
 import {
   forecasts as staticForecasts,
   forecastDomains,
@@ -148,7 +149,7 @@ const ForecastCard = ({
                     Evidence
                   </h4>
                   <p className="font-body text-sm leading-relaxed text-muted-foreground">
-                    {forecast.evidence}
+                    {linkifyText(forecast.evidence)}
                   </p>
                 </div>
                 <div>
@@ -156,7 +157,7 @@ const ForecastCard = ({
                     Implications
                   </h4>
                   <p className="font-body text-sm leading-relaxed text-muted-foreground">
-                    {forecast.implications}
+                    {linkifyText(forecast.implications)}
                   </p>
                 </div>
               </div>

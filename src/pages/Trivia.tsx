@@ -2,10 +2,11 @@ import { useState, useMemo, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import { ChevronLeft, ChevronRight, Lightbulb, Check, X, RotateCcw, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Lightbulb, Check, X, RotateCcw, Sparkles, Share2, Twitter, Copy, MessageCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import TriviaLeaderboard from "@/components/trivia/TriviaLeaderboard";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
 
 interface TriviaQuestion {
   id: string;
@@ -401,7 +402,7 @@ const Trivia = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mt-8 text-center"
           >
-            <div className="inline-flex flex-col items-center gap-3 rounded-2xl border border-gold/30 bg-gold/10 px-8 py-6">
+           <div className="inline-flex flex-col items-center gap-3 rounded-2xl border border-gold/30 bg-gold/10 px-8 py-6">
               <Sparkles className="h-6 w-6 text-gold" />
               <p className="font-display text-xl font-bold">
                 You scored <span className="text-gold">{score}</span> / {filtered.length}!
@@ -412,11 +413,68 @@ const Trivia = () => {
               >
                 Save to Leaderboard
               </button>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="font-body text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Share:</span>
+                <button
+                  onClick={() => {
+                    const text = `I scored ${score}/${filtered.length} on AFRITRIVIA! 🌍✨ Test your knowledge of African fashion, culture & entertainment.`;
+                    const url = window.location.href;
+                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank");
+                  }}
+                  className="rounded-full border border-border bg-card p-2 text-muted-foreground hover:text-gold hover:border-gold/30 transition-colors"
+                  title="Share on X / Twitter"
+                >
+                  <Twitter className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => {
+                    const text = `I scored ${score}/${filtered.length} on AFRITRIVIA! 🌍✨ Test your knowledge: ${window.location.href}`;
+                    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+                  }}
+                  className="rounded-full border border-border bg-card p-2 text-muted-foreground hover:text-gold hover:border-gold/30 transition-colors"
+                  title="Share on WhatsApp"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => {
+                    const text = `I scored ${score}/${filtered.length} on AFRITRIVIA! 🌍✨ Test your knowledge: ${window.location.href}`;
+                    navigator.clipboard.writeText(text);
+                    toast({ title: "Copied to clipboard!", description: "Share your score with friends." });
+                  }}
+                  className="rounded-full border border-border bg-card p-2 text-muted-foreground hover:text-gold hover:border-gold/30 transition-colors"
+                  title="Copy to clipboard"
+                >
+                  <Copy className="h-4 w-4" />
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
         {scoreSaved && (
-          <p className="mt-4 text-center font-body text-xs text-gold">✓ Score saved!</p>
+          <div className="mt-4 flex items-center justify-center gap-2">
+            <p className="font-body text-xs text-gold">✓ Score saved!</p>
+            <button
+              onClick={() => {
+                const text = `I scored ${score}/${filtered.length} on AFRITRIVIA! 🌍✨ Test your knowledge: ${window.location.href}`;
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`, "_blank");
+              }}
+              className="rounded-full border border-border bg-card p-1.5 text-muted-foreground hover:text-gold hover:border-gold/30 transition-colors"
+              title="Share on X"
+            >
+              <Twitter className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => {
+                const text = `I scored ${score}/${filtered.length} on AFRITRIVIA! 🌍✨ Test your knowledge: ${window.location.href}`;
+                window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+              }}
+              className="rounded-full border border-border bg-card p-1.5 text-muted-foreground hover:text-gold hover:border-gold/30 transition-colors"
+              title="Share on WhatsApp"
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+            </button>
+          </div>
         )}
 
         {/* Leaderboard */}
