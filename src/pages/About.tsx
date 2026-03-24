@@ -8,25 +8,25 @@ const values = [
     icon: Globe,
     title: "Global Perspective",
     description:
-      "We spotlight African and Black creatives shaping fashion, beauty, art, and culture across the continent and the Diaspora.",
+      "From Lagos to Los Angeles, Accra to Atlanta, London to the Caribbean — we cover fashion, entertainment, and culture across the African continent, the diaspora, and the world.",
   },
   {
     icon: Users,
     title: "Community First",
     description:
-      "Every story we tell centers the voices, creativity, and innovation of communities too often overlooked by mainstream media.",
+      "Afrivogue is for everyone who loves culture, style, and innovation. We centre Black voices and African narratives while welcoming every reader who wants to be part of the conversation.",
   },
   {
     icon: Sparkles,
     title: "Cultural Intelligence",
     description:
-      "We go beyond surface-level trends to decode the cultural forces driving what's next in style, identity, and influence.",
+      "We decode the forces driving what's next — from Hollywood red carpets and Afrobeats to emerging designers, celebrity culture, and the movements shaping global style.",
   },
   {
     icon: Target,
     title: "Editorial Integrity",
     description:
-      "Our content is deeply researched, thoughtfully curated, and always rooted in authenticity — never performative.",
+      "Our content is deeply researched, thoughtfully curated, and always rooted in authenticity — covering celebrity moments through cultural significance, never gossip.",
   },
 ];
 
