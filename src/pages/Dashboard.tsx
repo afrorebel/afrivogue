@@ -346,6 +346,40 @@ const Dashboard = () => {
             <ReferralWidget />
           </TabsContent>
 
+          {/* Favorite Authors Tab */}
+          <TabsContent value="authors">
+            {favoriteAuthors.length === 0 ? (
+              <p className="font-body text-sm text-muted-foreground">
+                No favorite authors yet. Discover writers on our{" "}
+                <Link to="/contributors" className="text-gold hover:underline">Voices</Link> page.
+              </p>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2">
+                {favoriteAuthors.map((author: any) => (
+                  <Link
+                    key={author.id}
+                    to={`/author/${author.id}`}
+                    className="flex items-center gap-4 rounded-lg border border-border p-4 transition-colors hover:border-gold/50"
+                  >
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 bg-card">
+                      {author.avatar_url ? (
+                        <img src={author.avatar_url} alt="" className="h-full w-full rounded-full object-cover" />
+                      ) : (
+                        <User className="h-5 w-5 text-gold" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-body text-sm font-medium text-foreground">{author.display_name || "Afrivogue Writer"}</p>
+                      {author.bio && (
+                        <p className="font-body text-xs text-muted-foreground line-clamp-1">{author.bio}</p>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
           {/* Preferences Tab */}
           <TabsContent value="preferences">
             <p className="mb-4 font-body text-sm text-muted-foreground">Select your preferred categories to personalize your feed.</p>
