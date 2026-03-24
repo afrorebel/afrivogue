@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { trends } from "@/lib/trendData";
 import { useAuth } from "@/hooks/useAuth";
 import Paywall from "@/components/Paywall";
+import Footer from "@/components/Footer";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 40 },
