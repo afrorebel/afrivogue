@@ -59,7 +59,7 @@ const Editorials = () => {
             Editorials
           </span>
           <h1 className="mt-6 font-display text-4xl font-bold leading-tight text-foreground sm:text-5xl md:text-6xl">
-            Long-Form <span className="text-gold">Intelligence</span>
+            Afrivogue <span className="text-gold">Editorials</span>
           </h1>
           <p className="mt-4 max-w-2xl font-body text-base leading-relaxed text-muted-foreground sm:text-lg">
             In-depth editorial features and premium long-form pieces exploring the cultural forces reshaping African and Diaspora fashion, beauty, and luxury.
