@@ -51,20 +51,6 @@ const TrendDetail = () => {
     enabled: !!id,
   });
 
-  const { data: relatedTrends = [] } = useQuery({
-    queryKey: ["related-trends", trend?.category, trend?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("trends")
-        .select("*")
-        .eq("published", true)
-        .neq("id", trend!.id)
-        .limit(3);
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!trend,
-  });
 
   if (isLoading) {
     return (
