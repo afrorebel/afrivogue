@@ -45,7 +45,7 @@ const swipeVariants = {
     opacity: 1,
     scale: 1,
     rotateY: 0,
-    transition: { type: "spring", stiffness: 300, damping: 30 },
+    transition: { type: "spring" as const, stiffness: 300, damping: 30 },
   },
   exit: (dir: number) => ({
     x: dir < 0 ? 400 : -400,
