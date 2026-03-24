@@ -14,7 +14,7 @@ const NewsletterPopup = () => {
     const alreadySubscribed = localStorage.getItem("afrivogue_newsletter");
     if (alreadySubscribed) return;
 
-    const timer = setTimeout(() => setShow(true), 8000);
+    const timer = setTimeout(() => setShow(true), 25000);
     return () => clearTimeout(timer);
   }, []);
 
