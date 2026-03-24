@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, User, BookOpen, Heart, Star, Award, DollarSign, Settings, PenSquare } from "lucide-react";
+import { LogOut, User, BookOpen, Heart, Star, Award, DollarSign, Settings, PenSquare, Gamepad2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import ReferralWidget from "@/components/ReferralWidget";
