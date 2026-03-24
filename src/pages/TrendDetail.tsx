@@ -83,10 +83,14 @@ const TrendDetail = () => {
   }
 
   const pullQuote = extractPullQuote(trend.cultural_significance);
-  const sentences = trend.cultural_significance.split(/(?<=[.!?])\s+/);
-  const midpoint = Math.ceil(sentences.length / 2);
-  const firstHalf = sentences.slice(0, midpoint).join(" ");
-  const secondHalf = sentences.slice(midpoint).join(" ");
+  // Split on double-newlines first (AI-produced paragraphs), fall back to sentence-based split
+  const paragraphs = trend.cultural_significance.includes("\n\n")
+    ? trend.cultural_significance.split(/\n\n+/).filter((p) => p.trim())
+    : (() => {
+        const sentences = trend.cultural_significance.split(/(?<=[.!?])\s+/);
+        const mid = Math.ceil(sentences.length / 2);
+        return [sentences.slice(0, mid).join(" "), sentences.slice(mid).join(" ")].filter(Boolean);
+      })();
 
   const featuredImage = trend.featured_image_url || getCategoryImage(trend.category);
   const images = Array.isArray(trend.images) ? (trend.images as string[]) : [];
