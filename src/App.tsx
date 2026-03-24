@@ -7,6 +7,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import TrendDetail from "./pages/TrendDetail";
 import StoryMode from "./pages/StoryMode";
+import Trivia from "./pages/Trivia";
 import PremiumEditorial from "./pages/PremiumEditorial";
 import CulturalForecast from "./pages/CulturalForecast";
 import AdminLogin from "./pages/AdminLogin";

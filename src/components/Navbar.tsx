@@ -9,7 +9,7 @@ const navLinks = [
   { label: "Editorials", href: "/editorials" },
   { label: "Moodboard", href: "/moodboard" },
   { label: "Forecast", href: "/forecast" },
-  { label: "Story Mode", href: "/story/4" },
+  { label: "Trivia", href: "/trivia" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
