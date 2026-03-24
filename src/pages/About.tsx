@@ -8,25 +8,25 @@ const values = [
     icon: Globe,
     title: "Global Perspective",
     description:
-      "We spotlight African and Black creatives shaping fashion, beauty, art, and culture across the continent and the Diaspora.",
+      "From Lagos to Los Angeles, Accra to Atlanta, London to the Caribbean — we cover fashion, entertainment, and culture across the African continent, the diaspora, and the world.",
   },
   {
     icon: Users,
     title: "Community First",
     description:
-      "Every story we tell centers the voices, creativity, and innovation of communities too often overlooked by mainstream media.",
+      "Afrivogue is for everyone who loves culture, style, and innovation. We centre Black voices and African narratives while welcoming every reader who wants to be part of the conversation.",
   },
   {
     icon: Sparkles,
     title: "Cultural Intelligence",
     description:
-      "We go beyond surface-level trends to decode the cultural forces driving what's next in style, identity, and influence.",
+      "We decode the forces driving what's next — from Hollywood red carpets and Afrobeats to emerging designers, celebrity culture, and the movements shaping global style.",
   },
   {
     icon: Target,
     title: "Editorial Integrity",
     description:
-      "Our content is deeply researched, thoughtfully curated, and always rooted in authenticity — never performative.",
+      "Our content is deeply researched, thoughtfully curated, and always rooted in authenticity — covering celebrity moments through cultural significance, never gossip.",
   },
 ];
 
@@ -50,8 +50,7 @@ const About = () => {
             About <span className="text-primary">Afrivogue</span>
           </h1>
           <p className="mx-auto mt-4 max-w-2xl font-body text-sm leading-relaxed text-muted-foreground md:text-base">
-            Afrivogue is a fashion and lifestyle media platform amplifying the voices of African and
-            Black creatives, decoding Diaspora influence, and mapping global cultural impact.
+            Afrivogue is a global fashion, culture, entertainment, and lifestyle platform — through an African lens. From the continent to the diaspora, from Hollywood to the Caribbean, we celebrate the creativity and influence that shapes the world.
           </p>
         </motion.div>
       </section>
@@ -64,16 +63,16 @@ const About = () => {
             Redefining the narrative
           </h2>
           <p className="mt-4 font-body text-sm leading-relaxed text-muted-foreground md:text-base">
-            We believe African creativity is one of the most powerful forces in global culture today.
-            From Lagos to London, Accra to Atlanta, Nairobi to New York — the Diaspora is shaping
-            fashion runways, music charts, beauty standards, and the cultural zeitgeist. Afrivogue
+            We believe African and Black creativity is one of the most powerful forces in global culture today.
+            From Lagos to London, Accra to Atlanta, Nairobi to New York, Kingston to Paris — the continent and its diaspora are shaping
+            fashion runways, Hollywood, music charts, beauty standards, and the cultural zeitgeist. Afrivogue
             exists to document, celebrate, and forecast these movements with the editorial depth they
             deserve.
           </p>
           <p className="mt-4 font-body text-sm leading-relaxed text-muted-foreground md:text-base">
-            Our platform combines real-time trend intelligence with longform storytelling, cultural
+            Our platform combines real-time trend intelligence with entertainment coverage, cultural
             forecasting, and community-driven curation. Whether you're a brand strategist, creative
-            director, or culture enthusiast — Afrivogue is your window into what's next.
+            director, celebrity watcher, or culture enthusiast — regardless of where you are or where you're from — Afrivogue is your home.
           </p>
         </motion.div>
       </section>

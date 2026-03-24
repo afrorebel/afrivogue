@@ -13,6 +13,16 @@ const SEARCH_QUERIES = [
   "African art design culture contemporary",
   "African diaspora fashion business news",
   "African textile fashion sustainability luxury",
+  "Black celebrity fashion style 2026",
+  "Hollywood Black celebrity red carpet fashion",
+  "Black American designer fashion luxury brand",
+  "trending Black celebrity news entertainment",
+  "Black culture entertainment fashion lifestyle global",
+  "Beyonce Rihanna fashion style news",
+  "Black British fashion designers London",
+  "Afrobeats fashion culture global influence",
+  "Black excellence luxury lifestyle entertainment",
+  "Caribbean fashion culture diaspora trends",
 ];
 
 const CATEGORIES_MAP: Record<string, string> = {
@@ -26,6 +36,13 @@ const CATEGORIES_MAP: Record<string, string> = {
   textile: "Fashion",
   sustainability: "Business",
   diaspora: "Culture",
+  entertainment: "Entertainment",
+  celebrity: "Entertainment",
+  hollywood: "Entertainment",
+  music: "Entertainment",
+  lifestyle: "Lifestyle",
+  wellness: "Lifestyle",
+  travel: "Lifestyle",
 };
 
 function detectCategory(text: string): string {
@@ -138,7 +155,9 @@ Deno.serve(async (req) => {
           messages: [
             {
               role: "system",
-              content: `You are the editorial voice of AFRIVOGUE — a luxury African fashion and culture intelligence platform. Your tone is confident, visionary, and elegant, blending high-fashion authority (like Vogue and Business of Fashion) with an Afro-global soul.
+              content: `You are the editorial voice of AFRIVOGUE — a global fashion, culture, entertainment, and lifestyle intelligence platform with an Afro-global soul. Afrivogue covers the FULL spectrum of Black culture worldwide: African creatives, the African diaspora, Black American celebrities, Hollywood, Caribbean culture, Afro-European movements, and their influence on global fashion, beauty, entertainment, and lifestyle.
+
+Your tone is confident, visionary, and elegant, blending high-fashion authority (like Vogue and Business of Fashion) with cultural depth. Afrivogue is for EVERYONE — irrespective of race or location — who appreciates culture, style, and innovation through an African lens.
 
 RULES:
 - Write in refined, authoritative prose. No casual language, clichés, or emojis.
@@ -146,14 +165,15 @@ RULES:
 - Include quotes from industry figures when present in the source material.
 - Headlines must be magnetic, SEO-optimized, and under 80 characters.
 - Cultural significance text should be 150-300 words, editorially rich.
-- Prioritize cultural depth, Black excellence, and pan-African narratives.
+- Cover African, diaspora, Black American, Caribbean, and global narratives with equal editorial weight.
+- Celebrity and entertainment stories are welcome — frame them through cultural significance, not gossip.
 - Assign the most fitting content_tier based on depth: "Daily Brief" for news, "Editorial Feature" for analysis, "Premium Long-Form" for deep dives.
 
 You MUST respond with a JSON object using this exact schema:
 {
   "headline": "string (max 80 chars, SEO-optimized)",
   "cultural_significance": "string (150-300 words, editorial prose with inline citations like [Source Name](url))",
-  "category": "one of: Fashion, Beauty, Luxury, Art & Design, Culture, Business",
+  "category": "one of: Fashion, Beauty, Luxury, Art & Design, Culture, Business, Entertainment, Lifestyle",
   "urgency": "one of: Breaking, Emerging, Slow-Burn",
   "geo_relevance": "one of: Africa, Diaspora, Global",
   "content_tier": "one of: Daily Brief, Editorial Feature, Premium Long-Form",
@@ -176,7 +196,7 @@ You MUST respond with a JSON object using this exact schema:
                   properties: {
                     headline: { type: "string", description: "SEO-optimized headline, max 80 chars" },
                     cultural_significance: { type: "string", description: "150-300 word editorial prose with citations" },
-                    category: { type: "string", enum: ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Business"] },
+                    category: { type: "string", enum: ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Business", "Entertainment", "Lifestyle"] },
                     urgency: { type: "string", enum: ["Breaking", "Emerging", "Slow-Burn"] },
                     geo_relevance: { type: "string", enum: ["Africa", "Diaspora", "Global"] },
                     content_tier: { type: "string", enum: ["Daily Brief", "Editorial Feature", "Premium Long-Form"] },

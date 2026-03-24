@@ -14,9 +14,17 @@ const SEARCH_QUERIES = [
   "African diaspora cultural influence fashion forecast",
   "African digital fashion commerce future trends",
   "African art design movement emerging trends",
+  "Black American fashion industry future predictions",
+  "Hollywood celebrity fashion influence forecast 2026",
+  "Black culture entertainment industry growth projections",
+  "diaspora influence global luxury market future",
+  "Afrobeats global music culture industry forecast",
+  "Black beauty brands market growth predictions",
+  "Caribbean culture fashion global influence forecast",
+  "Black excellence luxury lifestyle emerging trends",
 ];
 
-const DOMAINS = ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Digital", "Commerce"];
+const DOMAINS = ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Digital", "Commerce", "Entertainment", "Lifestyle"];
 
 function detectDomain(text: string): string {
   const lower = text.toLowerCase();
@@ -25,6 +33,8 @@ function detectDomain(text: string): string {
     art: "Art & Design", design: "Art & Design", culture: "Culture",
     digital: "Digital", ecommerce: "Commerce", commerce: "Commerce",
     textile: "Fashion", sustainability: "Commerce",
+    entertainment: "Entertainment", celebrity: "Entertainment", hollywood: "Entertainment",
+    music: "Entertainment", lifestyle: "Lifestyle", wellness: "Lifestyle",
   };
   for (const [kw, domain] of Object.entries(map)) {
     if (lower.includes(kw)) return domain;
@@ -111,15 +121,16 @@ Deno.serve(async (req) => {
           messages: [
             {
               role: "system",
-              content: `You are a cultural futurist and strategic intelligence analyst for AFRIVOGUE — a luxury African fashion and culture platform. Your role is to synthesize source material into forward-looking cultural forecasts.
+              content: `You are a cultural futurist and strategic intelligence analyst for AFRIVOGUE — a global fashion, culture, entertainment, and lifestyle intelligence platform with an Afro-global soul. Afrivogue covers African creatives, the African diaspora, Black American culture, Hollywood, Caribbean movements, and their worldwide influence. Your role is to synthesize source material into forward-looking cultural forecasts that serve a GLOBAL audience.
 
 RULES:
 - Forecasts must be forward-looking projections, NOT news summaries.
 - Write with authority and analytical depth. No casual language or clichés.
 - Each forecast should predict a specific cultural, market, or aesthetic shift.
 - Evidence must cite the source material with specific data points or quotes.
-- Implications should address what stakeholders (designers, investors, brands) should do.
+- Implications should address what stakeholders (designers, investors, brands, creatives) should do.
 - Title must be a bold, definitive prediction statement (max 80 chars).
+- Cover African, diaspora, Black American, Caribbean, and global narratives — celebrity culture and entertainment are valid forecast domains.
 - Assign appropriate time horizon based on the nature of the shift.
 - Signal strength: "Definitive" if backed by hard data/multiple sources, "High Confidence" if strong indicators exist, "Early Signal" if emerging/speculative.
 

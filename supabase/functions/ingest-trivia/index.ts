@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const CATEGORIES = ["Fashion", "Culture", "Entertainment", "Lifestyle", "Beauty", "Art & Design", "Luxury"];
+const CATEGORIES = ["Fashion", "Culture", "Entertainment", "Lifestyle", "Beauty", "Art & Design", "Luxury", "Business"];
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -41,22 +41,23 @@ Deno.serve(async (req) => {
 
     const category = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
 
-    const aiPrompt = `You are an expert quiz writer for AFRIVOGUE, a premium African fashion, culture, and lifestyle platform. Generate 8 unique, engaging trivia questions.
+    const aiPrompt = `You are an expert quiz writer for AFRIVOGUE, a global fashion, culture, entertainment, and lifestyle platform with an Afro-global soul. Afrivogue celebrates the FULL spectrum of Black culture worldwide and is for everyone who appreciates culture, style, and innovation. Generate 8 unique, engaging trivia questions.
 
 REQUIREMENTS:
-- Mix of historical and contemporary topics
-- Focus on African fashion, culture, entertainment, lifestyle, beauty, art & design, and luxury
-- Include questions about: African designers, cultural traditions, fashion weeks, music artists, film, beauty innovations, textile arts, cultural movements, diaspora influence
+- Mix of historical and contemporary topics from ACROSS THE BLACK WORLD and global culture
+- Cover: African fashion, Black American celebrity culture, Hollywood, diaspora movements, Caribbean influence, Afrobeats, global entertainment, beauty, luxury, art, and lifestyle
+- Include questions about: African designers, Black American icons (Beyoncé, Rihanna, Virgil Abloh, etc.), Hollywood moments, cultural traditions, fashion weeks, music artists, film, beauty innovations, textile arts, cultural movements, diaspora influence, global lifestyle trends
 - Each question must have exactly 4 options with one correct answer
 - Provide a brief but insightful explanation for the correct answer
 - Add an optional fun fact that's surprising or memorable
 - Difficulty should vary: 3 easy, 3 medium, 2 hard
 - Category for each question: ${CATEGORIES.join(", ")}
 - Make questions educational and entertaining — not obscure trivia nobody would know
-- Reference real people, brands, events, movements
+- Reference real people, brands, events, movements from Africa, America, Europe, Caribbean, and beyond
+- Ensure global appeal — questions should be interesting to anyone regardless of race or location
 
 CURRENT TRENDING TOPICS (use some for inspiration):
-${trendContext || "General African fashion and culture trends"}
+${trendContext || "General fashion, culture, and entertainment trends"}
 
 Return a JSON array using this tool call.`;
 

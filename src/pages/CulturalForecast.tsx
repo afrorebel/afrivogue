@@ -293,8 +293,8 @@ const CulturalForecast = () => {
             transition={{ delay: 0.4 }}
             className="mt-4 max-w-xl font-body text-sm leading-relaxed text-muted-foreground sm:text-base"
           >
-            Intelligent projections across fashion, luxury, culture, and creative
-            industry — curated for those who shape the future rather than follow it.
+            Intelligent projections across fashion, entertainment, luxury, culture, and the creative
+            economy — from the African continent to Hollywood, the Caribbean to global capitals.
           </motion.p>
         </div>
       </header>
