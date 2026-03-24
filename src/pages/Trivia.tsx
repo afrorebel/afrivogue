@@ -452,7 +452,29 @@ const Trivia = () => {
           </motion.div>
         )}
         {scoreSaved && (
-          <p className="mt-4 text-center font-body text-xs text-gold">✓ Score saved!</p>
+          <div className="mt-4 flex items-center justify-center gap-2">
+            <p className="font-body text-xs text-gold">✓ Score saved!</p>
+            <button
+              onClick={() => {
+                const text = `I scored ${score}/${filtered.length} on AFRITRIVIA! 🌍✨ Test your knowledge: ${window.location.href}`;
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`, "_blank");
+              }}
+              className="rounded-full border border-border bg-card p-1.5 text-muted-foreground hover:text-gold hover:border-gold/30 transition-colors"
+              title="Share on X"
+            >
+              <Twitter className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => {
+                const text = `I scored ${score}/${filtered.length} on AFRITRIVIA! 🌍✨ Test your knowledge: ${window.location.href}`;
+                window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+              }}
+              className="rounded-full border border-border bg-card p-1.5 text-muted-foreground hover:text-gold hover:border-gold/30 transition-colors"
+              title="Share on WhatsApp"
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+            </button>
+          </div>
         )}
 
         {/* Leaderboard */}
