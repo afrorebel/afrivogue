@@ -50,8 +50,7 @@ const About = () => {
             About <span className="text-primary">Afrivogue</span>
           </h1>
           <p className="mx-auto mt-4 max-w-2xl font-body text-sm leading-relaxed text-muted-foreground md:text-base">
-            Afrivogue is a fashion and lifestyle media platform amplifying the voices of African and
-            Black creatives, decoding Diaspora influence, and mapping global cultural impact.
+            Afrivogue is a global fashion, culture, entertainment, and lifestyle platform — through an African lens. From the continent to the diaspora, from Hollywood to the Caribbean, we celebrate the creativity and influence that shapes the world.
           </p>
         </motion.div>
       </section>
