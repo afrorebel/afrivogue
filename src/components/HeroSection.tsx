@@ -20,7 +20,7 @@ const HeroSection = () => {
           Curating Culture, Style & Tomorrow
         </h1>
         <p className="mt-4 max-w-xl font-body text-base text-muted-foreground md:text-lg">
-          Curating culture, style, and tomorrow. Afrivogue is a global destination for fashion, beauty, and cultural intelligence rooted in African excellence.
+          Curating culture, style, and tomorrow through a global Afrocentric lens—exploring fashion, beauty, and creative excellence shaping the future
         </p>
         <div className="mt-6 h-px w-24 gradient-gold" />
       </div>
