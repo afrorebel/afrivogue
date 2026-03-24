@@ -199,6 +199,7 @@ const Dashboard = () => {
             <TabsTrigger value="history">Reading History</TabsTrigger>
             <TabsTrigger value="points">Points & Earnings</TabsTrigger>
             <TabsTrigger value="referrals">Referrals</TabsTrigger>
+            <TabsTrigger value="authors">Favorite Authors</TabsTrigger>
             <TabsTrigger value="preferences">Preferences</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
