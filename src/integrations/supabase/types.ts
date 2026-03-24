@@ -453,6 +453,62 @@ export type Database = {
         }
         Relationships: []
       }
+      trivia_questions: {
+        Row: {
+          category: string
+          correct_answer: string
+          created_at: string
+          difficulty: string
+          explanation: string
+          fun_fact: string | null
+          id: string
+          needs_review: boolean
+          options: Json
+          published: boolean
+          question: string
+          source_trend_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          correct_answer: string
+          created_at?: string
+          difficulty?: string
+          explanation?: string
+          fun_fact?: string | null
+          id?: string
+          needs_review?: boolean
+          options?: Json
+          published?: boolean
+          question: string
+          source_trend_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          correct_answer?: string
+          created_at?: string
+          difficulty?: string
+          explanation?: string
+          fun_fact?: string | null
+          id?: string
+          needs_review?: boolean
+          options?: Json
+          published?: boolean
+          question?: string
+          source_trend_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trivia_questions_source_trend_id_fkey"
+            columns: ["source_trend_id"]
+            isOneToOne: false
+            referencedRelation: "trends"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_points: {
         Row: {
           points: number
