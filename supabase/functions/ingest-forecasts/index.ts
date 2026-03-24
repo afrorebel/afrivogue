@@ -33,6 +33,8 @@ function detectDomain(text: string): string {
     art: "Art & Design", design: "Art & Design", culture: "Culture",
     digital: "Digital", ecommerce: "Commerce", commerce: "Commerce",
     textile: "Fashion", sustainability: "Commerce",
+    entertainment: "Entertainment", celebrity: "Entertainment", hollywood: "Entertainment",
+    music: "Entertainment", lifestyle: "Lifestyle", wellness: "Lifestyle",
   };
   for (const [kw, domain] of Object.entries(map)) {
     if (lower.includes(kw)) return domain;
