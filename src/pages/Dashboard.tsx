@@ -68,8 +68,9 @@ const Dashboard = () => {
     } else {
       setFavoriteAuthors([]);
     }
+  };
 
-  const checkSubscription = async () => {
+
     try {
       const { data, error } = await supabase.functions.invoke("check-subscription");
       if (!error && data) {
