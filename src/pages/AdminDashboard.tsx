@@ -60,6 +60,9 @@ const AdminDashboard = () => {
           <TabsContent value="trends">
             <AdminTrends />
           </TabsContent>
+          <TabsContent value="trivia">
+            <AdminTrivia />
+          </TabsContent>
           <TabsContent value="moodboard">
             <AdminMoodboard />
           </TabsContent>
