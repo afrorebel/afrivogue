@@ -150,6 +150,7 @@ export type Database = {
           created_at: string
           id: string
           image_url: string
+          needs_review: boolean
           related_trend_id: string | null
           submitted_by: string | null
           updated_at: string
@@ -161,6 +162,7 @@ export type Database = {
           created_at?: string
           id?: string
           image_url: string
+          needs_review?: boolean
           related_trend_id?: string | null
           submitted_by?: string | null
           updated_at?: string
@@ -172,6 +174,7 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string
+          needs_review?: boolean
           related_trend_id?: string | null
           submitted_by?: string | null
           updated_at?: string
