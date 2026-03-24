@@ -137,7 +137,24 @@ const Trivia = () => {
     setScore(0);
     setAnswered(new Set());
     setDirection(0);
+    setScoreSaved(false);
   };
+
+  const saveScore = async () => {
+    if (!user || scoreSaved || answered.size === 0) return;
+    setScoreSaved(true);
+    await supabase.from("trivia_scores").insert({
+      user_id: user.id,
+      score,
+      total_questions: filtered.length,
+      category: filterCategory,
+    });
+    qc.invalidateQueries({ queryKey: ["trivia-leaderboard"] });
+  };
+
+  // Auto-save when all questions answered
+  const allAnswered = filtered.length > 0 && answered.size === filtered.length;
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
