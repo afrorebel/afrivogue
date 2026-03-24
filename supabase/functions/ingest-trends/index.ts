@@ -13,6 +13,16 @@ const SEARCH_QUERIES = [
   "African art design culture contemporary",
   "African diaspora fashion business news",
   "African textile fashion sustainability luxury",
+  "Black celebrity fashion style 2026",
+  "Hollywood Black celebrity red carpet fashion",
+  "Black American designer fashion luxury brand",
+  "trending Black celebrity news entertainment",
+  "Black culture entertainment fashion lifestyle global",
+  "Beyonce Rihanna fashion style news",
+  "Black British fashion designers London",
+  "Afrobeats fashion culture global influence",
+  "Black excellence luxury lifestyle entertainment",
+  "Caribbean fashion culture diaspora trends",
 ];
 
 const CATEGORIES_MAP: Record<string, string> = {
