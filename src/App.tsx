@@ -36,6 +36,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/trend/:id" element={<TrendDetail />} />
             <Route path="/story/:id" element={<StoryMode />} />
+            <Route path="/trivia" element={<Trivia />} />
             <Route path="/editorial/:id" element={<PremiumEditorial />} />
             <Route path="/editorials" element={<Editorials />} />
             <Route path="/forecast" element={<CulturalForecast />} />
