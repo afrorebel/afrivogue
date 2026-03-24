@@ -36,6 +36,13 @@ const CATEGORIES_MAP: Record<string, string> = {
   textile: "Fashion",
   sustainability: "Business",
   diaspora: "Culture",
+  entertainment: "Entertainment",
+  celebrity: "Entertainment",
+  hollywood: "Entertainment",
+  music: "Entertainment",
+  lifestyle: "Lifestyle",
+  wellness: "Lifestyle",
+  travel: "Lifestyle",
 };
 
 function detectCategory(text: string): string {
