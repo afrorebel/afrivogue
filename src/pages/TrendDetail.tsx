@@ -83,10 +83,14 @@ const TrendDetail = () => {
   }
 
   const pullQuote = extractPullQuote(trend.cultural_significance);
-  const sentences = trend.cultural_significance.split(/(?<=[.!?])\s+/);
-  const midpoint = Math.ceil(sentences.length / 2);
-  const firstHalf = sentences.slice(0, midpoint).join(" ");
-  const secondHalf = sentences.slice(midpoint).join(" ");
+  // Split on double-newlines first (AI-produced paragraphs), fall back to sentence-based split
+  const paragraphs = trend.cultural_significance.includes("\n\n")
+    ? trend.cultural_significance.split(/\n\n+/).filter((p) => p.trim())
+    : (() => {
+        const sentences = trend.cultural_significance.split(/(?<=[.!?])\s+/);
+        const mid = Math.ceil(sentences.length / 2);
+        return [sentences.slice(0, mid).join(" "), sentences.slice(mid).join(" ")].filter(Boolean);
+      })();
 
   const featuredImage = trend.featured_image_url || getCategoryImage(trend.category);
   const images = Array.isArray(trend.images) ? (trend.images as string[]) : [];
@@ -158,9 +162,12 @@ const TrendDetail = () => {
       <article className="mx-auto max-w-4xl px-6 py-16 md:px-16">
         <div className="grid gap-12 lg:grid-cols-[1fr_280px]">
           <div className="space-y-10">
-            <p className="font-display text-xl leading-relaxed text-foreground/90 md:text-2xl">
-              {linkifyText(firstHalf)}
-            </p>
+            {/* Lead paragraph — larger type */}
+            {paragraphs.length > 0 && (
+              <p className="font-display text-xl leading-relaxed text-foreground/90 md:text-2xl">
+                {linkifyText(paragraphs[0])}
+              </p>
+            )}
 
             {/* Image carousel if post has images */}
             {images.length > 0 && <ImageCarousel images={images} alt={trend.headline} />}
@@ -172,11 +179,12 @@ const TrendDetail = () => {
               </p>
             </blockquote>
 
-            {secondHalf && (
-              <p className="font-body text-base leading-[1.85] text-muted-foreground">
-                {linkifyText(secondHalf)}
+            {/* Remaining paragraphs */}
+            {paragraphs.slice(1).map((para, i) => (
+              <p key={i} className="font-body text-base leading-[1.9] text-muted-foreground">
+                {linkifyText(para)}
               </p>
-            )}
+            ))}
 
             {/* Source attribution */}
             {trend.source_name && (

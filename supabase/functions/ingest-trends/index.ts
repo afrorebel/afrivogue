@@ -159,12 +159,23 @@ Deno.serve(async (req) => {
 
 Your tone is confident, visionary, and elegant, blending high-fashion authority (like Vogue and Business of Fashion) with cultural depth. Afrivogue is for EVERYONE — irrespective of race or location — who appreciates culture, style, and innovation through an African lens.
 
-RULES:
+WRITING STYLE:
 - Write in refined, authoritative prose. No casual language, clichés, or emojis.
-- Every piece must include at least one direct citation with a clickable source link.
+- Use clear, well-spaced paragraphs. Each paragraph should develop ONE idea fully before moving to the next.
+- Separate paragraphs with blank lines for readability.
+- Vary sentence length: mix short punchy statements with longer analytical sentences.
+- Use transition phrases between paragraphs to guide the reader smoothly.
+
+CITATION & LINKING RULES (CRITICAL):
+- NEVER write raw URLs in the text. NEVER display a link as "https://example.com".
+- Instead, embed all references as markdown hyperlinks within natural sentences: [descriptive text](url)
+- The linked text should be a meaningful phrase that tells the reader what they'll find, e.g. "according to [a recent Business of Fashion report](https://url)" or "as [Vogue documented](https://url)".
+- Every piece must include at least one embedded citation.
 - Include quotes from industry figures when present in the source material.
+
+OTHER RULES:
 - Headlines must be magnetic, SEO-optimized, and under 80 characters.
-- Cultural significance text should be 150-300 words, editorially rich.
+- Cultural significance text should be 200-400 words, editorially rich with clear paragraph breaks.
 - Cover African, diaspora, Black American, Caribbean, and global narratives with equal editorial weight.
 - Celebrity and entertainment stories are welcome — frame them through cultural significance, not gossip.
 - Assign the most fitting content_tier based on depth: "Daily Brief" for news, "Editorial Feature" for analysis, "Premium Long-Form" for deep dives.
@@ -172,7 +183,7 @@ RULES:
 You MUST respond with a JSON object using this exact schema:
 {
   "headline": "string (max 80 chars, SEO-optimized)",
-  "cultural_significance": "string (150-300 words, editorial prose with inline citations like [Source Name](url))",
+  "cultural_significance": "string (200-400 words, editorial prose with embedded markdown hyperlinks like [text](url), well-spaced paragraphs separated by double newlines)",
   "category": "one of: Fashion, Beauty, Luxury, Art & Design, Culture, Business, Entertainment, Lifestyle",
   "urgency": "one of: Breaking, Emerging, Slow-Burn",
   "geo_relevance": "one of: Africa, Diaspora, Global",
@@ -247,18 +258,21 @@ You MUST respond with a JSON object using this exact schema:
       }
 
       // Step 3: Save to database
+      const tier = trendData.content_tier || "Daily Brief";
+      const isEditorial = tier === "Editorial Feature" || tier === "Premium Long-Form";
+
       const { error: insertError } = await supabase.from("trends").insert({
         headline: trendData.headline,
         cultural_significance: trendData.cultural_significance,
         category: trendData.category || detectCategory(sourceContent),
         urgency: trendData.urgency || detectUrgency(sourceContent),
         geo_relevance: trendData.geo_relevance || detectGeo(sourceContent),
-        content_tier: trendData.content_tier || "Daily Brief",
+        content_tier: tier,
         image_hint: trendData.image_hint || "",
         source_url: result.url || "",
         source_name: result.title?.split(" - ").pop()?.trim() || new URL(result.url).hostname,
         featured_image_url: result.metadata?.ogImage || result.metadata?.image || null,
-        published: true,
+        published: isEditorial ? false : true,
         needs_review: true,
         original_source_content: sourceContent.slice(0, 5000),
       });
