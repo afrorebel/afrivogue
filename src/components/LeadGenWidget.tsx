@@ -113,26 +113,29 @@ const LeadGenWidget = ({ variant = "inline", category }: LeadGenWidgetProps) => 
 
   // inline variant
   return (
-    <div className="my-8 rounded-lg border border-border bg-card p-6 text-center">
+    <div className="my-8 rounded-lg border border-border bg-card p-6">
       <p className="font-body text-[10px] font-bold uppercase tracking-[0.3em] text-gold">
         Don't Miss a Signal
       </p>
       <h3 className="mt-2 font-display text-lg font-bold text-foreground">
         Subscribe to the Afrivogue Feed
       </h3>
-      <form onSubmit={handleSubmit} className="mx-auto mt-4 flex max-w-sm gap-2">
+      <p className="mt-2 font-body text-sm text-muted-foreground">
+        Curated trend analysis delivered to your inbox.
+      </p>
+      <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-2 sm:flex-row">
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="your@email.com"
           required
-          className="flex-1 rounded-sm border border-border bg-background px-3 py-2 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none"
+          className="flex-1 rounded-sm border border-border bg-background px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none"
         />
         <button
           type="submit"
           disabled={loading}
-          className="rounded-sm bg-gold px-4 py-2 font-body text-xs font-bold uppercase tracking-wider text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="rounded-sm bg-gold px-5 py-3 font-body text-xs font-bold uppercase tracking-wider text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           {loading ? "…" : "Join"}
         </button>
