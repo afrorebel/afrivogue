@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { getCategoryImage } from "@/lib/categoryImages";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import ShareButtons from "@/components/ShareButtons";
 import TrendCard from "@/components/TrendCard";
 import ImageCarousel from "@/components/ImageCarousel";
 import LeadGenWidget from "@/components/LeadGenWidget";
