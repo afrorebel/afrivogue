@@ -1,9 +1,11 @@
 import { useState, useMemo, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { ChevronLeft, ChevronRight, Lightbulb, Check, X, RotateCcw, Sparkles } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import TriviaLeaderboard from "@/components/trivia/TriviaLeaderboard";
+import { useAuth } from "@/hooks/useAuth";
 
 interface TriviaQuestion {
   id: string;
@@ -57,6 +59,8 @@ const swipeVariants = {
 };
 
 const Trivia = () => {
+  const { user } = useAuth();
+  const qc = useQueryClient();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -64,6 +68,7 @@ const Trivia = () => {
   const [score, setScore] = useState(0);
   const [answered, setAnswered] = useState<Set<number>>(new Set());
   const [filterCategory, setFilterCategory] = useState<string>("All");
+  const [scoreSaved, setScoreSaved] = useState(false);
 
   const { data: questions = [], isLoading } = useQuery({
     queryKey: ["trivia-questions"],
@@ -132,7 +137,24 @@ const Trivia = () => {
     setScore(0);
     setAnswered(new Set());
     setDirection(0);
+    setScoreSaved(false);
   };
+
+  const saveScore = async () => {
+    if (!user || scoreSaved || answered.size === 0) return;
+    setScoreSaved(true);
+    await supabase.from("trivia_scores").insert({
+      user_id: user.id,
+      score,
+      total_questions: filtered.length,
+      category: filterCategory,
+    });
+    qc.invalidateQueries({ queryKey: ["trivia-leaderboard"] });
+  };
+
+  // Auto-save when all questions answered
+  const allAnswered = filtered.length > 0 && answered.size === filtered.length;
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -371,6 +393,36 @@ const Trivia = () => {
         <p className="text-center mt-6 font-body text-[10px] uppercase tracking-[0.2em] text-muted-foreground/50 md:hidden">
           Swipe to navigate
         </p>
+
+        {/* Completion & save */}
+        {allAnswered && !scoreSaved && user && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-8 text-center"
+          >
+            <div className="inline-flex flex-col items-center gap-3 rounded-2xl border border-gold/30 bg-gold/10 px-8 py-6">
+              <Sparkles className="h-6 w-6 text-gold" />
+              <p className="font-display text-xl font-bold">
+                You scored <span className="text-gold">{score}</span> / {filtered.length}!
+              </p>
+              <button
+                onClick={saveScore}
+                className="rounded-xl bg-gold/20 border border-gold/30 px-6 py-2 font-body text-xs font-semibold uppercase tracking-[0.15em] text-gold hover:bg-gold/30 transition-colors"
+              >
+                Save to Leaderboard
+              </button>
+            </div>
+          </motion.div>
+        )}
+        {scoreSaved && (
+          <p className="mt-4 text-center font-body text-xs text-gold">✓ Score saved!</p>
+        )}
+
+        {/* Leaderboard */}
+        <div className="mt-12">
+          <TriviaLeaderboard />
+        </div>
       </div>
     </div>
   );
