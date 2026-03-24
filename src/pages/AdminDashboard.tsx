@@ -9,6 +9,7 @@ import AdminForecasts from "@/components/admin/AdminForecasts";
 import AdminSiteSettings from "@/components/admin/AdminSiteSettings";
 import AdminUsers from "@/components/admin/AdminUsers";
 import AdminMoodboard from "@/components/admin/AdminMoodboard";
+import AdminTrivia from "@/components/admin/AdminTrivia";
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
