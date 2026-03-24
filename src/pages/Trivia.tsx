@@ -2,10 +2,11 @@ import { useState, useMemo, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
-import { ChevronLeft, ChevronRight, Lightbulb, Check, X, RotateCcw, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Lightbulb, Check, X, RotateCcw, Sparkles, Share2, Twitter, Copy, MessageCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import TriviaLeaderboard from "@/components/trivia/TriviaLeaderboard";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
 
 interface TriviaQuestion {
   id: string;
