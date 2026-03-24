@@ -7,30 +7,31 @@ interface RelatedContentProps {
   currentId: string;
   category: string;
   geoRelevance?: string;
-  contentTier?: string;
 }
 
-const RelatedContent = ({ currentId, category, geoRelevance, contentTier }: RelatedContentProps) => {
+const RelatedContent = ({ currentId, category, geoRelevance }: RelatedContentProps) => {
   const { data: related = [] } = useQuery({
     queryKey: ["related-content", currentId, category, geoRelevance],
     queryFn: async () => {
-      // 1. Try same category + same geo — tightest match
-      const { data: exactMatch } = await supabase
-        .from("trends")
-        .select("*")
-        .eq("published", true)
-        .eq("category", category)
-        .neq("id", currentId)
-        ...(geoRelevance ? eq("geo_relevance", geoRelevance) : this)
-        .order("created_at", { ascending: false })
-        .limit(6);
+      // 1. Same category + same geo — tightest relevance
+      let results: any[] = [];
 
-      // We'll build results in priority tiers
-      let results = exactMatch || [];
+      if (geoRelevance) {
+        const { data } = await supabase
+          .from("trends")
+          .select("*")
+          .eq("published", true)
+          .eq("category", category)
+          .eq("geo_relevance", geoRelevance)
+          .neq("id", currentId)
+          .order("created_at", { ascending: false })
+          .limit(6);
+        results = data || [];
+      }
 
-      // 2. If not enough, broaden to same category (any geo)
+      // 2. Broaden to same category (any geo)
       if (results.length < 3) {
-        const { data: catMatch } = await supabase
+        const { data } = await supabase
           .from("trends")
           .select("*")
           .eq("published", true)
@@ -39,15 +40,13 @@ const RelatedContent = ({ currentId, category, geoRelevance, contentTier }: Rela
           .order("created_at", { ascending: false })
           .limit(6);
 
-        const existingIds = new Set(results.map((r) => r.id));
-        (catMatch || []).forEach((t) => {
-          if (!existingIds.has(t.id)) results.push(t);
-        });
+        const ids = new Set(results.map((r) => r.id));
+        (data || []).forEach((t) => { if (!ids.has(t.id)) results.push(t); });
       }
 
-      // 3. If still not enough, same geo (any category)
+      // 3. Same geo, any category
       if (results.length < 3 && geoRelevance) {
-        const { data: geoMatch } = await supabase
+        const { data } = await supabase
           .from("trends")
           .select("*")
           .eq("published", true)
@@ -56,10 +55,8 @@ const RelatedContent = ({ currentId, category, geoRelevance, contentTier }: Rela
           .order("created_at", { ascending: false })
           .limit(6);
 
-        const existingIds = new Set(results.map((r) => r.id));
-        (geoMatch || []).forEach((t) => {
-          if (!existingIds.has(t.id)) results.push(t);
-        });
+        const ids = new Set(results.map((r) => r.id));
+        (data || []).forEach((t) => { if (!ids.has(t.id)) results.push(t); });
       }
 
       return results.slice(0, 3);
