@@ -17,10 +17,10 @@ const HeroSection = () => {
           Afrivogue Feed
         </p>
         <h1 className="max-w-3xl font-display text-4xl font-bold leading-[1.1] text-foreground md:text-6xl lg:text-7xl">
-          The Pulse of African &amp; Global Fashion
+          Where Culture Sets the Tempo
         </h1>
         <p className="mt-4 max-w-xl font-body text-base text-muted-foreground md:text-lg">
-          Curated signals from the frontlines of fashion, beauty, culture, and the creative economy — centering African and Black voices.
+          Fashion, entertainment, beauty, and lifestyle intelligence — from Lagos to Los Angeles, Accra to Atlanta, London to the world.
         </p>
         <div className="mt-6 h-px w-24 gradient-gold" />
       </div>

@@ -63,16 +63,16 @@ const About = () => {
             Redefining the narrative
           </h2>
           <p className="mt-4 font-body text-sm leading-relaxed text-muted-foreground md:text-base">
-            We believe African creativity is one of the most powerful forces in global culture today.
-            From Lagos to London, Accra to Atlanta, Nairobi to New York — the Diaspora is shaping
-            fashion runways, music charts, beauty standards, and the cultural zeitgeist. Afrivogue
+            We believe African and Black creativity is one of the most powerful forces in global culture today.
+            From Lagos to London, Accra to Atlanta, Nairobi to New York, Kingston to Paris — the continent and its diaspora are shaping
+            fashion runways, Hollywood, music charts, beauty standards, and the cultural zeitgeist. Afrivogue
             exists to document, celebrate, and forecast these movements with the editorial depth they
             deserve.
           </p>
           <p className="mt-4 font-body text-sm leading-relaxed text-muted-foreground md:text-base">
-            Our platform combines real-time trend intelligence with longform storytelling, cultural
+            Our platform combines real-time trend intelligence with entertainment coverage, cultural
             forecasting, and community-driven curation. Whether you're a brand strategist, creative
-            director, or culture enthusiast — Afrivogue is your window into what's next.
+            director, celebrity watcher, or culture enthusiast — regardless of where you are or where you're from — Afrivogue is your home.
           </p>
         </motion.div>
       </section>

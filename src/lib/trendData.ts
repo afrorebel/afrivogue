@@ -1,4 +1,4 @@
-export type Category = "Fashion" | "Beauty" | "Luxury" | "Art & Design" | "Culture" | "Business";
+export type Category = "Fashion" | "Beauty" | "Luxury" | "Art & Design" | "Culture" | "Business" | "Entertainment" | "Lifestyle";
 export type Urgency = "Breaking" | "Emerging" | "Slow-Burn";
 export type GeoRelevance = "Africa" | "Diaspora" | "Global";
 export type ContentTier = "Daily Brief" | "Editorial Feature" | "Premium Long-Form" | "Cultural Forecast" | "Story Mode";

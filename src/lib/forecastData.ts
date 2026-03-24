@@ -144,6 +144,8 @@ export const forecastDomains: ForecastDomain[] = [
   "Luxury",
   "Art & Design",
   "Culture",
+  "Entertainment",
+  "Lifestyle",
   "Digital",
   "Commerce",
 ];
