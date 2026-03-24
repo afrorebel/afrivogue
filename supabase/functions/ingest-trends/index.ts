@@ -196,7 +196,7 @@ You MUST respond with a JSON object using this exact schema:
                   properties: {
                     headline: { type: "string", description: "SEO-optimized headline, max 80 chars" },
                     cultural_significance: { type: "string", description: "150-300 word editorial prose with citations" },
-                    category: { type: "string", enum: ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Business"] },
+                    category: { type: "string", enum: ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Business", "Entertainment", "Lifestyle"] },
                     urgency: { type: "string", enum: ["Breaking", "Emerging", "Slow-Burn"] },
                     geo_relevance: { type: "string", enum: ["Africa", "Diaspora", "Global"] },
                     content_tier: { type: "string", enum: ["Daily Brief", "Editorial Feature", "Premium Long-Form"] },
