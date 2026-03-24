@@ -187,16 +187,19 @@ Deno.serve(async (req) => {
       }
 
       // Use AI to curate the best images
-      const aiPrompt = `You are Afrivogue's visual curator. Afrivogue is a luxury African fashion and culture editorial platform.
+      const aiPrompt = `You are Afrivogue's visual curator. Afrivogue is a contemporary, globally African-inspired luxury editorial platform celebrating African creativity, innovation, and cultural influence worldwide.
 
-Given these candidate images for the "${category}" moodboard category, select the TOP 3 most visually compelling and editorially relevant ones. 
+Given these candidate images for the "${category}" moodboard category, select the TOP 3 most visually compelling and editorially relevant ones.
 
 Criteria:
-- High visual impact and editorial quality
-- Aligns with luxury African fashion/culture aesthetics
-- Diverse representation across African diaspora
-- Trendsetting, not generic stock imagery
-- Avoids low-resolution thumbnails or irrelevant images
+- CONTEMPORARY aesthetic — modern, forward-looking, globally relevant
+- African-inspired but not stereotypical — celebrates the global African diaspora's influence on world culture
+- High visual impact, editorial-grade quality, bold compositions
+- Reflects the intersection of African heritage with global contemporary culture
+- Diverse representation — West, East, South, North Africa and the global diaspora
+- Trendsetting and culturally significant, not generic stock or tourist imagery
+- Avoids low-resolution thumbnails, logos, or irrelevant images
+- Preference for images that feel luxurious, artful, and culturally resonant
 
 Candidates:
 ${candidateImages
@@ -204,7 +207,7 @@ ${candidateImages
   .map((c, i) => `${i + 1}. URL: ${c.url}\n   Context: ${c.context}\n   Source: ${c.sourceUrl}`)
   .join("\n\n")}
 
-For each selected image, provide an editorial caption that matches Afrivogue's voice — sophisticated, culturally aware, and trend-forward.`;
+For each selected image, write an editorial caption in Afrivogue's voice — sophisticated, culturally aware, contemporary, and globally minded. The caption should connect the image to broader cultural movements and trends.`;
 
       const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
