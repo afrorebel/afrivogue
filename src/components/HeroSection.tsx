@@ -7,8 +7,8 @@ const HeroSection = () => {
         <img
           src={heroImage}
           alt="African haute couture editorial"
-          className="h-full w-full object-cover object-top"
-        />
+          className="h-full w-full object-cover object-top" />
+        
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
       </div>
 
@@ -17,15 +17,15 @@ const HeroSection = () => {
           Afrivogue Feed
         </p>
         <h1 className="max-w-3xl font-display text-4xl font-bold leading-[1.1] text-foreground md:text-6xl lg:text-7xl">
-          The Authority on Culture, Taste & Tomorrow
+          Curating Culture, Style & Tomorrow
         </h1>
         <p className="mt-4 max-w-xl font-body text-base text-muted-foreground md:text-lg">
-          Fashion, beauty, entertainment, and lifestyle insights — for the global African diaspora and everyone shaping the culture.
+          Curating culture, style, and tomorrow. Afrivogue is a global destination for fashion, beauty, and cultural intelligence rooted in African excellence.
         </p>
         <div className="mt-6 h-px w-24 gradient-gold" />
       </div>
-    </section>
-  );
+    </section>);
+
 };
 
 export default HeroSection;
