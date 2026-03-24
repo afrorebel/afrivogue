@@ -1,5 +1,5 @@
 export type ForecastHorizon = "6 Months" | "1–2 Years" | "3–5 Years";
-export type ForecastDomain = "Fashion" | "Beauty" | "Luxury" | "Art & Design" | "Culture" | "Digital" | "Commerce";
+export type ForecastDomain = "Fashion" | "Beauty" | "Luxury" | "Art & Design" | "Culture" | "Digital" | "Commerce" | "Entertainment" | "Lifestyle";
 export type ForecastSignalStrength = "Definitive" | "High Confidence" | "Early Signal";
 
 export interface CulturalForecast {
