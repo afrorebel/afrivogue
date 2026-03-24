@@ -298,17 +298,7 @@ const PremiumEditorial = () => {
         </Link>
       </motion.div>
 
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-border px-6 py-10 md:px-16">
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div className="font-display text-lg font-bold text-foreground">
-            AFRI<span className="text-gold">VOGUE</span>
-          </div>
-          <p className="font-body text-xs text-muted-foreground">
-            © 2026 Afrivogue. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
