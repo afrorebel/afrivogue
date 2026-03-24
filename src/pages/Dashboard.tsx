@@ -70,7 +70,7 @@ const Dashboard = () => {
     }
   };
 
-
+  const checkSubscription = async () => {
     try {
       const { data, error } = await supabase.functions.invoke("check-subscription");
       if (!error && data) {
