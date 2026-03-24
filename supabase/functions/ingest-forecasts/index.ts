@@ -24,7 +24,7 @@ const SEARCH_QUERIES = [
   "Black excellence luxury lifestyle emerging trends",
 ];
 
-const DOMAINS = ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Digital", "Commerce"];
+const DOMAINS = ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Digital", "Commerce", "Entertainment", "Lifestyle"];
 
 function detectDomain(text: string): string {
   const lower = text.toLowerCase();
