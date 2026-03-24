@@ -46,7 +46,7 @@ const NewsletterPopup = () => {
       toast({ title: "Welcome to Afrivogue", description: "You're now on the insider list." });
     }
 
-    localStorage.setItem("afrivogue_newsletter", "true");
+    localStorage.setItem("afrivogue_newsletter_ts", Date.now().toString());
     setShow(false);
   };
 

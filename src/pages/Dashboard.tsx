@@ -132,6 +132,9 @@ const Dashboard = () => {
             AFRI<span className="text-gold">VOGUE</span>
           </Link>
           <div className="flex items-center gap-4">
+            <Link to="/trivia" className="font-body text-xs text-gold hover:text-gold/80 flex items-center gap-1">
+              <Gamepad2 className="h-3 w-3" /> Trivia
+            </Link>
             <Link to="/submit" className="font-body text-xs text-gold hover:text-gold/80 flex items-center gap-1">
               <PenSquare className="h-3 w-3" /> Submit Article
             </Link>
