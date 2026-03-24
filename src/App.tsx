@@ -21,6 +21,8 @@ import PublicProfile from "./pages/PublicProfile";
 import MembershipPage from "./pages/MembershipPage";
 import GlobalMoodboard from "./pages/GlobalMoodboard";
 import SubmitArticle from "./pages/SubmitArticle";
+import Contributors from "./pages/Contributors";
+import AuthorProfile from "./pages/AuthorProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
