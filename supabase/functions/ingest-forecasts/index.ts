@@ -14,6 +14,14 @@ const SEARCH_QUERIES = [
   "African diaspora cultural influence fashion forecast",
   "African digital fashion commerce future trends",
   "African art design movement emerging trends",
+  "Black American fashion industry future predictions",
+  "Hollywood celebrity fashion influence forecast 2026",
+  "Black culture entertainment industry growth projections",
+  "diaspora influence global luxury market future",
+  "Afrobeats global music culture industry forecast",
+  "Black beauty brands market growth predictions",
+  "Caribbean culture fashion global influence forecast",
+  "Black excellence luxury lifestyle emerging trends",
 ];
 
 const DOMAINS = ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Digital", "Commerce"];
