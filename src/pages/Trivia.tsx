@@ -393,6 +393,36 @@ const Trivia = () => {
         <p className="text-center mt-6 font-body text-[10px] uppercase tracking-[0.2em] text-muted-foreground/50 md:hidden">
           Swipe to navigate
         </p>
+
+        {/* Completion & save */}
+        {allAnswered && !scoreSaved && user && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-8 text-center"
+          >
+            <div className="inline-flex flex-col items-center gap-3 rounded-2xl border border-gold/30 bg-gold/10 px-8 py-6">
+              <Sparkles className="h-6 w-6 text-gold" />
+              <p className="font-display text-xl font-bold">
+                You scored <span className="text-gold">{score}</span> / {filtered.length}!
+              </p>
+              <button
+                onClick={saveScore}
+                className="rounded-xl bg-gold/20 border border-gold/30 px-6 py-2 font-body text-xs font-semibold uppercase tracking-[0.15em] text-gold hover:bg-gold/30 transition-colors"
+              >
+                Save to Leaderboard
+              </button>
+            </div>
+          </motion.div>
+        )}
+        {scoreSaved && (
+          <p className="mt-4 text-center font-body text-xs text-gold">✓ Score saved!</p>
+        )}
+
+        {/* Leaderboard */}
+        <div className="mt-12">
+          <TriviaLeaderboard />
+        </div>
       </div>
     </div>
   );
