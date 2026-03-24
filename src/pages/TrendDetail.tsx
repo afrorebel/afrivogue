@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ShareButtons from "@/components/ShareButtons";
-import TrendCard from "@/components/TrendCard";
+import RelatedContent from "@/components/RelatedContent";
 import ImageCarousel from "@/components/ImageCarousel";
 import LeadGenWidget from "@/components/LeadGenWidget";
 import Paywall from "@/components/Paywall";
