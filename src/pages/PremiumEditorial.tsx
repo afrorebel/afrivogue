@@ -299,6 +299,14 @@ const PremiumEditorial = () => {
         </Link>
       </motion.div>
 
+      {trend && (
+        <RelatedContent
+          currentId={trend.id}
+          category={trend.category}
+          geoRelevance={trend.geoRelevance}
+        />
+      )}
+
       <Footer />
     </div>
   );

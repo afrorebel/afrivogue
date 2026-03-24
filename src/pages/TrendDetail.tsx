@@ -260,19 +260,11 @@ const TrendDetail = () => {
       </article>
       )}
 
-      {/* Related trends */}
-      {relatedTrends.length > 0 && (
-        <section className="border-t border-border px-6 py-16 md:px-16 lg:px-24">
-          <h2 className="mb-10 font-display text-2xl font-bold text-foreground md:text-3xl">
-            More from Afrivogue
-          </h2>
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {relatedTrends.map((t, i) => (
-              <TrendCard key={t.id} trend={t} index={i} />
-            ))}
-          </div>
-        </section>
-      )}
+      <RelatedContent
+        currentId={trend.id}
+        category={trend.category}
+        geoRelevance={trend.geo_relevance}
+      />
 
       <Footer />
     </div>
