@@ -109,7 +109,7 @@ export const trends: Trend[] = [
   },
 ];
 
-export const categories: Category[] = ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Business"];
+export const categories: Category[] = ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Business", "Entertainment", "Lifestyle"];
 export const urgencyLevels: Urgency[] = ["Breaking", "Emerging", "Slow-Burn"];
 export const geoOptions: GeoRelevance[] = ["Africa", "Diaspora", "Global"];
 export const contentTiers: ContentTier[] = ["Daily Brief", "Editorial Feature", "Premium Long-Form", "Cultural Forecast", "Story Mode"];
