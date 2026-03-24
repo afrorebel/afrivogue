@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ShareButtons from "@/components/ShareButtons";
-import TrendCard from "@/components/TrendCard";
+import RelatedContent from "@/components/RelatedContent";
 import ImageCarousel from "@/components/ImageCarousel";
 import LeadGenWidget from "@/components/LeadGenWidget";
 import Paywall from "@/components/Paywall";
@@ -51,20 +51,6 @@ const TrendDetail = () => {
     enabled: !!id,
   });
 
-  const { data: relatedTrends = [] } = useQuery({
-    queryKey: ["related-trends", trend?.category, trend?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("trends")
-        .select("*")
-        .eq("published", true)
-        .neq("id", trend!.id)
-        .limit(3);
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!trend,
-  });
 
   if (isLoading) {
     return (
@@ -274,19 +260,11 @@ const TrendDetail = () => {
       </article>
       )}
 
-      {/* Related trends */}
-      {relatedTrends.length > 0 && (
-        <section className="border-t border-border px-6 py-16 md:px-16 lg:px-24">
-          <h2 className="mb-10 font-display text-2xl font-bold text-foreground md:text-3xl">
-            More from Afrivogue
-          </h2>
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {relatedTrends.map((t, i) => (
-              <TrendCard key={t.id} trend={t} index={i} />
-            ))}
-          </div>
-        </section>
-      )}
+      <RelatedContent
+        currentId={trend.id}
+        category={trend.category}
+        geoRelevance={trend.geo_relevance}
+      />
 
       <Footer />
     </div>

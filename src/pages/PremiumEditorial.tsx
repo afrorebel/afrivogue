@@ -4,6 +4,7 @@ import { trends } from "@/lib/trendData";
 import { useAuth } from "@/hooks/useAuth";
 import Paywall from "@/components/Paywall";
 import Footer from "@/components/Footer";
+import RelatedContent from "@/components/RelatedContent";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -297,6 +298,14 @@ const PremiumEditorial = () => {
           Experience in Story Mode
         </Link>
       </motion.div>
+
+      {trend && (
+        <RelatedContent
+          currentId={trend.id}
+          category={trend.category}
+          geoRelevance={trend.geoRelevance}
+        />
+      )}
 
       <Footer />
     </div>
