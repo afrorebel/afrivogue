@@ -23,6 +23,7 @@ const Dashboard = () => {
   const [readingHistory, setReadingHistory] = useState<any[]>([]);
   const [preferences, setPreferences] = useState<string[]>([]);
   const [withdrawals, setWithdrawals] = useState<any[]>([]);
+  const [favoriteAuthors, setFavoriteAuthors] = useState<any[]>([]);
   const [subscribed, setSubscribed] = useState(false);
   const [subEnd, setSubEnd] = useState<string | null>(null);
 
