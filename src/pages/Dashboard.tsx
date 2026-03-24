@@ -56,7 +56,18 @@ const Dashboard = () => {
     if (historyRes.data) setReadingHistory(historyRes.data);
     if (prefsRes.data) setPreferences((prefsRes.data.categories as string[]) || []);
     if (withdrawRes.data) setWithdrawals(withdrawRes.data);
-  };
+
+    // Fetch favorite author profiles
+    if (favAuthorsRes.data && favAuthorsRes.data.length > 0) {
+      const authorIds = favAuthorsRes.data.map((f) => f.author_id);
+      const { data: authorProfiles } = await supabase
+        .from("profiles")
+        .select("*")
+        .in("id", authorIds);
+      setFavoriteAuthors(authorProfiles || []);
+    } else {
+      setFavoriteAuthors([]);
+    }
 
   const checkSubscription = async () => {
     try {
