@@ -149,7 +149,7 @@ const ForecastCard = ({
                     Evidence
                   </h4>
                   <p className="font-body text-sm leading-relaxed text-muted-foreground">
-                    {forecast.evidence}
+                    {linkifyText(forecast.evidence)}
                   </p>
                 </div>
                 <div>
@@ -157,7 +157,7 @@ const ForecastCard = ({
                     Implications
                   </h4>
                   <p className="font-body text-sm leading-relaxed text-muted-foreground">
-                    {forecast.implications}
+                    {linkifyText(forecast.implications)}
                   </p>
                 </div>
               </div>
