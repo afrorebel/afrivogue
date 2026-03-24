@@ -8,6 +8,7 @@ import AdminTrends from "@/components/admin/AdminTrends";
 import AdminForecasts from "@/components/admin/AdminForecasts";
 import AdminSiteSettings from "@/components/admin/AdminSiteSettings";
 import AdminUsers from "@/components/admin/AdminUsers";
+import AdminMoodboard from "@/components/admin/AdminMoodboard";
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -49,12 +50,16 @@ const AdminDashboard = () => {
           <TabsList className="mb-6">
             <TabsTrigger value="trends">Trends</TabsTrigger>
             <TabsTrigger value="forecasts">Forecasts</TabsTrigger>
+            <TabsTrigger value="moodboard">Moodboard</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="site">Site Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="trends">
             <AdminTrends />
+          </TabsContent>
+          <TabsContent value="moodboard">
+            <AdminMoodboard />
           </TabsContent>
           <TabsContent value="forecasts">
             <AdminForecasts />
