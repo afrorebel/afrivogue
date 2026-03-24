@@ -138,7 +138,7 @@ You MUST respond using the create_forecast function.`,
             },
             {
               role: "user",
-              content: `Analyze this content and generate a cultural forecast for the African fashion/culture ecosystem. Source: "${result.title}" from ${result.url}\n\nContent:\n${sourceContent.slice(0, 3000)}`,
+              content: `Analyze this content and generate a cultural forecast for the Afro-global fashion/culture ecosystem.\n\nSource Title: "${result.title}"\nSource URL: ${result.url}\n\nIMPORTANT: You MUST embed the source URL (${result.url}) as a markdown link in both the evidence and implications sections. Reference it naturally, e.g. "According to [${result.title || 'source'}](${result.url}), ..." — do NOT leave citations as plain text.\n\nContent:\n${sourceContent.slice(0, 3000)}`,
             },
           ],
           tools: [
