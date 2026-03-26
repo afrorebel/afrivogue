@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Shield, Star } from "lucide-react";
+import { Search, Shield, Star, Crown } from "lucide-react";
+import { supabase as supabaseClient } from "@/integrations/supabase/client";
 
 const AdminUsers = () => {
   const { toast } = useToast();
