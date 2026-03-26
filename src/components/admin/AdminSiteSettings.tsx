@@ -4,9 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import { Save } from "lucide-react";
+import { Save, Lock } from "lucide-react";
 import type { Json } from "@/integrations/supabase/types";
 
 interface HeroSettings {
@@ -25,6 +26,8 @@ interface NavLink {
   href: string;
 }
 
+const CATEGORIES = ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Business"];
+
 const AdminSiteSettings = () => {
   const qc = useQueryClient();
 
@@ -42,31 +45,73 @@ const AdminSiteSettings = () => {
   const [hero, setHero] = useState<HeroSettings>({ subtitle: "", title: "", description: "" });
   const [footer, setFooter] = useState<FooterSettings>({ tagline: "", subtitle: "" });
   const [navLinks, setNavLinks] = useState<NavLink[]>([]);
+  const [paywalledCategories, setPaywalledCategories] = useState<string[]>([]);
 
   useEffect(() => {
     if (settings) {
       if (settings.hero) setHero(settings.hero as unknown as HeroSettings);
       if (settings.footer) setFooter(settings.footer as unknown as FooterSettings);
       if (settings.nav_links) setNavLinks(settings.nav_links as unknown as NavLink[]);
+      if (settings.paywalled_categories) setPaywalledCategories(settings.paywalled_categories as unknown as string[]);
     }
   }, [settings]);
 
   const saveMut = useMutation({
     mutationFn: async ({ key, value }: { key: string; value: Json }) => {
-      const { error } = await supabase.from("site_settings").update({ value }).eq("key", key);
+      // Try update first, if no rows affected then insert
+      const { data, error } = await supabase.from("site_settings").update({ value }).eq("key", key).select();
       if (error) throw error;
+      if (!data || data.length === 0) {
+        const { error: insertError } = await supabase.from("site_settings").insert({ key, value });
+        if (insertError) throw insertError;
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-site-settings"] });
+      qc.invalidateQueries({ queryKey: ["site-settings"] });
       toast({ title: "Settings saved" });
     },
     onError: (e) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
 
+  const toggleCategory = (cat: string) => {
+    setPaywalledCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+    );
+  };
+
   if (isLoading) return <p className="text-muted-foreground">Loading…</p>;
 
   return (
     <div className="space-y-6">
+      {/* Category Paywall Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-display text-lg flex items-center gap-2">
+            <Lock className="h-4 w-4 text-gold" /> Category Paywall Settings
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="font-body text-sm text-muted-foreground">
+            Toggle categories to require membership. All articles in a paywalled category will be gated for non-subscribers, regardless of individual article settings.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+            {CATEGORIES.map((cat) => (
+              <div key={cat} className="flex items-center justify-between rounded-lg border border-border p-3">
+                <span className="font-body text-sm text-foreground">{cat}</span>
+                <Switch
+                  checked={paywalledCategories.includes(cat)}
+                  onCheckedChange={() => toggleCategory(cat)}
+                />
+              </div>
+            ))}
+          </div>
+          <Button size="sm" onClick={() => saveMut.mutate({ key: "paywalled_categories", value: paywalledCategories as unknown as Json })} disabled={saveMut.isPending}>
+            <Save className="mr-1 h-4 w-4" /> Save Paywall Settings
+          </Button>
+        </CardContent>
+      </Card>
+
       {/* Hero Section */}
       <Card>
         <CardHeader><CardTitle className="font-display text-lg">Hero Section</CardTitle></CardHeader>
