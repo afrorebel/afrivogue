@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Shield, Star } from "lucide-react";
+import { Search, Shield, Star, Crown } from "lucide-react";
+import { supabase as supabaseClient } from "@/integrations/supabase/client";
 
 const AdminUsers = () => {
   const { toast } = useToast();
@@ -119,6 +120,7 @@ const AdminUsers = () => {
                 <TableHead>Joined</TableHead>
                 <TableHead>Points</TableHead>
                 <TableHead>Role</TableHead>
+                <TableHead>Membership</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -153,7 +155,12 @@ const AdminUsers = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {isAdmin && <Badge className="bg-gold/20 text-gold border-gold/30">Admin</Badge>}
+                     {isAdmin && <Badge className="bg-gold/20 text-gold border-gold/30">Admin</Badge>}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="text-muted-foreground">
+                        <Crown className="mr-1 h-3 w-3" /> Free
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">

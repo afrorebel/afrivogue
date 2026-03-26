@@ -127,6 +127,7 @@ const AdminTrends = () => {
       content_tier: t.content_tier,
       image_hint: t.image_hint || "",
       published: t.published,
+      members_only: t.members_only,
       source_url: (t as any).source_url || "",
       source_name: (t as any).source_name || "",
       featured_image_url: (t as any).featured_image_url || "",
@@ -243,9 +244,15 @@ const AdminTrends = () => {
                   <Label>Image Hint</Label>
                   <Input value={form.image_hint || ""} onChange={(e) => setForm({ ...form, image_hint: e.target.value })} />
                 </div>
-                <div className="flex items-center gap-2">
-                  <Switch checked={!!form.published} onCheckedChange={(v) => setForm({ ...form, published: v })} />
-                  <Label>Published</Label>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Switch checked={!!form.published} onCheckedChange={(v) => setForm({ ...form, published: v })} />
+                    <Label>Published</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch checked={!!(form as any).members_only} onCheckedChange={(v) => setForm({ ...form, members_only: v })} />
+                    <Label>Members Only</Label>
+                  </div>
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={closeDialog}>Cancel</Button>
@@ -271,6 +278,7 @@ const AdminTrends = () => {
               <TableHead>Category</TableHead>
               <TableHead>Urgency</TableHead>
               <TableHead>Source</TableHead>
+              <TableHead>Paywall</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="w-28">Actions</TableHead>
             </TableRow>
@@ -282,6 +290,13 @@ const AdminTrends = () => {
                 <TableCell>{t.category}</TableCell>
                 <TableCell>{t.urgency}</TableCell>
                 <TableCell className="text-xs text-muted-foreground">{(t as any).source_name || "—"}</TableCell>
+                <TableCell>
+                  {t.members_only ? (
+                    <Badge variant="outline" className="border-gold/50 text-gold">🔒 Premium</Badge>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">Free</span>
+                  )}
+                </TableCell>
                 <TableCell>
                   <div className="flex gap-1">
                     <Badge variant={t.published ? "default" : "secondary"}>

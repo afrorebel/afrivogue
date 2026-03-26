@@ -13,6 +13,7 @@ import Paywall from "@/components/Paywall";
 import Comments from "@/components/Comments";
 import { Skeleton } from "@/components/ui/skeleton";
 import { linkifyText } from "@/lib/linkify";
+import type { Json } from "@/integrations/supabase/types";
 
 const urgencyStyles: Record<string, string> = {
   Breaking: "urgency-breaking",
@@ -51,7 +52,19 @@ const TrendDetail = () => {
     enabled: !!id,
   });
 
-
+  // Fetch category-level paywall settings
+  const { data: paywalledCategories = [] } = useQuery({
+    queryKey: ["paywalled-categories"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "paywalled_categories")
+        .maybeSingle();
+      if (error) throw error;
+      return (data?.value as unknown as string[]) || [];
+    },
+  });
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -154,7 +167,7 @@ const TrendDetail = () => {
       </header>
 
       {/* Article body */}
-      {trend.members_only && !subscribed && !isAdmin ? (
+      {(trend.members_only || paywalledCategories.includes(trend.category)) && !subscribed && !isAdmin ? (
         <div className="mx-auto max-w-4xl px-6 py-16 md:px-16">
           <Paywall previewContent={trend.cultural_significance} />
         </div>
