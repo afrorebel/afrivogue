@@ -71,6 +71,7 @@ const ProductCard = ({ product, isWishlisted, onWishlistToggle }: Props) => {
     e.preventDefault();
     e.stopPropagation();
     if (!user) { toast({ title: "Sign in to add to cart", variant: "destructive" }); return; }
+    if (premiumRequired) { toast({ title: "Members only", description: "Custom pieces are exclusive to Collective members.", variant: "destructive" }); return; }
     await addToCart(product.id);
     toast({ title: `${product.name} added to cart` });
   };
