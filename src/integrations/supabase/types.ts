@@ -59,6 +59,44 @@ export type Database = {
         }
         Relationships: []
       }
+      cart_items: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          product_id: string
+          quantity: number
+          size: string | null
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          product_id: string
+          quantity?: number
+          size?: string | null
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+          size?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cart_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           content: string
@@ -93,6 +131,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      discount_codes: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          discount_type: string
+          discount_value: number
+          expires_at: string | null
+          id: string
+          max_uses: number | null
+          min_order: number | null
+          times_used: number
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          discount_type?: string
+          discount_value?: number
+          expires_at?: string | null
+          id?: string
+          max_uses?: number | null
+          min_order?: number | null
+          times_used?: number
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          discount_type?: string
+          discount_value?: number
+          expires_at?: string | null
+          id?: string
+          max_uses?: number | null
+          min_order?: number | null
+          times_used?: number
+        }
+        Relationships: []
       }
       favorite_authors: {
         Row: {
@@ -231,6 +308,42 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          created_at: string
+          id: string
+          items: Json
+          shipping_address: Json | null
+          status: string
+          stripe_session_id: string | null
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          items?: Json
+          shipping_address?: Json | null
+          status?: string
+          stripe_session_id?: string | null
+          total?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          items?: Json
+          shipping_address?: Json | null
+          status?: string
+          stripe_session_id?: string | null
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       points_history: {
         Row: {
           amount: number
@@ -252,6 +365,75 @@ export type Database = {
           id?: string
           reason?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          affiliate_url: string | null
+          category: string
+          colors: Json | null
+          compare_at_price: number | null
+          created_at: string
+          description: string
+          featured: boolean
+          flash_sale: boolean
+          flash_sale_end: string | null
+          flash_sale_price: number | null
+          id: string
+          images: Json
+          name: string
+          price: number
+          product_type: string
+          published: boolean
+          sizes: Json | null
+          stock: number
+          tags: Json | null
+          updated_at: string
+        }
+        Insert: {
+          affiliate_url?: string | null
+          category?: string
+          colors?: Json | null
+          compare_at_price?: number | null
+          created_at?: string
+          description?: string
+          featured?: boolean
+          flash_sale?: boolean
+          flash_sale_end?: string | null
+          flash_sale_price?: number | null
+          id?: string
+          images?: Json
+          name: string
+          price?: number
+          product_type?: string
+          published?: boolean
+          sizes?: Json | null
+          stock?: number
+          tags?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          affiliate_url?: string | null
+          category?: string
+          colors?: Json | null
+          compare_at_price?: number | null
+          created_at?: string
+          description?: string
+          featured?: boolean
+          flash_sale?: boolean
+          flash_sale_end?: string | null
+          flash_sale_price?: number | null
+          id?: string
+          images?: Json
+          name?: string
+          price?: number
+          product_type?: string
+          published?: boolean
+          sizes?: Json | null
+          stock?: number
+          tags?: Json | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -616,6 +798,38 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      wishlists: {
+        Row: {
+          created_at: string
+          id: string
+          notify_back_in_stock: boolean
+          product_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notify_back_in_stock?: boolean
+          product_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notify_back_in_stock?: boolean
+          product_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wishlists_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       withdrawals: {
         Row: {

@@ -5,13 +5,14 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { LogOut, Users, FileText, Crown, Gamepad2 } from "lucide-react";
+import { LogOut, Users, FileText, Crown, Gamepad2, ShoppingBag } from "lucide-react";
 import AdminTrends from "@/components/admin/AdminTrends";
 import AdminForecasts from "@/components/admin/AdminForecasts";
 import AdminSiteSettings from "@/components/admin/AdminSiteSettings";
 import AdminUsers from "@/components/admin/AdminUsers";
 import AdminMoodboard from "@/components/admin/AdminMoodboard";
 import AdminTrivia from "@/components/admin/AdminTrivia";
+import AdminShop from "@/components/admin/AdminShop";
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -93,6 +94,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="forecasts">Forecasts</TabsTrigger>
             <TabsTrigger value="trivia">Trivia</TabsTrigger>
             <TabsTrigger value="moodboard">Moodboard</TabsTrigger>
+            <TabsTrigger value="shop">Shop</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="site">Site Settings</TabsTrigger>
           </TabsList>
@@ -108,6 +110,9 @@ const AdminDashboard = () => {
           </TabsContent>
           <TabsContent value="forecasts">
             <AdminForecasts />
+          </TabsContent>
+          <TabsContent value="shop">
+            <AdminShop />
           </TabsContent>
           <TabsContent value="users">
             <AdminUsers />
