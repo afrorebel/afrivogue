@@ -6,8 +6,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ProductCard from "@/components/shop/ProductCard";
 import ProductReviews from "@/components/shop/ProductReviews";
+import ProductBundles from "@/components/shop/ProductBundles";
+import CrossSellProducts from "@/components/shop/CrossSellProducts";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, ShoppingBag, ExternalLink, ArrowLeft, Clock, Minus, Plus, Share2, Crown } from "lucide-react";
@@ -229,20 +230,18 @@ const ProductDetail = () => {
           </motion.div>
         </div>
 
+        {/* Bundles */}
+        <div className="mt-16">
+          <ProductBundles currentProductId={product.id} />
+        </div>
+
         {/* Reviews */}
         <div className="mt-16">
           <ProductReviews productId={product.id} />
         </div>
 
-        {/* Related */}
-        {related.length > 0 && (
-          <div className="mt-16">
-            <h2 className="mb-6 font-display text-xl font-bold text-foreground">You May Also Like</h2>
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              {related.map((p: any) => <ProductCard key={p.id} product={p} />)}
-            </div>
-          </div>
-        )}
+        {/* Cross-sell */}
+        <CrossSellProducts productId={product.id} category={product.category} />
       </main>
       <Footer />
     </div>
