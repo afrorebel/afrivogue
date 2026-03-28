@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Package, Tag, ShoppingCart, Zap } from "lucide-react";
 import type { Json } from "@/integrations/supabase/types";
+import ImageUpload from "@/components/shop/ImageUpload";
 
 const CATEGORIES = ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Accessories"];
 
@@ -26,7 +27,7 @@ interface ProductForm {
   category: string;
   product_type: string;
   affiliate_url: string;
-  images: string;
+  images: string[];
   stock: string;
   sizes: string;
   colors: string;
@@ -40,7 +41,7 @@ interface ProductForm {
 
 const emptyForm: ProductForm = {
   name: "", description: "", price: "0", compare_at_price: "", category: "Fashion",
-  product_type: "custom", affiliate_url: "", images: "", stock: "0", sizes: "",
+  product_type: "custom", affiliate_url: "", images: [], stock: "0", sizes: "",
   colors: "", tags: "", featured: false, published: false, flash_sale: false,
   flash_sale_end: "", flash_sale_price: "",
 };
@@ -101,7 +102,7 @@ const AdminShop = () => {
         category: productForm.category,
         product_type: productForm.product_type,
         affiliate_url: productForm.affiliate_url || null,
-        images: productForm.images.split("\n").filter(Boolean) as unknown as Json,
+        images: productForm.images as unknown as Json,
         stock: parseInt(productForm.stock) || 0,
         sizes: productForm.sizes.split(",").map((s) => s.trim()).filter(Boolean) as unknown as Json,
         colors: productForm.colors.split(",").map((s) => s.trim()).filter(Boolean) as unknown as Json,
@@ -171,7 +172,7 @@ const AdminShop = () => {
       name: p.name, description: p.description, price: String(p.price),
       compare_at_price: p.compare_at_price ? String(p.compare_at_price) : "",
       category: p.category, product_type: p.product_type,
-      affiliate_url: p.affiliate_url || "", images: ((p.images as string[]) || []).join("\n"),
+      affiliate_url: p.affiliate_url || "", images: (p.images as string[]) || [],
       stock: String(p.stock), sizes: ((p.sizes as string[]) || []).join(", "),
       colors: ((p.colors as string[]) || []).join(", "),
       tags: ((p.tags as string[]) || []).join(", "),
@@ -233,9 +234,14 @@ const AdminShop = () => {
                 <div className="space-y-2"><Label>Sizes (comma-separated)</Label><Input value={productForm.sizes} onChange={(e) => setProductForm({ ...productForm, sizes: e.target.value })} placeholder="S, M, L, XL" /></div>
                 <div className="space-y-2"><Label>Colors (comma-separated)</Label><Input value={productForm.colors} onChange={(e) => setProductForm({ ...productForm, colors: e.target.value })} placeholder="Black, White, Gold" /></div>
                 <div className="space-y-2"><Label>Tags (comma-separated)</Label><Input value={productForm.tags} onChange={(e) => setProductForm({ ...productForm, tags: e.target.value })} /></div>
-                <div className="space-y-2 md:col-span-2">
-                  <Label>Image URLs (one per line)</Label>
-                  <Textarea value={productForm.images} onChange={(e) => setProductForm({ ...productForm, images: e.target.value })} rows={3} placeholder="https://..." />
+                <div className="md:col-span-2">
+                  <ImageUpload
+                    bucket="product-images"
+                    folder="products"
+                    value={productForm.images}
+                    onChange={(urls) => setProductForm({ ...productForm, images: urls })}
+                    label="Product Images"
+                  />
                 </div>
                 <div className="flex items-center gap-3"><Switch checked={productForm.published} onCheckedChange={(v) => setProductForm({ ...productForm, published: v })} /><Label>Published</Label></div>
                 <div className="flex items-center gap-3"><Switch checked={productForm.featured} onCheckedChange={(v) => setProductForm({ ...productForm, featured: v })} /><Label>Featured</Label></div>
