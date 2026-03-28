@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { User, Gamepad2, Trophy } from "lucide-react";
+import { User, Gamepad2, Trophy, Crown } from "lucide-react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 
@@ -33,6 +33,19 @@ const PublicProfile = () => {
         .eq("user_id", userId!)
         .single();
       return (data?.categories as string[]) || [];
+    },
+    enabled: !!userId,
+  });
+
+  const { data: isPremium } = useQuery({
+    queryKey: ["profile-premium", userId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "manual_premium_users")
+        .maybeSingle();
+      return ((data?.value as string[]) || []).includes(userId!);
     },
     enabled: !!userId,
   });
@@ -79,6 +92,12 @@ const PublicProfile = () => {
             <h1 className="font-display text-3xl font-bold text-foreground">
               {profile.display_name || "Afrivogue Member"}
             </h1>
+
+            {isPremium && (
+              <Badge className="mt-2 inline-flex items-center gap-1 bg-gold/20 text-gold border-gold/30">
+                <Crown className="h-3 w-3" /> Premium Member
+              </Badge>
+            )}
 
             {profile.bio && (
               <p className="mx-auto mt-3 max-w-md font-body text-sm leading-relaxed text-muted-foreground">

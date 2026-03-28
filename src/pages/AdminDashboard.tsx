@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, Users, FileText, Crown, Gamepad2 } from "lucide-react";
 import AdminTrends from "@/components/admin/AdminTrends";
 import AdminForecasts from "@/components/admin/AdminForecasts";
 import AdminSiteSettings from "@/components/admin/AdminSiteSettings";
@@ -14,6 +16,25 @@ import AdminTrivia from "@/components/admin/AdminTrivia";
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
   const navigate = useNavigate();
+
+  const { data: stats } = useQuery({
+    queryKey: ["admin-stats"],
+    queryFn: async () => {
+      const [profilesRes, trendsRes, triviaRes, premiumRes] = await Promise.all([
+        supabase.from("profiles").select("id", { count: "exact", head: true }),
+        supabase.from("trends").select("id", { count: "exact", head: true }).eq("published", true),
+        supabase.from("trivia_questions").select("id", { count: "exact", head: true }).eq("published", true),
+        supabase.from("site_settings").select("value").eq("key", "manual_premium_users").maybeSingle(),
+      ]);
+      return {
+        users: profilesRes.count ?? 0,
+        articles: trendsRes.count ?? 0,
+        trivia: triviaRes.count ?? 0,
+        premium: ((premiumRes.data?.value as string[]) || []).length,
+      };
+    },
+    enabled: !!user && isAdmin,
+  });
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
@@ -47,6 +68,25 @@ const AdminDashboard = () => {
       </header>
 
       <main className="mx-auto max-w-6xl px-6 py-8">
+        {stats && (
+          <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+            {[
+              { label: "Total Users", value: stats.users, icon: Users, color: "text-gold" },
+              { label: "Premium Members", value: stats.premium, icon: Crown, color: "text-gold" },
+              { label: "Published Articles", value: stats.articles, icon: FileText, color: "text-foreground" },
+              { label: "Trivia Questions", value: stats.trivia, icon: Gamepad2, color: "text-foreground" },
+            ].map((s) => (
+              <div key={s.label} className="rounded-lg border border-border bg-card p-4">
+                <div className="flex items-center gap-2">
+                  <s.icon className={`h-4 w-4 ${s.color}`} />
+                  <span className="font-body text-xs uppercase tracking-wider text-muted-foreground">{s.label}</span>
+                </div>
+                <p className={`mt-2 font-display text-2xl font-bold ${s.color}`}>{s.value}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
         <Tabs defaultValue="trends">
           <TabsList className="mb-6">
             <TabsTrigger value="trends">Trends</TabsTrigger>
