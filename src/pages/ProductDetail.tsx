@@ -7,15 +7,16 @@ import { useCart } from "@/hooks/useCart";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/shop/ProductCard";
+import ProductReviews from "@/components/shop/ProductReviews";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, ShoppingBag, ExternalLink, ArrowLeft, Clock, Minus, Plus, Share2 } from "lucide-react";
+import { Heart, ShoppingBag, ExternalLink, ArrowLeft, Clock, Minus, Plus, Share2, Crown } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const { user } = useAuth();
+  const { user, subscribed, isAdmin } = useAuth();
   const { addToCart } = useCart();
   const [selectedSize, setSelectedSize] = useState<string>();
   const [selectedColor, setSelectedColor] = useState<string>();
@@ -57,6 +58,8 @@ const ProductDetail = () => {
   const isFlashActive = product.flash_sale && product.flash_sale_end && new Date(product.flash_sale_end) > new Date();
   const effectivePrice = isFlashActive && product.flash_sale_price ? product.flash_sale_price : product.price;
   const isAffiliate = product.product_type === "affiliate";
+  const isCustom = product.product_type === "custom";
+  const premiumRequired = isCustom && !subscribed && !isAdmin;
   const outOfStock = product.stock <= 0 && !isAffiliate;
 
   const handleAdd = async () => {
@@ -164,8 +167,24 @@ const ProductDetail = () => {
               </div>
             )}
 
+            {/* Premium gate for custom products */}
+            {premiumRequired && (
+              <div className="rounded-lg border border-gold/30 bg-gold/5 p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Crown className="h-5 w-5 text-gold" />
+                  <p className="font-display text-sm font-bold text-foreground">Members Exclusive</p>
+                </div>
+                <p className="font-body text-xs text-muted-foreground">
+                  Custom pieces are available exclusively to Afrivogue Collective members.
+                </p>
+                <Button asChild className="w-full bg-gold hover:bg-gold/90">
+                  <Link to="/membership">Join the Collective</Link>
+                </Button>
+              </div>
+            )}
+
             {/* Quantity & CTA */}
-            {!isAffiliate ? (
+            {!isAffiliate && !premiumRequired ? (
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <p className="font-body text-xs font-medium text-foreground">Qty</p>
@@ -208,6 +227,11 @@ const ProductDetail = () => {
               </Button>
             </div>
           </motion.div>
+        </div>
+
+        {/* Reviews */}
+        <div className="mt-16">
+          <ProductReviews productId={product.id} />
         </div>
 
         {/* Related */}

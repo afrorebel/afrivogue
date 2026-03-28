@@ -7,6 +7,7 @@ import TrendCard from "@/components/TrendCard";
 import LeadGenWidget from "@/components/LeadGenWidget";
 import NewsletterPopup from "@/components/NewsletterPopup";
 import TrendingTicker from "@/components/TrendingTicker";
+import FeaturedProducts from "@/components/shop/FeaturedProducts";
 import Footer from "@/components/Footer";
 import { useTrends } from "@/hooks/useTrends";
 import { trends as fallbackTrends } from "@/lib/trendData";
@@ -131,6 +132,8 @@ const Index = () => {
             <p className="mt-2 font-body text-sm text-muted-foreground">Try broadening your selection.</p>
           </div>
         )}
+        {/* Featured Products */}
+        <FeaturedProducts />
       </main>
 
       <Footer />
