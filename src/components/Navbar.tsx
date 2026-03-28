@@ -39,6 +39,7 @@ const Navbar = () => {
 
         <div className="flex items-center gap-3">
           <SearchDialog />
+          <CartDrawer />
           <ThemeToggle />
           <div className="h-2 w-2 rounded-full bg-gold animate-pulse" title="Live feed" />
           {user ? (
