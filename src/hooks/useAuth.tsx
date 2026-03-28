@@ -29,12 +29,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsAdmin(!!data);
   };
 
-  const checkSubscription = useCallback(async () => {
+  const checkSubscription = useCallback(async (userId?: string) => {
     try {
       setSubscriptionLoading(true);
+      // Check Stripe subscription
       const { data, error } = await supabase.functions.invoke("check-subscription");
-      if (error) throw error;
-      setSubscribed(!!data?.subscribed);
+      if (!error && data?.subscribed) {
+        setSubscribed(true);
+        return;
+      }
+      // Check manual premium grant
+      if (userId) {
+        const { data: setting } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", "manual_premium_users")
+          .maybeSingle();
+        const manualUsers = (setting?.value as string[]) || [];
+        if (manualUsers.includes(userId)) {
+          setSubscribed(true);
+          return;
+        }
+      }
+      setSubscribed(false);
     } catch {
       setSubscribed(false);
     } finally {
@@ -52,7 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         setTimeout(() => checkAdmin(session.user.id), 0);
-        setTimeout(() => checkSubscription(), 0);
+        setTimeout(() => checkSubscription(session.user.id), 0);
       } else {
         setIsAdmin(false);
         setSubscribed(false);
@@ -65,7 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         checkAdmin(session.user.id);
-        checkSubscription();
+        checkSubscription(session.user.id);
       }
       setLoading(false);
     });
