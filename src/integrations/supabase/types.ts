@@ -59,6 +59,39 @@ export type Database = {
         }
         Relationships: []
       }
+      bundle_items: {
+        Row: {
+          bundle_id: string
+          id: string
+          product_id: string
+        }
+        Insert: {
+          bundle_id: string
+          id?: string
+          product_id: string
+        }
+        Update: {
+          bundle_id?: string
+          id?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bundle_items_bundle_id_fkey"
+            columns: ["bundle_id"]
+            isOneToOne: false
+            referencedRelation: "product_bundles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bundle_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cart_items: {
         Row: {
           color: string | null
@@ -162,6 +195,75 @@ export type Database = {
           status?: string
           template_name?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      cross_sell_rules: {
+        Row: {
+          created_at: string
+          id: string
+          priority: number
+          recommended_product_id: string
+          source_product_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          priority?: number
+          recommended_product_id: string
+          source_product_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          priority?: number
+          recommended_product_id?: string
+          source_product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cross_sell_rules_recommended_product_id_fkey"
+            columns: ["recommended_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cross_sell_rules_source_product_id_fkey"
+            columns: ["source_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_segments: {
+        Row: {
+          color: string
+          created_at: string
+          criteria: Json
+          description: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          criteria?: Json
+          description?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          criteria?: Json
+          description?: string
+          id?: string
+          name?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -398,6 +500,36 @@ export type Database = {
           id?: string
           reason?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      product_bundles: {
+        Row: {
+          created_at: string
+          description: string
+          discount_percentage: number
+          id: string
+          name: string
+          published: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          discount_percentage?: number
+          id?: string
+          name: string
+          published?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          discount_percentage?: number
+          id?: string
+          name?: string
+          published?: boolean
+          updated_at?: string
         }
         Relationships: []
       }
@@ -642,6 +774,35 @@ export type Database = {
             columns: ["moodboard_item_id"]
             isOneToOne: false
             referencedRelation: "moodboard_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      segment_members: {
+        Row: {
+          added_at: string
+          id: string
+          segment_id: string
+          user_id: string
+        }
+        Insert: {
+          added_at?: string
+          id?: string
+          segment_id: string
+          user_id: string
+        }
+        Update: {
+          added_at?: string
+          id?: string
+          segment_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "segment_members_segment_id_fkey"
+            columns: ["segment_id"]
+            isOneToOne: false
+            referencedRelation: "customer_segments"
             referencedColumns: ["id"]
           },
         ]

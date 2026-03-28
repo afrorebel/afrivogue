@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { LogOut, Users, FileText, Crown, Gamepad2, ShoppingBag, BarChart3 } from "lucide-react";
+import { LogOut, Users, FileText, Crown, Gamepad2, ShoppingBag, BarChart3, Package, Target } from "lucide-react";
 import AdminTrends from "@/components/admin/AdminTrends";
 import AdminForecasts from "@/components/admin/AdminForecasts";
 import AdminSiteSettings from "@/components/admin/AdminSiteSettings";
@@ -14,6 +14,8 @@ import AdminMoodboard from "@/components/admin/AdminMoodboard";
 import AdminTrivia from "@/components/admin/AdminTrivia";
 import AdminShop from "@/components/admin/AdminShop";
 import AdminCRM from "@/components/admin/AdminCRM";
+import AdminBundlesCrossSell from "@/components/admin/AdminBundlesCrossSell";
+import AdminSegmentation from "@/components/admin/AdminSegmentation";
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -96,7 +98,9 @@ const AdminDashboard = () => {
             <TabsTrigger value="trivia">Trivia</TabsTrigger>
             <TabsTrigger value="moodboard">Moodboard</TabsTrigger>
             <TabsTrigger value="shop">Shop</TabsTrigger>
+            <TabsTrigger value="bundles">Bundles</TabsTrigger>
             <TabsTrigger value="crm">CRM</TabsTrigger>
+            <TabsTrigger value="segments">Segments</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="site">Site Settings</TabsTrigger>
           </TabsList>
@@ -116,8 +120,14 @@ const AdminDashboard = () => {
           <TabsContent value="shop">
             <AdminShop />
           </TabsContent>
+          <TabsContent value="bundles">
+            <AdminBundlesCrossSell />
+          </TabsContent>
           <TabsContent value="crm">
             <AdminCRM />
+          </TabsContent>
+          <TabsContent value="segments">
+            <AdminSegmentation />
           </TabsContent>
           <TabsContent value="users">
             <AdminUsers />
