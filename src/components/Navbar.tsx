@@ -5,11 +5,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import SearchDialog from "@/components/SearchDialog";
 import ThemeToggle from "@/components/ThemeToggle";
+import CartDrawer from "@/components/shop/CartDrawer";
 
 const navLinks = [
   { label: "Trends", href: "/" },
   { label: "Editorials", href: "/editorials" },
   { label: "Moodboard", href: "/moodboard" },
+  { label: "Shop", href: "/shop" },
   { label: "Forecast", href: "/forecast" },
   { label: "Voices", href: "/contributors" },
   { label: "About", href: "/about" },
