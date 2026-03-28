@@ -158,6 +158,7 @@ const AdminUsers = () => {
                 const isAdmin = !!getUserRole(profile.id);
                 const pts = getUserPoints(profile.id);
                 const isPremium = isUserPremium(profile.id);
+                return (
                   <TableRow key={profile.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
