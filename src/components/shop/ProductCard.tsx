@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, ShoppingBag, ExternalLink, Clock } from "lucide-react";
+import { Heart, ShoppingBag, ExternalLink, Clock, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
@@ -57,12 +57,14 @@ const CountdownTimer = ({ endDate }: { endDate: string }) => {
 };
 
 const ProductCard = ({ product, isWishlisted, onWishlistToggle }: Props) => {
-  const { user } = useAuth();
+  const { user, subscribed, isAdmin } = useAuth();
   const { addToCart } = useCart();
   const isFlashActive = product.flash_sale && product.flash_sale_end && new Date(product.flash_sale_end) > new Date();
   const effectivePrice = isFlashActive && product.flash_sale_price ? product.flash_sale_price : product.price;
   const showCompare = product.compare_at_price && product.compare_at_price > effectivePrice;
   const isAffiliate = product.product_type === "affiliate";
+  const isCustom = product.product_type === "custom";
+  const premiumRequired = isCustom && !subscribed && !isAdmin;
   const outOfStock = product.stock <= 0 && !isAffiliate;
 
   const handleAddToCart = async (e: React.MouseEvent) => {
@@ -99,7 +101,12 @@ const ProductCard = ({ product, isWishlisted, onWishlistToggle }: Props) => {
 
           {/* Badges */}
           <div className="absolute left-3 top-3 flex flex-col gap-1">
-            {product.featured && <Badge className="bg-gold text-primary-foreground font-body text-[10px]">Featured</Badge>}
+            {isCustom && (
+              <Badge className="bg-gold text-primary-foreground font-body text-[10px]">
+                <Crown className="mr-1 h-3 w-3" /> Members Only
+              </Badge>
+            )}
+            {product.featured && !isCustom && <Badge className="bg-gold text-primary-foreground font-body text-[10px]">Featured</Badge>}
             {isFlashActive && <CountdownTimer endDate={product.flash_sale_end!} />}
             {isAffiliate && (
               <Badge variant="secondary" className="font-body text-[10px]">
@@ -119,7 +126,7 @@ const ProductCard = ({ product, isWishlisted, onWishlistToggle }: Props) => {
             <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full" onClick={handleWishlist}>
               <Heart className={`h-4 w-4 ${isWishlisted ? "fill-destructive text-destructive" : ""}`} />
             </Button>
-            {!isAffiliate && !outOfStock && (
+            {!isAffiliate && !outOfStock && !premiumRequired && (
               <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full" onClick={handleAddToCart}>
                 <ShoppingBag className="h-4 w-4" />
               </Button>
