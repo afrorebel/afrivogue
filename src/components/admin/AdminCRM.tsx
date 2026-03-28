@@ -54,7 +54,7 @@ const AdminCRM = () => {
   const { data: emailLog = [] } = useQuery({
     queryKey: ["admin-crm-log"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("crm_email_log")
         .select("*")
         .order("created_at", { ascending: false })
@@ -89,13 +89,13 @@ const AdminCRM = () => {
       await supabase.from("cart_items").update({ reminder_sent_at: now } as any).eq("id", id);
     }
     // Log the CRM action
-    await supabase.from("crm_email_log").insert({
+    await (supabase as any).from("crm_email_log").insert({
       user_id: userId,
       email: "cart-recovery",
       template_name: "abandoned-cart-reminder",
       status: "queued",
       metadata: { item_count: itemIds.length },
-    } as any);
+    });
     qc.invalidateQueries({ queryKey: ["admin-abandoned-carts"] });
     qc.invalidateQueries({ queryKey: ["admin-crm-log"] });
     toast({ title: "Cart recovery reminder queued" });
