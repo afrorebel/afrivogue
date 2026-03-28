@@ -34,14 +34,7 @@ const ProductDetail = () => {
     enabled: !!id,
   });
 
-  const { data: related = [] } = useQuery({
-    queryKey: ["related-products", product?.category],
-    queryFn: async () => {
-      const { data } = await supabase.from("products").select("*").eq("published", true).eq("category", product!.category).neq("id", id!).limit(4);
-      return (data || []).map((p: any) => ({ ...p, images: (p.images as string[]) || [] }));
-    },
-    enabled: !!product?.category,
-  });
+
 
   const { data: isWishlisted = false, refetch: refetchWish } = useQuery({
     queryKey: ["wish-check", user?.id, id],
