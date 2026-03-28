@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Shield, Star, Crown } from "lucide-react";
-import { supabase as supabaseClient } from "@/integrations/supabase/client";
 
 const AdminUsers = () => {
   const { toast } = useToast();
@@ -42,6 +41,35 @@ const AdminUsers = () => {
       if (error) throw error;
       return data;
     },
+  });
+
+  const { data: manualPremiumUsers = [] } = useQuery({
+    queryKey: ["manual-premium-users"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "manual_premium_users")
+        .maybeSingle();
+      return (data?.value as string[]) || [];
+    },
+  });
+
+  const togglePremium = useMutation({
+    mutationFn: async ({ userId, isPremium }: { userId: string; isPremium: boolean }) => {
+      const updated = isPremium
+        ? manualPremiumUsers.filter((id) => id !== userId)
+        : [...manualPremiumUsers, userId];
+      const { error } = await supabase
+        .from("site_settings")
+        .upsert({ key: "manual_premium_users", value: updated as any });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["manual-premium-users"] });
+      toast({ title: "Membership updated" });
+    },
+    onError: (err: Error) => toast({ title: "Error", description: err.message, variant: "destructive" }),
   });
 
   const toggleAdmin = useMutation({
@@ -93,6 +121,7 @@ const AdminUsers = () => {
 
   const getUserRole = (id: string) => roles.find((r) => r.user_id === id && r.role === "admin");
   const getUserPoints = (id: string) => allPoints.find((p) => p.user_id === id)?.points ?? 0;
+  const isUserPremium = (id: string) => manualPremiumUsers.includes(id);
 
   return (
     <div className="space-y-4">
@@ -128,6 +157,7 @@ const AdminUsers = () => {
               {filtered.map((profile) => {
                 const isAdmin = !!getUserRole(profile.id);
                 const pts = getUserPoints(profile.id);
+                const isPremium = isUserPremium(profile.id);
                 return (
                   <TableRow key={profile.id}>
                     <TableCell>
@@ -158,12 +188,25 @@ const AdminUsers = () => {
                      {isAdmin && <Badge className="bg-gold/20 text-gold border-gold/30">Admin</Badge>}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-muted-foreground">
-                        <Crown className="mr-1 h-3 w-3" /> Free
-                      </Badge>
+                      {isPremium ? (
+                        <Badge className="bg-gold/20 text-gold border-gold/30">
+                          <Crown className="mr-1 h-3 w-3" /> Premium
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-muted-foreground">Free</Badge>
+                      )}
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => togglePremium.mutate({ userId: profile.id, isPremium })}
+                          className="text-xs"
+                        >
+                          <Crown className="mr-1 h-3 w-3" />
+                          {isPremium ? "Revoke Premium" : "Grant Premium"}
+                        </Button>
                         <Button
                           variant="ghost"
                           size="sm"

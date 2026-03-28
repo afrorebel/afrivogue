@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Lock } from "lucide-react";
 import { getCategoryImage } from "@/lib/categoryImages";
 
 const urgencyStyles: Record<string, string> = {
@@ -30,14 +31,17 @@ export interface TrendCardData {
   imageHint?: string;
   featured_image_url?: string | null;
   source_name?: string | null;
+  members_only?: boolean;
 }
 
 interface TrendCardProps {
   trend: TrendCardData;
   index: number;
+  isPaywalled?: boolean;
 }
 
-const TrendCard = ({ trend, index }: TrendCardProps) => {
+const TrendCard = ({ trend, index, isPaywalled = false }: TrendCardProps) => {
+  const showLock = trend.members_only || isPaywalled;
   const significance = trend.cultural_significance || trend.culturalSignificance || "";
   const geo = trend.geo_relevance || trend.geoRelevance || "";
   const tier = trend.content_tier || trend.contentTier || "";
@@ -61,6 +65,12 @@ const TrendCard = ({ trend, index }: TrendCardProps) => {
           loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
+        {showLock && (
+          <div className="absolute top-3 right-3 flex items-center gap-1 rounded-sm bg-gold/90 px-2 py-1 backdrop-blur-sm">
+            <Lock className="h-3 w-3 text-background" />
+            <span className="font-body text-[10px] font-bold uppercase tracking-wider text-background">Premium</span>
+          </div>
+        )}
         <div className="absolute bottom-3 left-3 flex flex-wrap items-center gap-2">
           <span className={`rounded-sm px-2.5 py-1 font-body text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm ${urgencyStyles[trend.urgency] || ""}`}>
             {trend.urgency}
