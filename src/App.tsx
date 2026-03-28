@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { CartProvider } from "@/hooks/useCart";
 import Index from "./pages/Index";
 import TrendDetail from "./pages/TrendDetail";
 import StoryMode from "./pages/StoryMode";
@@ -23,6 +24,8 @@ import GlobalMoodboard from "./pages/GlobalMoodboard";
 import SubmitArticle from "./pages/SubmitArticle";
 import Contributors from "./pages/Contributors";
 import AuthorProfile from "./pages/AuthorProfile";
+import Shop from "./pages/Shop";
+import ProductDetail from "./pages/ProductDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +33,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
+      <CartProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -50,6 +54,8 @@ const App = () => (
             <Route path="/submit" element={<SubmitArticle />} />
             <Route path="/contributors" element={<Contributors />} />
             <Route path="/author/:authorId" element={<AuthorProfile />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/shop/:id" element={<ProductDetail />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/contact" element={<Contact />} />
@@ -59,6 +65,7 @@ const App = () => (
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
+      </CartProvider>
     </AuthProvider>
   </QueryClientProvider>
 );
