@@ -66,6 +66,7 @@ export type Database = {
           id: string
           product_id: string
           quantity: number
+          reminder_sent_at: string | null
           size: string | null
           user_id: string
         }
@@ -75,6 +76,7 @@ export type Database = {
           id?: string
           product_id: string
           quantity?: number
+          reminder_sent_at?: string | null
           size?: string | null
           user_id: string
         }
@@ -84,6 +86,7 @@ export type Database = {
           id?: string
           product_id?: string
           quantity?: number
+          reminder_sent_at?: string | null
           size?: string | null
           user_id?: string
         }
@@ -131,6 +134,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      crm_email_log: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          metadata: Json | null
+          status: string
+          template_name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          metadata?: Json | null
+          status?: string
+          template_name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          metadata?: Json | null
+          status?: string
+          template_name?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       discount_codes: {
         Row: {
