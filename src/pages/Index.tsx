@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import FilterBar from "@/components/FilterBar";
@@ -11,6 +12,7 @@ import { useTrends } from "@/hooks/useTrends";
 import { trends as fallbackTrends } from "@/lib/trendData";
 import type { Category, Urgency, GeoRelevance, ContentTier } from "@/lib/trendData";
 import { Skeleton } from "@/components/ui/skeleton";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const [category, setCategory] = useState<Category | "All">("All");
@@ -19,6 +21,18 @@ const Index = () => {
   const [contentTier, setContentTier] = useState<ContentTier | "All">("All");
 
   const { data: dbTrends, isLoading } = useTrends();
+
+  const { data: paywalledCategories = [] } = useQuery({
+    queryKey: ["paywalled-categories"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "paywalled_categories")
+        .maybeSingle();
+      return (data?.value as string[]) || [];
+    },
+  });
 
   const allTrends = useMemo(() => {
     if (dbTrends && dbTrends.length > 0) {
@@ -91,7 +105,7 @@ const Index = () => {
           <>
             <div className="mt-10 grid gap-6 px-6 md:grid-cols-2 md:px-16 lg:px-24 xl:grid-cols-3">
               {filtered.slice(0, 6).map((trend, i) => (
-                <TrendCard key={trend.id} trend={trend} index={i} />
+                <TrendCard key={trend.id} trend={trend} index={i} isPaywalled={paywalledCategories.includes(trend.category)} />
               ))}
             </div>
 
@@ -104,7 +118,7 @@ const Index = () => {
             {filtered.length > 6 && (
               <div className="mt-6 grid gap-6 px-6 md:grid-cols-2 md:px-16 lg:px-24 xl:grid-cols-3">
                 {filtered.slice(6).map((trend, i) => (
-                  <TrendCard key={trend.id} trend={trend} index={i + 6} />
+                  <TrendCard key={trend.id} trend={trend} index={i + 6} isPaywalled={paywalledCategories.includes(trend.category)} />
                 ))}
               </div>
             )}
