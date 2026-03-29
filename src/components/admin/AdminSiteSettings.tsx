@@ -26,6 +26,17 @@ interface NavLink {
   href: string;
 }
 
+const DEFAULT_NAV_LINKS: NavLink[] = [
+  { label: "Home", href: "/" },
+  { label: "Editorials", href: "/editorials" },
+  { label: "Moodboard", href: "/moodboard" },
+  { label: "Shop", href: "/shop" },
+  { label: "Forecast", href: "/forecast" },
+  { label: "Voices", href: "/contributors" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+];
+
 const CATEGORIES = ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Business"];
 
 const AdminSiteSettings = () => {
@@ -52,6 +63,7 @@ const AdminSiteSettings = () => {
       if (settings.hero) setHero(settings.hero as unknown as HeroSettings);
       if (settings.footer) setFooter(settings.footer as unknown as FooterSettings);
       if (settings.nav_links) setNavLinks(settings.nav_links as unknown as NavLink[]);
+      else setNavLinks(DEFAULT_NAV_LINKS);
       if (settings.paywalled_categories) setPaywalledCategories(settings.paywalled_categories as unknown as string[]);
     }
   }, [settings]);
