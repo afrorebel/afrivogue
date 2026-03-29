@@ -345,7 +345,7 @@ const AdminEditorials = () => {
             </div>
             <div className="space-y-2">
               <Label>Additional Images</Label>
-              <ImageUpload images={form.images} onChange={(imgs) => setForm({ ...form, images: imgs })} />
+              <ImageUpload bucket="trend-images" folder="editorials" value={form.images} onChange={(imgs) => setForm({ ...form, images: imgs })} />
             </div>
             <div className="space-y-2">
               <Label>Content</Label>
