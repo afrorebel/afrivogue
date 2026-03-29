@@ -22,6 +22,7 @@ export type Database = {
           created_at: string
           id: string
           images: Json | null
+          meta_description: string | null
           points_awarded: number | null
           status: string
           tags: Json | null
@@ -36,6 +37,7 @@ export type Database = {
           created_at?: string
           id?: string
           images?: Json | null
+          meta_description?: string | null
           points_awarded?: number | null
           status?: string
           tags?: Json | null
@@ -50,6 +52,7 @@ export type Database = {
           created_at?: string
           id?: string
           images?: Json | null
+          meta_description?: string | null
           points_awarded?: number | null
           status?: string
           tags?: Json | null
@@ -385,6 +388,7 @@ export type Database = {
           image_url: string
           needs_review: boolean
           related_trend_id: string | null
+          source_url: string | null
           submitted_by: string | null
           updated_at: string
         }
@@ -397,6 +401,7 @@ export type Database = {
           image_url: string
           needs_review?: boolean
           related_trend_id?: string | null
+          source_url?: string | null
           submitted_by?: string | null
           updated_at?: string
         }
@@ -409,6 +414,7 @@ export type Database = {
           image_url?: string
           needs_review?: boolean
           related_trend_id?: string | null
+          source_url?: string | null
           submitted_by?: string | null
           updated_at?: string
         }

@@ -116,6 +116,9 @@ const Index = () => {
               </div>
             )}
 
+            {/* Featured Products in the middle */}
+            <FeaturedProducts />
+
             {filtered.length > 6 && (
               <div className="mt-6 grid gap-6 px-6 md:grid-cols-2 md:px-16 lg:px-24 xl:grid-cols-3">
                 {filtered.slice(6).map((trend, i) => (
@@ -132,8 +135,7 @@ const Index = () => {
             <p className="mt-2 font-body text-sm text-muted-foreground">Try broadening your selection.</p>
           </div>
         )}
-        {/* Featured Products */}
-        <FeaturedProducts />
+        {/* Featured Products moved to middle of feed above */}
       </main>
 
       <Footer />

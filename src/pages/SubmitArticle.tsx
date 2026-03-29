@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { Send, ArrowLeft } from "lucide-react";
+import RichTextEditor from "@/components/RichTextEditor";
+import ImageUpload from "@/components/shop/ImageUpload";
 
 const CATEGORIES = ["Fashion", "Beauty", "Culture", "Lifestyle", "Art & Design", "Business of Fashion"];
 
@@ -23,6 +25,8 @@ const SubmitArticle = () => {
     content: "",
     category: "",
     tags: "",
+    meta_description: "",
+    images: [] as string[],
   });
 
   if (loading) {
@@ -78,6 +82,8 @@ const SubmitArticle = () => {
         content: form.content.trim(),
         category: form.category,
         tags,
+        images: form.images,
+        meta_description: form.meta_description.trim() || null,
       });
       if (error) throw error;
       toast({ title: "Submitted!", description: "Your article has been submitted for editorial review." });
@@ -92,7 +98,7 @@ const SubmitArticle = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="mx-auto max-w-3xl px-6 pt-28 pb-20">
+      <div className="mx-auto max-w-4xl px-6 pt-28 pb-20">
         <Link to="/dashboard" className="mb-6 inline-flex items-center gap-2 font-body text-xs uppercase tracking-wider text-muted-foreground hover:text-gold">
           <ArrowLeft className="h-3 w-3" /> Dashboard
         </Link>
@@ -101,7 +107,7 @@ const SubmitArticle = () => {
           <p className="font-body text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-3">Contribute</p>
           <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">Submit an Editorial</h1>
           <p className="font-body text-sm text-muted-foreground mb-10">
-            Share your cultural insights with the Afrivogue community. Approved articles earn you 200 points.
+            Share your cultural insights with the Afrivogue community. Use the rich editor to add headings, images, embeds, and more. Approved articles earn you 200 points.
           </p>
         </motion.div>
 
@@ -129,15 +135,33 @@ const SubmitArticle = () => {
           </div>
 
           <div>
-            <label className="font-body text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 block">Content *</label>
+            <label className="font-body text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 block">Meta Description (SEO)</label>
             <Textarea
-              placeholder="Write your article here…"
-              value={form.content}
-              onChange={(e) => setForm((p) => ({ ...p, content: e.target.value }))}
-              rows={16}
-              className="min-h-[300px]"
+              placeholder="A short summary for search engines (max 160 chars)"
+              value={form.meta_description}
+              onChange={(e) => setForm((p) => ({ ...p, meta_description: e.target.value }))}
+              rows={2}
+              maxLength={160}
+            />
+            <p className="font-body text-[10px] text-muted-foreground mt-1">{form.meta_description.length}/160</p>
+          </div>
+
+          <div>
+            <label className="font-body text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 block">Content *</label>
+            <RichTextEditor
+              content={form.content}
+              onChange={(html) => setForm((p) => ({ ...p, content: html }))}
+              placeholder="Write your article here… Use the toolbar to add headings, images, embeds, and formatting."
             />
           </div>
+
+          <ImageUpload
+            bucket="trend-images"
+            folder="submissions"
+            value={form.images}
+            onChange={(urls) => setForm((p) => ({ ...p, images: urls }))}
+            label="Featured Images (optional)"
+          />
 
           <div>
             <label className="font-body text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 block">Tags (optional)</label>

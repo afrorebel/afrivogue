@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ShareButtons from "@/components/ShareButtons";
+import StickyShareButtons from "@/components/StickyShareButtons";
 import RelatedContent from "@/components/RelatedContent";
 import ImageCarousel from "@/components/ImageCarousel";
 import LeadGenWidget from "@/components/LeadGenWidget";
@@ -111,6 +112,7 @@ const TrendDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
+      <StickyShareButtons title={trend.headline} />
 
       {/* Hero with featured image */}
       <header className="relative overflow-hidden border-b border-border">
