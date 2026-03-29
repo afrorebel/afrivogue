@@ -60,7 +60,7 @@ const Trends = () => {
       <section className="py-14 px-6 md:px-16 lg:px-24">
         <div className="mb-8">
           <p className="font-body text-xs uppercase tracking-[0.2em] text-gold">Explore</p>
-          <h1 className="mt-1 font-display text-3xl font-bold text-foreground md:text-4xl">All Trends</h1>
+          <h1 className="mt-1 font-display text-3xl font-bold text-foreground md:text-4xl">Latest Stories</h1>
         </div>
 
         <div className="mb-8 flex flex-wrap gap-2">
