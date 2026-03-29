@@ -60,6 +60,23 @@ const RichTextEditor = ({ content, onChange, placeholder = "Write your articleâ€
     }
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    for (const file of Array.from(files)) {
+      const ext = file.name.split(".").pop();
+      const path = `editor/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from("trend-images").upload(path, file);
+      if (error) continue;
+      const { data: urlData } = supabase.storage.from("trend-images").getPublicUrl(path);
+      if (urlData?.publicUrl) {
+        editor.chain().focus().setImage({ src: urlData.publicUrl }).run();
+      }
+    }
+    e.target.value = "";
+    setImageDialogOpen(false);
+  };
+
   const addLink = () => {
     if (linkUrl.trim()) {
       editor.chain().focus().extendMarkRange("link").setLink({ href: linkUrl.trim() }).run();
@@ -158,8 +175,20 @@ const RichTextEditor = ({ content, onChange, placeholder = "Write your articleâ€
           <DialogContent className="sm:max-w-sm">
             <DialogHeader><DialogTitle className="font-display">Insert Image</DialogTitle></DialogHeader>
             <div className="space-y-3">
+              <div>
+                <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground hover:border-gold hover:text-foreground transition-colors">
+                  <Upload className="h-4 w-4" />
+                  Upload from device
+                  <input type="file" accept="image/*" multiple className="hidden" onChange={handleFileUpload} />
+                </label>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="h-px flex-1 bg-border" />
+                <span className="text-[10px] text-muted-foreground uppercase">or paste URL</span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
               <Input placeholder="Image URL" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addImage())} />
-              <Button onClick={addImage} className="w-full bg-gold text-primary-foreground hover:bg-gold/90">Insert</Button>
+              <Button onClick={addImage} className="w-full bg-gold text-primary-foreground hover:bg-gold/90">Insert from URL</Button>
             </div>
           </DialogContent>
         </Dialog>
