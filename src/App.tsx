@@ -26,6 +26,7 @@ import Contributors from "./pages/Contributors";
 import AuthorProfile from "./pages/AuthorProfile";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
+import Trends from "./pages/Trends";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/trends" element={<Trends />} />
             <Route path="/trend/:id" element={<TrendDetail />} />
             <Route path="/story/:id" element={<StoryMode />} />
             <Route path="/trivia" element={<Trivia />} />
