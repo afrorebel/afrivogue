@@ -12,8 +12,9 @@ import { useState } from "react";
 import {
   Bold, Italic, Underline as UnderlineIcon, Heading1, Heading2, Heading3,
   List, ListOrdered, Quote, Image as ImageIcon, Link as LinkIcon,
-  AlignLeft, AlignCenter, AlignRight, Code, Minus, Instagram, Youtube
+  AlignLeft, AlignCenter, AlignRight, Code, Minus, Instagram, Youtube, Upload
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface RichTextEditorProps {
   content: string;
