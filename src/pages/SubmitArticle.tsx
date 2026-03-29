@@ -134,7 +134,7 @@ const SubmitArticle = () => {
             <Select value={form.category} onValueChange={(v) => setForm((p) => ({ ...p, category: v }))}>
               <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
               <SelectContent>
-                {CATEGORIES.map((c) => (
+                {categories.map((c) => (
                   <SelectItem key={c} value={c}>{c}</SelectItem>
                 ))}
               </SelectContent>
