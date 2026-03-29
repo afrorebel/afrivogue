@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { User, PenLine, Heart } from "lucide-react";
+import { User, PenLine, Heart, Shield, Crown } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ContributorData {
@@ -17,44 +17,57 @@ interface ContributorData {
   created_at: string;
   article_count: number;
   favorite_count: number;
+  roles: string[];
 }
+
+const roleBadge: Record<string, { label: string; color: string }> = {
+  contributor: { label: "Contributor", color: "bg-blue-500/20 text-blue-400" },
+  publisher: { label: "Publisher", color: "bg-green-500/20 text-green-400" },
+  editor: { label: "Editor", color: "bg-gold/20 text-gold" },
+};
 
 const Contributors = () => {
   const { data: contributors, isLoading } = useQuery({
     queryKey: ["contributors"],
     queryFn: async () => {
-      // Get all users who have at least one approved article submission
-      const { data: submissions, error } = await supabase
-        .from("article_submissions")
-        .select("user_id")
-        .eq("status", "approved");
+      // Get users with publishing roles OR approved articles
+      const [{ data: rolesData }, { data: submissions }, { data: favorites }] = await Promise.all([
+        supabase.from("user_roles").select("user_id, role").in("role", ["contributor", "publisher", "editor"]),
+        supabase.from("article_submissions").select("user_id").in("status", ["approved", "published"]),
+        supabase.from("favorite_authors").select("author_id"),
+      ]);
 
-      if (error) throw error;
-      if (!submissions || submissions.length === 0) return [];
+      // Collect unique user IDs
+      const userIds = new Set<string>();
+      rolesData?.forEach((r) => userIds.add(r.user_id));
+      submissions?.forEach((s) => userIds.add(s.user_id));
+
+      if (userIds.size === 0) return [];
+
+      // Build role map
+      const roleMap: Record<string, string[]> = {};
+      rolesData?.forEach((r) => {
+        if (!roleMap[r.user_id]) roleMap[r.user_id] = [];
+        roleMap[r.user_id].push(r.role);
+      });
 
       // Count articles per author
       const authorCounts: Record<string, number> = {};
-      submissions.forEach((s) => {
+      submissions?.forEach((s) => {
         authorCounts[s.user_id] = (authorCounts[s.user_id] || 0) + 1;
       });
 
-      const authorIds = Object.keys(authorCounts);
+      // Favorite counts
+      const favCounts: Record<string, number> = {};
+      favorites?.forEach((f) => {
+        favCounts[f.author_id] = (favCounts[f.author_id] || 0) + 1;
+      });
 
       // Fetch profiles
       const { data: profiles } = await supabase
         .from("profiles")
         .select("*")
-        .in("id", authorIds);
-
-      // Fetch favorite counts
-      const { data: favorites } = await supabase
-        .from("favorite_authors")
-        .select("author_id");
-
-      const favCounts: Record<string, number> = {};
-      favorites?.forEach((f) => {
-        favCounts[f.author_id] = (favCounts[f.author_id] || 0) + 1;
-      });
+        .in("id", Array.from(userIds));
 
       const result: ContributorData[] = (profiles || []).map((p) => ({
         id: p.id,
@@ -64,10 +77,17 @@ const Contributors = () => {
         created_at: p.created_at,
         article_count: authorCounts[p.id] || 0,
         favorite_count: favCounts[p.id] || 0,
+        roles: roleMap[p.id] || [],
       }));
 
-      // Sort by article count descending
-      result.sort((a, b) => b.article_count - a.article_count);
+      // Sort: editors first, then publishers, then by article count
+      const rolePriority: Record<string, number> = { editor: 3, publisher: 2, contributor: 1 };
+      result.sort((a, b) => {
+        const aMax = Math.max(...a.roles.map((r) => rolePriority[r] || 0), 0);
+        const bMax = Math.max(...b.roles.map((r) => rolePriority[r] || 0), 0);
+        if (bMax !== aMax) return bMax - aMax;
+        return b.article_count - a.article_count;
+      });
       return result;
     },
   });
@@ -133,6 +153,18 @@ const Contributors = () => {
                       </p>
                     </div>
                   </div>
+
+                  {/* Role badges */}
+                  {author.roles.length > 0 && (
+                    <div className="mt-3 flex gap-1 flex-wrap">
+                      {author.roles.map((r) => {
+                        const info = roleBadge[r];
+                        return info ? (
+                          <Badge key={r} className={`${info.color} text-[10px]`}>{info.label}</Badge>
+                        ) : null;
+                      })}
+                    </div>
+                  )}
 
                   {author.bio && (
                     <p className="mt-3 font-body text-sm leading-relaxed text-muted-foreground line-clamp-2">
