@@ -57,8 +57,8 @@ const Index = () => {
 
   // Hero = first trend
   const hero = allTrends[0];
-  // Trends section = next 9 (3 rows × 3)
-  const trendCards = allTrends.slice(1, 10);
+  // Trends section = next 6 (2 rows × 3)
+  const trendCards = allTrends.slice(1, 7);
   // Editorials = Editorial Feature / Premium Long-Form tiers
   const editorials = allTrends
     .filter((t) => ["Editorial Feature", "Premium Long-Form"].includes(t.content_tier))
@@ -109,7 +109,7 @@ const Index = () => {
               <h2 className="mt-1 font-display text-2xl font-bold text-foreground md:text-3xl">Latest Trends</h2>
             </div>
             <Button variant="outline" size="sm" asChild>
-              <Link to="/?filter=trends">View All <ArrowRight className="ml-1 h-3 w-3" /></Link>
+              <Link to="/trends">View All <ArrowRight className="ml-1 h-3 w-3" /></Link>
             </Button>
           </div>
           {isLoading ? (

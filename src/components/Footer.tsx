@@ -18,11 +18,6 @@ const exploreLinks = [
   { label: "Moodboard", href: "/moodboard" },
 ];
 
-const aboutLinks = [
-  { label: "About Us", href: "/about" },
-  { label: "Contact", href: "/contact" },
-  { label: "Media Kit", href: "/contact" },
-];
 
 const categoryLinks = [
   { label: "Fashion", href: "/?category=Fashion" },
@@ -37,6 +32,8 @@ const communityLinks = [
   { label: "Join Afrivogue", href: "/auth" },
   { label: "Membership", href: "/membership" },
   { label: "Submit an Article", href: "/submit" },
+  { label: "About Us", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const Footer = () => {
@@ -127,14 +124,10 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* About Us */}
+          {/* Community */}
           <div>
-            <ColumnTitle>About Us</ColumnTitle>
-            <ul className="space-y-2.5">
-              {aboutLinks.map((l) => <ColumnLink key={l.label} to={l.href}>{l.label}</ColumnLink>)}
-            </ul>
             <ColumnTitle>Community</ColumnTitle>
-            <ul className="space-y-2.5 mt-4">
+            <ul className="space-y-2.5">
               {communityLinks.map((l) => <ColumnLink key={l.label} to={l.href}>{l.label}</ColumnLink>)}
             </ul>
           </div>
