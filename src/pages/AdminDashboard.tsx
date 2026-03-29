@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { LogOut, Users, FileText, Crown, Gamepad2, ShoppingBag, BarChart3, Package, Target, Newspaper } from "lucide-react";
+import { LogOut, Users, FileText, Crown, Gamepad2, ShoppingBag, BarChart3, Package, Target, Newspaper, FolderTree, Shield } from "lucide-react";
 import AdminTrends from "@/components/admin/AdminTrends";
 import AdminForecasts from "@/components/admin/AdminForecasts";
 import AdminSiteSettings from "@/components/admin/AdminSiteSettings";
@@ -17,6 +17,8 @@ import AdminCRM from "@/components/admin/AdminCRM";
 import AdminBundlesCrossSell from "@/components/admin/AdminBundlesCrossSell";
 import AdminSegmentation from "@/components/admin/AdminSegmentation";
 import AdminEditorials from "@/components/admin/AdminEditorials";
+import AdminCategories from "@/components/admin/AdminCategories";
+import AdminRoles from "@/components/admin/AdminRoles";
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -93,7 +95,7 @@ const AdminDashboard = () => {
         )}
 
         <Tabs defaultValue="trends">
-          <TabsList className="mb-6">
+          <TabsList className="mb-6 flex-wrap h-auto gap-1">
             <TabsTrigger value="trends">Trends</TabsTrigger>
             <TabsTrigger value="editorials">Editorials</TabsTrigger>
             <TabsTrigger value="forecasts">Forecasts</TabsTrigger>
@@ -103,43 +105,25 @@ const AdminDashboard = () => {
             <TabsTrigger value="bundles">Bundles</TabsTrigger>
             <TabsTrigger value="crm">CRM</TabsTrigger>
             <TabsTrigger value="segments">Segments</TabsTrigger>
+            <TabsTrigger value="categories">Categories</TabsTrigger>
+            <TabsTrigger value="roles">Roles</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="site">Site Settings</TabsTrigger>
+            <TabsTrigger value="site">Settings</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="trends">
-            <AdminTrends />
-          </TabsContent>
-          <TabsContent value="editorials">
-            <AdminEditorials />
-          </TabsContent>
-          <TabsContent value="trivia">
-            <AdminTrivia />
-          </TabsContent>
-          <TabsContent value="moodboard">
-            <AdminMoodboard />
-          </TabsContent>
-          <TabsContent value="forecasts">
-            <AdminForecasts />
-          </TabsContent>
-          <TabsContent value="shop">
-            <AdminShop />
-          </TabsContent>
-          <TabsContent value="bundles">
-            <AdminBundlesCrossSell />
-          </TabsContent>
-          <TabsContent value="crm">
-            <AdminCRM />
-          </TabsContent>
-          <TabsContent value="segments">
-            <AdminSegmentation />
-          </TabsContent>
-          <TabsContent value="users">
-            <AdminUsers />
-          </TabsContent>
-          <TabsContent value="site">
-            <AdminSiteSettings />
-          </TabsContent>
+          <TabsContent value="trends"><AdminTrends /></TabsContent>
+          <TabsContent value="editorials"><AdminEditorials /></TabsContent>
+          <TabsContent value="trivia"><AdminTrivia /></TabsContent>
+          <TabsContent value="moodboard"><AdminMoodboard /></TabsContent>
+          <TabsContent value="forecasts"><AdminForecasts /></TabsContent>
+          <TabsContent value="shop"><AdminShop /></TabsContent>
+          <TabsContent value="bundles"><AdminBundlesCrossSell /></TabsContent>
+          <TabsContent value="crm"><AdminCRM /></TabsContent>
+          <TabsContent value="segments"><AdminSegmentation /></TabsContent>
+          <TabsContent value="categories"><AdminCategories /></TabsContent>
+          <TabsContent value="roles"><AdminRoles /></TabsContent>
+          <TabsContent value="users"><AdminUsers /></TabsContent>
+          <TabsContent value="site"><AdminSiteSettings /></TabsContent>
         </Tabs>
       </main>
     </div>

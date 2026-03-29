@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -13,11 +14,17 @@ import { Send, ArrowLeft } from "lucide-react";
 import RichTextEditor from "@/components/RichTextEditor";
 import ImageUpload from "@/components/shop/ImageUpload";
 
-const CATEGORIES = ["Fashion", "Beauty", "Culture", "Lifestyle", "Art & Design", "Business of Fashion"];
-
 const SubmitArticle = () => {
   const { user, loading, subscribed, isAdmin } = useAuth();
   const navigate = useNavigate();
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories-list"],
+    queryFn: async () => {
+      const { data } = await supabase.from("categories").select("name").is("parent_id", null).order("name");
+      return data?.map((c: any) => c.name) || [];
+    },
+  });
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
@@ -127,7 +134,7 @@ const SubmitArticle = () => {
             <Select value={form.category} onValueChange={(v) => setForm((p) => ({ ...p, category: v }))}>
               <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
               <SelectContent>
-                {CATEGORIES.map((c) => (
+                {categories.map((c) => (
                   <SelectItem key={c} value={c}>{c}</SelectItem>
                 ))}
               </SelectContent>

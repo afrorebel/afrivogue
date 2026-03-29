@@ -8,7 +8,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import CartDrawer from "@/components/shop/CartDrawer";
 
 const navLinks = [
-  { label: "Trends", href: "/" },
+  { label: "Home", href: "/" },
   { label: "Editorials", href: "/editorials" },
   { label: "Moodboard", href: "/moodboard" },
   { label: "Shop", href: "/shop" },
