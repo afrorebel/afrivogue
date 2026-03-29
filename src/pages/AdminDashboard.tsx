@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { LogOut, Users, FileText, Crown, Gamepad2, ShoppingBag, BarChart3, Package, Target, Newspaper, FolderTree, Shield } from "lucide-react";
+import { LogOut, Users, FileText, Crown, Gamepad2, ShoppingBag, BarChart3, Package, Target, Newspaper, FolderTree, Shield, LineChart } from "lucide-react";
 import AdminTrends from "@/components/admin/AdminTrends";
 import AdminForecasts from "@/components/admin/AdminForecasts";
 import AdminSiteSettings from "@/components/admin/AdminSiteSettings";
@@ -19,6 +19,7 @@ import AdminSegmentation from "@/components/admin/AdminSegmentation";
 import AdminEditorials from "@/components/admin/AdminEditorials";
 import AdminCategories from "@/components/admin/AdminCategories";
 import AdminRoles from "@/components/admin/AdminRoles";
+import AdminAnalytics from "@/components/admin/AdminAnalytics";
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -94,8 +95,9 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        <Tabs defaultValue="trends">
+        <Tabs defaultValue="analytics">
           <TabsList className="mb-6 flex-wrap h-auto gap-1">
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="trends">Trends</TabsTrigger>
             <TabsTrigger value="editorials">Editorials</TabsTrigger>
             <TabsTrigger value="forecasts">Forecasts</TabsTrigger>
@@ -111,6 +113,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="site">Settings</TabsTrigger>
           </TabsList>
 
+          <TabsContent value="analytics"><AdminAnalytics /></TabsContent>
           <TabsContent value="trends"><AdminTrends /></TabsContent>
           <TabsContent value="editorials"><AdminEditorials /></TabsContent>
           <TabsContent value="trivia"><AdminTrivia /></TabsContent>
