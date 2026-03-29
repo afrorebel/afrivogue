@@ -11,14 +11,32 @@ const socialLinks = [
   { label: "YouTube", href: "https://youtube.com/@afrivogue", icon: "YT" },
 ];
 
-const quickLinks = [
+const exploreLinks = [
   { label: "Trends", href: "/" },
   { label: "Editorials", href: "/editorials" },
   { label: "Forecast", href: "/forecast" },
   { label: "Moodboard", href: "/moodboard" },
-  { label: "Trivia", href: "/trivia" },
-  { label: "About", href: "/about" },
+];
+
+const aboutLinks = [
+  { label: "About Us", href: "/about" },
   { label: "Contact", href: "/contact" },
+  { label: "Media Kit", href: "/contact" },
+];
+
+const categoryLinks = [
+  { label: "Fashion", href: "/?category=Fashion" },
+  { label: "Beauty", href: "/?category=Beauty" },
+  { label: "Luxury", href: "/?category=Luxury" },
+  { label: "Culture", href: "/?category=Culture" },
+  { label: "Art & Design", href: "/?category=Art+%26+Design" },
+  { label: "Entertainment", href: "/?category=Entertainment" },
+];
+
+const communityLinks = [
+  { label: "Join Afrivogue", href: "/auth" },
+  { label: "Membership", href: "/membership" },
+  { label: "Submit an Article", href: "/submit" },
 ];
 
 const Footer = () => {
@@ -51,19 +69,33 @@ const Footer = () => {
     setEmail("");
   };
 
+  const ColumnTitle = ({ children }: { children: React.ReactNode }) => (
+    <h4 className="mb-4 font-display text-xs font-bold uppercase tracking-[0.2em] text-gold">
+      {children}
+    </h4>
+  );
+
+  const ColumnLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
+    <li>
+      <Link to={to} className="font-body text-sm text-muted-foreground transition-colors hover:text-foreground">
+        {children}
+      </Link>
+    </li>
+  );
+
   return (
     <footer className="border-t border-border bg-card">
       <div className="mx-auto max-w-7xl px-6 py-16 md:px-16 lg:px-24">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-6">
           {/* Brand */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-2">
             <Link to="/" className="font-display text-2xl font-bold text-foreground">
               AFRI<span className="text-gold">VOGUE</span>
             </Link>
             <p className="mt-4 font-body text-sm leading-relaxed text-muted-foreground">
               Curating culture, style, and tomorrow through a global Afrocentric lens.
             </p>
-            <div className="mt-6 flex items-center gap-4">
+            <div className="mt-6 flex items-center gap-3">
               {socialLinks.map((s) => (
                 <a
                   key={s.label}
@@ -79,72 +111,55 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Explore */}
           <div>
-            <h4 className="mb-4 font-display text-xs font-bold uppercase tracking-[0.2em] text-gold">
-              Explore
-            </h4>
+            <ColumnTitle>Explore</ColumnTitle>
             <ul className="space-y-2.5">
-              {quickLinks.map((l) => (
-                <li key={l.label}>
-                  <Link
-                    to={l.href}
-                    className="font-body text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
+              {exploreLinks.map((l) => <ColumnLink key={l.label} to={l.href}>{l.label}</ColumnLink>)}
             </ul>
           </div>
 
-          {/* Community */}
+          {/* Categories */}
           <div>
-            <h4 className="mb-4 font-display text-xs font-bold uppercase tracking-[0.2em] text-gold">
-              Community
-            </h4>
+            <ColumnTitle>Categories</ColumnTitle>
             <ul className="space-y-2.5">
-              <li>
-                <Link to="/auth" className="font-body text-sm text-muted-foreground transition-colors hover:text-foreground">
-                  Join Afrivogue
-                </Link>
-              </li>
-              <li>
-                <Link to="/membership" className="font-body text-sm text-muted-foreground transition-colors hover:text-foreground">
-                  Membership
-                </Link>
-              </li>
-              <li>
-                <Link to="/submit" className="font-body text-sm text-muted-foreground transition-colors hover:text-foreground">
-                  Submit an Article
-                </Link>
-              </li>
+              {categoryLinks.map((l) => <ColumnLink key={l.label} to={l.href}>{l.label}</ColumnLink>)}
+            </ul>
+          </div>
+
+          {/* About Us */}
+          <div>
+            <ColumnTitle>About Us</ColumnTitle>
+            <ul className="space-y-2.5">
+              {aboutLinks.map((l) => <ColumnLink key={l.label} to={l.href}>{l.label}</ColumnLink>)}
+            </ul>
+            <ColumnTitle>Community</ColumnTitle>
+            <ul className="space-y-2.5 mt-4">
+              {communityLinks.map((l) => <ColumnLink key={l.label} to={l.href}>{l.label}</ColumnLink>)}
             </ul>
           </div>
 
           {/* Newsletter */}
-          <div>
-            <h4 className="mb-4 font-display text-xs font-bold uppercase tracking-[0.2em] text-gold">
-              Newsletter
-            </h4>
+          <div className="sm:col-span-2 lg:col-span-1">
+            <ColumnTitle>Newsletter</ColumnTitle>
             <p className="font-body text-sm text-muted-foreground">
               Trend reports & cultural forecasts — delivered weekly.
             </p>
-            <form onSubmit={handleSubscribe} className="mt-4 flex gap-2">
+            <form onSubmit={handleSubscribe} className="mt-4 flex flex-col gap-2">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
                 required
-                className="flex-1 rounded-sm border border-border bg-background px-3 py-2 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-ring"
+                className="w-full rounded-sm border border-border bg-background px-3 py-2 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-ring"
               />
               <button
                 type="submit"
                 disabled={loading}
                 className="rounded-sm bg-primary px-4 py-2 font-body text-xs font-bold uppercase tracking-wider text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
               >
-                {loading ? "…" : "Go"}
+                {loading ? "…" : "Subscribe"}
               </button>
             </form>
           </div>

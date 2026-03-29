@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { LogOut, Users, FileText, Crown, Gamepad2, ShoppingBag, BarChart3, Package, Target } from "lucide-react";
+import { LogOut, Users, FileText, Crown, Gamepad2, ShoppingBag, BarChart3, Package, Target, Newspaper } from "lucide-react";
 import AdminTrends from "@/components/admin/AdminTrends";
 import AdminForecasts from "@/components/admin/AdminForecasts";
 import AdminSiteSettings from "@/components/admin/AdminSiteSettings";
@@ -16,6 +16,7 @@ import AdminShop from "@/components/admin/AdminShop";
 import AdminCRM from "@/components/admin/AdminCRM";
 import AdminBundlesCrossSell from "@/components/admin/AdminBundlesCrossSell";
 import AdminSegmentation from "@/components/admin/AdminSegmentation";
+import AdminEditorials from "@/components/admin/AdminEditorials";
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -94,6 +95,7 @@ const AdminDashboard = () => {
         <Tabs defaultValue="trends">
           <TabsList className="mb-6">
             <TabsTrigger value="trends">Trends</TabsTrigger>
+            <TabsTrigger value="editorials">Editorials</TabsTrigger>
             <TabsTrigger value="forecasts">Forecasts</TabsTrigger>
             <TabsTrigger value="trivia">Trivia</TabsTrigger>
             <TabsTrigger value="moodboard">Moodboard</TabsTrigger>
@@ -107,6 +109,9 @@ const AdminDashboard = () => {
 
           <TabsContent value="trends">
             <AdminTrends />
+          </TabsContent>
+          <TabsContent value="editorials">
+            <AdminEditorials />
           </TabsContent>
           <TabsContent value="trivia">
             <AdminTrivia />

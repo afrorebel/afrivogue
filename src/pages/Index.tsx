@@ -1,8 +1,7 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import HeroSection from "@/components/HeroSection";
-import FilterBar from "@/components/FilterBar";
 import TrendCard from "@/components/TrendCard";
 import LeadGenWidget from "@/components/LeadGenWidget";
 import NewsletterPopup from "@/components/NewsletterPopup";
@@ -11,16 +10,15 @@ import FeaturedProducts from "@/components/shop/FeaturedProducts";
 import Footer from "@/components/Footer";
 import { useTrends } from "@/hooks/useTrends";
 import { trends as fallbackTrends } from "@/lib/trendData";
-import type { Category, Urgency, GeoRelevance, ContentTier } from "@/lib/trendData";
+import type { Category } from "@/lib/trendData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Crown } from "lucide-react";
+import { motion } from "framer-motion";
+import { getCategoryImage } from "@/lib/categoryImages";
 
 const Index = () => {
-  const [category, setCategory] = useState<Category | "All">("All");
-  const [urgency, setUrgency] = useState<Urgency | "All">("All");
-  const [geo, setGeo] = useState<GeoRelevance | "All">("All");
-  const [contentTier, setContentTier] = useState<ContentTier | "All">("All");
-
   const { data: dbTrends, isLoading } = useTrends();
 
   const { data: paywalledCategories = [] } = useQuery({
@@ -36,9 +34,7 @@ const Index = () => {
   });
 
   const allTrends = useMemo(() => {
-    if (dbTrends && dbTrends.length > 0) {
-      return dbTrends;
-    }
+    if (dbTrends && dbTrends.length > 0) return dbTrends;
     return fallbackTrends.map((t) => ({
       id: t.id,
       headline: t.headline,
@@ -59,83 +55,138 @@ const Index = () => {
     }));
   }, [dbTrends]);
 
-  const filtered = useMemo(() => {
-    return allTrends.filter((t) => {
-      if (category !== "All" && t.category !== category) return false;
-      if (urgency !== "All" && t.urgency !== urgency) return false;
-      if (geo !== "All" && t.geo_relevance !== geo) return false;
-      if (contentTier !== "All" && t.content_tier !== contentTier) return false;
-      return true;
-    });
-  }, [allTrends, category, urgency, geo, contentTier]);
+  // Hero = first trend
+  const hero = allTrends[0];
+  // Trends section = next 9 (3 rows × 3)
+  const trendCards = allTrends.slice(1, 10);
+  // Editorials = Editorial Feature / Premium Long-Form tiers
+  const editorials = allTrends
+    .filter((t) => ["Editorial Feature", "Premium Long-Form"].includes(t.content_tier))
+    .slice(0, 6);
+
+  const heroImage = hero?.featured_image_url || getCategoryImage(hero?.category || "Fashion");
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <HeroSection />
       <TrendingTicker />
       <NewsletterPopup />
 
-      <main className="py-12">
-        <FilterBar
-          activeCategory={category}
-          activeUrgency={urgency}
-          activeGeo={geo}
-          activeContentTier={contentTier}
-          onCategoryChange={setCategory}
-          onUrgencyChange={setUrgency}
-          onGeoChange={setGeo}
-          onContentTierChange={setContentTier}
-        />
-
-        {isLoading ? (
-          <div className="mt-10 grid gap-6 px-6 md:grid-cols-2 md:px-16 lg:px-24 xl:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="rounded-lg border border-border bg-card overflow-hidden">
-                <Skeleton className="h-48 w-full" />
-                <div className="p-6 space-y-3">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-6 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
-                </div>
-              </div>
-            ))}
+      {/* ── Cinematic Hero ── */}
+      {hero && (
+        <section className="relative h-[75vh] min-h-[520px] overflow-hidden">
+          <div className="absolute inset-0">
+            <img src={heroImage} alt={hero.headline} className="h-full w-full object-cover object-top" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent" />
           </div>
-        ) : (
-          <>
-            <div className="mt-10 grid gap-6 px-6 md:grid-cols-2 md:px-16 lg:px-24 xl:grid-cols-3">
-              {filtered.slice(0, 6).map((trend, i) => (
+          <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-14 md:px-16 lg:px-24">
+            <p className="mb-3 font-body text-xs font-semibold uppercase tracking-[0.3em] text-gold">
+              {hero.category} · {hero.urgency}
+            </p>
+            <h1 className="max-w-3xl font-display text-4xl font-bold leading-[1.08] text-foreground md:text-5xl lg:text-6xl">
+              {hero.headline}
+            </h1>
+            <p className="mt-4 max-w-xl font-body text-base text-muted-foreground md:text-lg line-clamp-2">
+              {hero.cultural_significance}
+            </p>
+            <div className="mt-6">
+              <Button asChild className="bg-gold text-primary-foreground hover:bg-gold/90 font-body text-sm uppercase tracking-wider">
+                <Link to={hero.content_tier === "Premium Long-Form" ? `/editorial/${hero.id}` : `/trend/${hero.id}`}>
+                  Read Story <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <main>
+        {/* ── Trends Section (3 rows on desktop) ── */}
+        <section className="py-14 px-6 md:px-16 lg:px-24">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <p className="font-body text-xs uppercase tracking-[0.2em] text-gold">What's Moving</p>
+              <h2 className="mt-1 font-display text-2xl font-bold text-foreground md:text-3xl">Latest Trends</h2>
+            </div>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/?filter=trends">View All <ArrowRight className="ml-1 h-3 w-3" /></Link>
+            </Button>
+          </div>
+          {isLoading ? (
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="rounded-lg border border-border bg-card overflow-hidden">
+                  <Skeleton className="h-48 w-full" />
+                  <div className="p-6 space-y-3">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-6 w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {trendCards.map((trend, i) => (
                 <TrendCard key={trend.id} trend={trend} index={i} isPaywalled={paywalledCategories.includes(trend.category)} />
               ))}
             </div>
+          )}
+        </section>
 
-            {filtered.length > 3 && (
-              <div className="px-6 md:px-16 lg:px-24">
-                <LeadGenWidget variant="banner" />
+        {/* ── Newsletter Block ── */}
+        <section className="px-6 md:px-16 lg:px-24">
+          <LeadGenWidget variant="banner" />
+        </section>
+
+        {/* ── Editorials (2 rows) ── */}
+        {editorials.length > 0 && (
+          <section className="py-14 px-6 md:px-16 lg:px-24">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <p className="font-body text-xs uppercase tracking-[0.2em] text-gold">Deep Reads</p>
+                <h2 className="mt-1 font-display text-2xl font-bold text-foreground md:text-3xl">Editorials</h2>
               </div>
-            )}
-
-            {/* Featured Products in the middle */}
-            <FeaturedProducts />
-
-            {filtered.length > 6 && (
-              <div className="mt-6 grid gap-6 px-6 md:grid-cols-2 md:px-16 lg:px-24 xl:grid-cols-3">
-                {filtered.slice(6).map((trend, i) => (
-                  <TrendCard key={trend.id} trend={trend} index={i + 6} isPaywalled={paywalledCategories.includes(trend.category)} />
-                ))}
-              </div>
-            )}
-          </>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/editorials">View All <ArrowRight className="ml-1 h-3 w-3" /></Link>
+              </Button>
+            </div>
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {editorials.map((trend, i) => (
+                <TrendCard key={trend.id} trend={trend} index={i} isPaywalled={paywalledCategories.includes(trend.category)} />
+              ))}
+            </div>
+          </section>
         )}
 
-        {!isLoading && filtered.length === 0 && (
-          <div className="mt-16 text-center">
-            <p className="font-display text-xl text-muted-foreground">No trends match your filters.</p>
-            <p className="mt-2 font-body text-sm text-muted-foreground">Try broadening your selection.</p>
-          </div>
-        )}
-        {/* Featured Products moved to middle of feed above */}
+        {/* ── Shop Promotion ── */}
+        <FeaturedProducts />
+
+        {/* ── Membership CTA ── */}
+        <section className="py-16 px-6 md:px-16 lg:px-24">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="rounded-lg border border-gold/30 bg-card p-10 md:p-14 text-center"
+          >
+            <Crown className="mx-auto h-10 w-10 text-gold mb-4" />
+            <h2 className="font-display text-3xl font-bold text-foreground md:text-4xl">
+              Join the <span className="text-gold">Afrivogue Collective</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl font-body text-base text-muted-foreground">
+              Unlock premium editorials, earn from your contributions, and join a global community of culture shapers.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button asChild className="bg-gold text-primary-foreground hover:bg-gold/90 px-8">
+                <Link to="/membership">Become a Member</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link to="/about">Learn More</Link>
+              </Button>
+            </div>
+          </motion.div>
+        </section>
       </main>
 
       <Footer />
