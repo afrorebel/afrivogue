@@ -2,15 +2,51 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { Check, X, Eye, Trash2 } from "lucide-react";
+import { Check, X, Eye, Trash2, Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
+import RichTextEditor from "@/components/RichTextEditor";
+import ImageUpload from "@/components/shop/ImageUpload";
+
+const URGENCIES = ["Breaking", "Emerging", "Slow-Burn"];
+const GEO_OPTIONS = ["Africa", "Diaspora", "Global"];
+const CONTENT_TIERS = ["Editorial Feature", "Premium Long-Form"];
 
 const AdminEditorials = () => {
   const qc = useQueryClient();
   const [preview, setPreview] = useState<any>(null);
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected" | "published">("all");
+  const [createOpen, setCreateOpen] = useState(false);
+  const [newCat, setNewCat] = useState("");
+
+  // New editorial form state
+  const [form, setForm] = useState({
+    headline: "",
+    content: "",
+    category: "Fashion",
+    content_tier: "Editorial Feature",
+    urgency: "Emerging",
+    geo_relevance: "Global",
+    meta_description: "",
+    featured_image_url: "",
+    images: [] as string[],
+    published: false,
+    members_only: false,
+  });
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories-list"],
+    queryFn: async () => {
+      const { data } = await supabase.from("categories").select("name").is("parent_id", null).order("name");
+      return data?.map((c: any) => c.name) || [];
+    },
+  });
 
   const { data: submissions = [], isLoading } = useQuery({
     queryKey: ["admin-submissions", filter],
@@ -29,6 +65,23 @@ const AdminEditorials = () => {
       if (status === "approved") updates.points_awarded = 50;
       const { error } = await supabase.from("article_submissions").update(updates).eq("id", id);
       if (error) throw error;
+
+      // Auto-upgrade user to publisher on first approval
+      if (status === "approved") {
+        const sub = submissions.find((s: any) => s.id === id);
+        if (sub) {
+          // Check if user already has publisher or higher role
+          const { data: existingRoles } = await supabase.from("user_roles").select("role").eq("user_id", sub.user_id);
+          const roles = existingRoles?.map((r: any) => r.role) || [];
+          if (!roles.includes("publisher") && !roles.includes("editor") && !roles.includes("admin")) {
+            // Remove contributor role if exists, add publisher
+            if (roles.includes("contributor")) {
+              await supabase.from("user_roles").delete().eq("user_id", sub.user_id).eq("role", "contributor");
+            }
+            await supabase.from("user_roles").insert({ user_id: sub.user_id, role: "publisher" });
+          }
+        }
+      }
 
       // If publishing, create a trend from the submission
       if (status === "published") {
@@ -68,6 +121,51 @@ const AdminEditorials = () => {
     },
   });
 
+  const createEditorial = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("trends").insert({
+        headline: form.headline,
+        cultural_significance: form.meta_description || form.content.replace(/<[^>]*>/g, "").substring(0, 200),
+        category: form.category,
+        content_tier: form.content_tier,
+        urgency: form.urgency,
+        geo_relevance: form.geo_relevance,
+        editorial_content: { body: form.content },
+        featured_image_url: form.featured_image_url || null,
+        images: form.images,
+        published: form.published,
+        members_only: form.members_only,
+        needs_review: false,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-trends"] });
+      qc.invalidateQueries({ queryKey: ["admin-stats"] });
+      toast({ title: "Editorial created" });
+      setCreateOpen(false);
+      setForm({
+        headline: "", content: "", category: "Fashion", content_tier: "Editorial Feature",
+        urgency: "Emerging", geo_relevance: "Global", meta_description: "",
+        featured_image_url: "", images: [], published: false, members_only: false,
+      });
+    },
+    onError: (e) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+  });
+
+  const addCategory = async () => {
+    if (!newCat.trim()) return;
+    const { error } = await supabase.from("categories").insert({ name: newCat.trim() });
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Category added" });
+      qc.invalidateQueries({ queryKey: ["categories-list"] });
+      setForm({ ...form, category: newCat.trim() });
+      setNewCat("");
+    }
+  };
+
   const statusColor: Record<string, string> = {
     pending: "bg-yellow-500/20 text-yellow-400",
     approved: "bg-green-500/20 text-green-400",
@@ -77,17 +175,23 @@ const AdminEditorials = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="font-display text-lg font-bold text-foreground">Editorial Submissions</h2>
-        <div className="flex gap-1">
-          {(["all", "pending", "approved", "published", "rejected"] as const).map((f) => (
-            <Button key={f} size="sm" variant={filter === f ? "default" : "outline"} onClick={() => setFilter(f)} className="capitalize text-xs">
-              {f}
-            </Button>
-          ))}
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <h2 className="font-display text-lg font-bold text-foreground">Editorials</h2>
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex gap-1">
+            {(["all", "pending", "approved", "published", "rejected"] as const).map((f) => (
+              <Button key={f} size="sm" variant={filter === f ? "default" : "outline"} onClick={() => setFilter(f)} className="capitalize text-xs">
+                {f}
+              </Button>
+            ))}
+          </div>
+          <Button size="sm" onClick={() => setCreateOpen(true)}>
+            <Plus className="mr-1 h-4 w-4" /> New Editorial
+          </Button>
         </div>
       </div>
 
+      {/* Submissions list */}
       {isLoading ? (
         <p className="text-muted-foreground text-sm">Loading…</p>
       ) : submissions.length === 0 ? (
@@ -139,6 +243,7 @@ const AdminEditorials = () => {
         </div>
       )}
 
+      {/* Preview Dialog */}
       <Dialog open={!!preview} onOpenChange={() => setPreview(null)}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
@@ -180,6 +285,89 @@ const AdminEditorials = () => {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Editorial Dialog */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-display">Create New Editorial</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Headline</Label>
+              <Input value={form.headline} onChange={(e) => setForm({ ...form, headline: e.target.value })} placeholder="Editorial headline…" />
+            </div>
+            <div className="space-y-2">
+              <Label>Meta Description</Label>
+              <Textarea rows={2} value={form.meta_description} onChange={(e) => setForm({ ...form, meta_description: e.target.value })} placeholder="Brief summary for SEO…" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Category</Label>
+                <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {categories.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <div className="flex gap-2">
+                  <Input value={newCat} onChange={(e) => setNewCat(e.target.value)} placeholder="New category…" className="text-xs h-8" />
+                  <Button size="sm" variant="outline" onClick={addCategory} className="h-8 text-xs shrink-0">Add</Button>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Content Tier</Label>
+                <Select value={form.content_tier} onValueChange={(v) => setForm({ ...form, content_tier: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>{CONTENT_TIERS.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Urgency</Label>
+                <Select value={form.urgency} onValueChange={(v) => setForm({ ...form, urgency: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>{URGENCIES.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Geo Relevance</Label>
+                <Select value={form.geo_relevance} onValueChange={(v) => setForm({ ...form, geo_relevance: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>{GEO_OPTIONS.map((g) => <SelectItem key={g} value={g}>{g}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Featured Image URL</Label>
+              <Input value={form.featured_image_url} onChange={(e) => setForm({ ...form, featured_image_url: e.target.value })} placeholder="https://..." />
+            </div>
+            <div className="space-y-2">
+              <Label>Additional Images</Label>
+              <ImageUpload images={form.images} onChange={(imgs) => setForm({ ...form, images: imgs })} />
+            </div>
+            <div className="space-y-2">
+              <Label>Content</Label>
+              <RichTextEditor content={form.content} onChange={(html) => setForm({ ...form, content: html })} placeholder="Write your editorial…" />
+            </div>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <Switch checked={form.published} onCheckedChange={(v) => setForm({ ...form, published: v })} />
+                <Label>Publish immediately</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={form.members_only} onCheckedChange={(v) => setForm({ ...form, members_only: v })} />
+                <Label>Members Only</Label>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
+              <Button onClick={() => createEditorial.mutate()} disabled={!form.headline || !form.content || createEditorial.isPending}>
+                {createEditorial.isPending ? "Creating…" : "Create Editorial"}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
