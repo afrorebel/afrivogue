@@ -12,7 +12,7 @@ const socialLinks = [
 ];
 
 const exploreLinks = [
-  { label: "Trends", href: "/" },
+  { label: "Trends", href: "/trends" },
   { label: "Editorials", href: "/editorials" },
   { label: "Forecast", href: "/forecast" },
   { label: "Moodboard", href: "/moodboard" },

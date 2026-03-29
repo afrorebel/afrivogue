@@ -16,7 +16,6 @@ import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 
 type Trend = Tables<"trends"> & { needs_review?: boolean; original_source_content?: string };
 
-const CATEGORIES = ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Business"];
 const URGENCIES = ["Breaking", "Emerging", "Slow-Burn"];
 const GEO_OPTIONS = ["Africa", "Diaspora", "Global"];
 const CONTENT_TIERS = ["Daily Brief", "Editorial Feature", "Premium Long-Form", "Cultural Forecast", "Story Mode"];
@@ -44,6 +43,15 @@ const AdminTrends = () => {
   const [form, setForm] = useState(emptyTrend);
   const [reviewFilter, setReviewFilter] = useState<ReviewFilter>("all");
   const [isIngesting, setIsIngesting] = useState(false);
+  const [newCat, setNewCat] = useState("");
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories-list"],
+    queryFn: async () => {
+      const { data } = await supabase.from("categories").select("name").is("parent_id", null).order("name");
+      return data?.map((c: any) => c.name) || [];
+    },
+  });
 
   const { data: trends = [], isLoading } = useQuery({
     queryKey: ["admin-trends"],
