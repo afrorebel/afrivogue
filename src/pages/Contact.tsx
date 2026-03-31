@@ -36,6 +36,16 @@ const Contact = () => {
         source: `contact: ${form.subject || "General"} — ${form.name}`,
       });
       if (error && error.code !== "23505") throw error;
+      // Send confirmation email
+      const confirmId = crypto.randomUUID();
+      await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "contact-confirmation",
+          recipientEmail: form.email.trim(),
+          idempotencyKey: `contact-confirm-${confirmId}`,
+          templateData: { name: form.name.trim(), subject: form.subject || undefined },
+        },
+      });
       toast({ title: "Message sent!", description: "We'll get back to you soon." });
       setForm({ name: "", email: "", subject: "", message: "" });
     } catch (err: any) {
