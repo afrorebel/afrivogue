@@ -7,7 +7,7 @@ import {
 import type { TemplateEntry } from './registry.ts'
 
 const SITE_NAME = "Afrivogue Pulse"
-const LOGO_URL = "https://mafitpqnezbkjmtaqcjq.supabase.co/storage/v1/object/public/email-assets/logo.png"
+const LOGO_URL = "https://mafitpqnezbkjmtaqcjq.supabase.co/storage/v1/object/public/email-assets/afrivogue-logo.png"
 
 interface OrderReceiptProps {
   orderNumber?: string
