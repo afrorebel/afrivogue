@@ -200,9 +200,15 @@ const Contact = () => {
             <div className="rounded-lg border border-border bg-card p-5">
               <h3 className="font-display text-base font-semibold">Partnership & Press</h3>
               <p className="mt-2 font-body text-sm leading-relaxed text-muted-foreground">
-                For brand collaborations, media inquiries, or advertising opportunities, please reach out via email with
-                "Partnership" in the subject line.
+                For brand collaborations, media inquiries, or advertising opportunities, check out our media kit or reach out via email.
               </p>
+              <a
+                href="/media-kit"
+                className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-primary bg-primary/5 px-4 py-2 font-body text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+              >
+                <ExternalLink className="h-3 w-3" />
+                View Media Kit
+              </a>
             </div>
           </motion.div>
         </div>

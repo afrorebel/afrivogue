@@ -67,6 +67,7 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<About />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
+            <Route path="/media-kit" element={<MediaKit />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
