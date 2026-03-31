@@ -61,7 +61,7 @@ const AdminDashboard = () => {
   if (!user || !isAdmin) return null;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex min-h-screen flex-col bg-background">
       <header className="flex items-center justify-between border-b border-border px-6 py-4 md:px-12">
         <div className="font-display text-xl font-bold text-foreground">
           AFRI<span className="text-gold">VOGUE</span>
