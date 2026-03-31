@@ -29,6 +29,7 @@ import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
 import Trends from "./pages/Trends";
 import Unsubscribe from "./pages/Unsubscribe";
+import MediaKit from "./pages/MediaKit";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
