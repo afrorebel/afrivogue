@@ -20,6 +20,8 @@ import AdminEditorials from "@/components/admin/AdminEditorials";
 import AdminCategories from "@/components/admin/AdminCategories";
 import AdminRoles from "@/components/admin/AdminRoles";
 import AdminAnalytics from "@/components/admin/AdminAnalytics";
+import AdminCodeInjection from "@/components/admin/AdminCodeInjection";
+import AdminMarketingIntegrations from "@/components/admin/AdminMarketingIntegrations";
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
