@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/hooks/use-toast";
 import { Check, X, Eye, Trash2, Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import ImageUrlUpload from "./ImageUrlUpload";
 import { useState } from "react";
 import RichTextEditor from "@/components/RichTextEditor";
 import ImageUpload from "@/components/shop/ImageUpload";
