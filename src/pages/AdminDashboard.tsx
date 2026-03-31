@@ -146,6 +146,7 @@ const AdminDashboard = () => {
             <TabsContent value="roles" className="mt-0"><AdminRoles /></TabsContent>
             <TabsContent value="users" className="mt-0"><AdminUsers /></TabsContent>
             <TabsContent value="marketing" className="mt-0"><AdminMarketingIntegrations /></TabsContent>
+            <TabsContent value="emails" className="mt-0"><AdminEmailTemplates /></TabsContent>
             <TabsContent value="code" className="mt-0"><AdminCodeInjection /></TabsContent>
             <TabsContent value="site" className="mt-0"><AdminSiteSettings /></TabsContent>
           </div>
