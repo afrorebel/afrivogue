@@ -95,6 +95,8 @@ const AdminDashboard = () => {
               { value: "categories", label: "Categories", icon: FolderTree },
               { value: "roles", label: "Roles", icon: Shield },
               { value: "users", label: "Users", icon: Users },
+              { value: "marketing", label: "Marketing", icon: Megaphone },
+              { value: "code", label: "Code Inject", icon: Code },
               { value: "site", label: "Settings", icon: Crown },
             ].map((tab) => (
               <TabsTrigger
