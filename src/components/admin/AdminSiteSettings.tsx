@@ -6,15 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { Save, Lock } from "lucide-react";
+import { Save, Lock, Image, Crown, DollarSign } from "lucide-react";
 import type { Json } from "@/integrations/supabase/types";
-
-interface HeroSettings {
-  subtitle: string;
-  title: string;
-  description: string;
-}
 
 interface FooterSettings {
   tagline: string;
@@ -24,6 +19,14 @@ interface FooterSettings {
 interface NavLink {
   label: string;
   href: string;
+}
+
+interface MembershipSettings {
+  pricing_enabled: boolean;
+  monthly_price: string;
+  yearly_price: string;
+  monthly_label: string;
+  yearly_label: string;
 }
 
 const DEFAULT_NAV_LINKS: NavLink[] = [
@@ -39,6 +42,14 @@ const DEFAULT_NAV_LINKS: NavLink[] = [
 
 const CATEGORIES = ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Business"];
 
+const DEFAULT_MEMBERSHIP: MembershipSettings = {
+  pricing_enabled: false,
+  monthly_price: "1",
+  yearly_price: "10",
+  monthly_label: "Monthly",
+  yearly_label: "Annual",
+};
+
 const AdminSiteSettings = () => {
   const qc = useQueryClient();
 
@@ -53,24 +64,39 @@ const AdminSiteSettings = () => {
     },
   });
 
-  const [hero, setHero] = useState<HeroSettings>({ subtitle: "", title: "", description: "" });
+  const { data: trends = [] } = useQuery({
+    queryKey: ["admin-all-trends"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("trends")
+        .select("id, headline, category, content_tier, featured_image_url")
+        .eq("published", true)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const [footer, setFooter] = useState<FooterSettings>({ tagline: "", subtitle: "" });
   const [navLinks, setNavLinks] = useState<NavLink[]>([]);
   const [paywalledCategories, setPaywalledCategories] = useState<string[]>([]);
+  const [heroTrendId, setHeroTrendId] = useState<string>("");
+  const [membership, setMembership] = useState<MembershipSettings>(DEFAULT_MEMBERSHIP);
 
   useEffect(() => {
     if (settings) {
-      if (settings.hero) setHero(settings.hero as unknown as HeroSettings);
       if (settings.footer) setFooter(settings.footer as unknown as FooterSettings);
       if (settings.nav_links) setNavLinks(settings.nav_links as unknown as NavLink[]);
       else setNavLinks(DEFAULT_NAV_LINKS);
       if (settings.paywalled_categories) setPaywalledCategories(settings.paywalled_categories as unknown as string[]);
+      if (settings.hero_trend_id) setHeroTrendId(settings.hero_trend_id as unknown as string);
+      if (settings.membership) setMembership({ ...DEFAULT_MEMBERSHIP, ...(settings.membership as unknown as MembershipSettings) });
     }
   }, [settings]);
 
   const saveMut = useMutation({
     mutationFn: async ({ key, value }: { key: string; value: Json }) => {
-      // Try update first, if no rows affected then insert
       const { data, error } = await supabase.from("site_settings").update({ value }).eq("key", key).select();
       if (error) throw error;
       if (!data || data.length === 0) {
@@ -81,6 +107,8 @@ const AdminSiteSettings = () => {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-site-settings"] });
       qc.invalidateQueries({ queryKey: ["site-settings"] });
+      qc.invalidateQueries({ queryKey: ["hero-trend-id"] });
+      qc.invalidateQueries({ queryKey: ["membership-settings"] });
       toast({ title: "Settings saved" });
     },
     onError: (e) => toast({ title: "Error", description: e.message, variant: "destructive" }),
@@ -92,10 +120,106 @@ const AdminSiteSettings = () => {
     );
   };
 
+  const selectedHeroTrend = trends.find((t) => t.id === heroTrendId);
+
   if (isLoading) return <p className="text-muted-foreground">Loading…</p>;
 
   return (
     <div className="space-y-6">
+      {/* Hero Content Picker */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-display text-lg flex items-center gap-2">
+            <Image className="h-4 w-4 text-gold" /> Hero Content
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="font-body text-sm text-muted-foreground">
+            Select which published article/editorial appears in the homepage hero. If none is selected, the most recent article is used.
+          </p>
+          <div className="space-y-2">
+            <Label>Featured Story</Label>
+            <Select value={heroTrendId || "auto"} onValueChange={(v) => setHeroTrendId(v === "auto" ? "" : v)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Auto (most recent)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="auto">Auto — Most Recent</SelectItem>
+                {trends.map((t) => (
+                  <SelectItem key={t.id} value={t.id}>
+                    {t.headline} ({t.category})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {selectedHeroTrend && (
+            <div className="rounded-lg border border-border p-3 flex items-center gap-3">
+              {selectedHeroTrend.featured_image_url && (
+                <img src={selectedHeroTrend.featured_image_url} alt="" className="h-16 w-24 rounded object-cover" />
+              )}
+              <div>
+                <p className="font-display text-sm font-bold text-foreground">{selectedHeroTrend.headline}</p>
+                <p className="font-body text-xs text-muted-foreground">{selectedHeroTrend.category} · {selectedHeroTrend.content_tier}</p>
+              </div>
+            </div>
+          )}
+          <Button size="sm" onClick={() => saveMut.mutate({ key: "hero_trend_id", value: (heroTrendId || "") as unknown as Json })} disabled={saveMut.isPending}>
+            <Save className="mr-1 h-4 w-4" /> Save Hero
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Membership Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-display text-lg flex items-center gap-2">
+            <Crown className="h-4 w-4 text-gold" /> Membership Settings
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between rounded-lg border border-border p-3">
+            <div>
+              <p className="font-body text-sm font-medium text-foreground">Enable Paid Pricing</p>
+              <p className="font-body text-xs text-muted-foreground">
+                When off, membership is free (email signup only). When on, Stripe checkout is used.
+              </p>
+            </div>
+            <Switch
+              checked={membership.pricing_enabled}
+              onCheckedChange={(v) => setMembership({ ...membership, pricing_enabled: v })}
+            />
+          </div>
+          {membership.pricing_enabled && (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label className="flex items-center gap-1"><DollarSign className="h-3 w-3" /> Monthly Price</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={membership.monthly_price}
+                  onChange={(e) => setMembership({ ...membership, monthly_price: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="flex items-center gap-1"><DollarSign className="h-3 w-3" /> Yearly Price</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={membership.yearly_price}
+                  onChange={(e) => setMembership({ ...membership, yearly_price: e.target.value })}
+                />
+              </div>
+            </div>
+          )}
+          <Button size="sm" onClick={() => saveMut.mutate({ key: "membership", value: membership as unknown as Json })} disabled={saveMut.isPending}>
+            <Save className="mr-1 h-4 w-4" /> Save Membership Settings
+          </Button>
+        </CardContent>
+      </Card>
+
       {/* Category Paywall Settings */}
       <Card>
         <CardHeader>
@@ -105,7 +229,7 @@ const AdminSiteSettings = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="font-body text-sm text-muted-foreground">
-            Toggle categories to require membership. All articles in a paywalled category will be gated for non-subscribers, regardless of individual article settings.
+            Toggle categories to require membership. All articles in a paywalled category will be gated for non-subscribers.
           </p>
           <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
             {CATEGORIES.map((cat) => (
@@ -120,28 +244,6 @@ const AdminSiteSettings = () => {
           </div>
           <Button size="sm" onClick={() => saveMut.mutate({ key: "paywalled_categories", value: paywalledCategories as unknown as Json })} disabled={saveMut.isPending}>
             <Save className="mr-1 h-4 w-4" /> Save Paywall Settings
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Hero Section */}
-      <Card>
-        <CardHeader><CardTitle className="font-display text-lg">Hero Section</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Subtitle (kicker)</Label>
-            <Input value={hero.subtitle} onChange={(e) => setHero({ ...hero, subtitle: e.target.value })} />
-          </div>
-          <div className="space-y-2">
-            <Label>Title</Label>
-            <Input value={hero.title} onChange={(e) => setHero({ ...hero, title: e.target.value })} />
-          </div>
-          <div className="space-y-2">
-            <Label>Description</Label>
-            <Input value={hero.description} onChange={(e) => setHero({ ...hero, description: e.target.value })} />
-          </div>
-          <Button size="sm" onClick={() => saveMut.mutate({ key: "hero", value: hero as unknown as Json })} disabled={saveMut.isPending}>
-            <Save className="mr-1 h-4 w-4" /> Save Hero
           </Button>
         </CardContent>
       </Card>

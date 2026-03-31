@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -8,9 +9,47 @@ import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
 import { Crown, BookOpen, Star, Users } from "lucide-react";
 
+interface MembershipSettings {
+  pricing_enabled: boolean;
+  monthly_price: string;
+  yearly_price: string;
+  monthly_label: string;
+  yearly_label: string;
+}
+
+const DEFAULT_MEMBERSHIP: MembershipSettings = {
+  pricing_enabled: false,
+  monthly_price: "1",
+  yearly_price: "10",
+  monthly_label: "Monthly",
+  yearly_label: "Annual",
+};
+
 const MembershipPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const { data: membership = DEFAULT_MEMBERSHIP } = useQuery({
+    queryKey: ["membership-settings"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "membership")
+        .maybeSingle();
+      if (data?.value) return { ...DEFAULT_MEMBERSHIP, ...(data.value as unknown as MembershipSettings) };
+      return DEFAULT_MEMBERSHIP;
+    },
+  });
+
+  const handleFreeSignup = () => {
+    if (user) {
+      toast({ title: "You're already a member!" });
+      navigate("/dashboard");
+    } else {
+      navigate("/auth");
+    }
+  };
 
   const handleCheckout = async (plan: "monthly" | "yearly") => {
     if (!user) {
@@ -27,6 +66,10 @@ const MembershipPage = () => {
       toast({ title: "Error", description: e.message, variant: "destructive" });
     }
   };
+
+  const pricingEnabled = membership.pricing_enabled;
+  const monthlyPrice = membership.monthly_price;
+  const yearlyPrice = membership.yearly_price;
 
   return (
     <div className="min-h-screen bg-background">
@@ -63,46 +106,78 @@ const MembershipPage = () => {
           ))}
         </div>
 
-        {/* Plans */}
-        <div className="mt-16 grid gap-6 md:grid-cols-2">
+        {/* Free Membership Mode */}
+        {!pricingEnabled && (
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="rounded-lg border border-border p-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-16 mx-auto max-w-lg rounded-lg border-2 border-gold p-10 text-center"
           >
-            <h3 className="font-display text-xl font-bold text-foreground">Monthly</h3>
-            <p className="mt-2 font-display text-4xl font-bold text-gold">$1<span className="text-base text-muted-foreground">/month</span></p>
-            <ul className="mt-6 space-y-3 font-body text-sm text-muted-foreground">
+            <Crown className="mx-auto mb-4 h-12 w-12 text-gold" />
+            <h3 className="font-display text-2xl font-bold text-foreground">Free Membership</h3>
+            <p className="mt-3 font-body text-sm text-muted-foreground">
+              Sign up with your email to unlock all premium content, earn engagement points, and join the collective — completely free.
+            </p>
+            <ul className="mt-6 space-y-3 font-body text-sm text-muted-foreground text-left max-w-xs mx-auto">
               <li>✦ All premium editorials</li>
               <li>✦ Save & bookmark articles</li>
               <li>✦ Earn engagement points</li>
               <li>✦ Personal dashboard</li>
+              <li>✦ Submit your own articles</li>
+              <li>✦ Community access</li>
             </ul>
-            <Button onClick={() => handleCheckout("monthly")} className="mt-8 w-full bg-gold text-foreground hover:bg-gold/90">
-              Get Started — $1/mo
+            <Button onClick={handleFreeSignup} className="mt-8 w-full bg-gold text-foreground hover:bg-gold/90">
+              {user ? "Go to Dashboard" : "Join Free — Sign Up"}
             </Button>
           </motion.div>
+        )}
 
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="relative rounded-lg border-2 border-gold p-8"
-          >
-            <Badge className="absolute -top-3 right-4 bg-gold text-foreground">Editor's Choice</Badge>
-            <h3 className="font-display text-xl font-bold text-foreground">Annual</h3>
-            <p className="mt-2 font-display text-4xl font-bold text-gold">$10<span className="text-base text-muted-foreground">/year</span></p>
-            <ul className="mt-6 space-y-3 font-body text-sm text-muted-foreground">
-              <li>✦ Everything in Monthly</li>
-              <li>✦ Save 2 months — best value</li>
-              <li>✦ Priority article submissions</li>
-              <li>✦ Exclusive member badge</li>
-              <li>✦ Early access to forecasts</li>
-            </ul>
-            <Button onClick={() => handleCheckout("yearly")} className="mt-8 w-full bg-gold text-foreground hover:bg-gold/90">
-              Get Started — $10/yr
-            </Button>
-          </motion.div>
-        </div>
+        {/* Paid Plans */}
+        {pricingEnabled && (
+          <div className="mt-16 grid gap-6 md:grid-cols-2">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="rounded-lg border border-border p-8"
+            >
+              <h3 className="font-display text-xl font-bold text-foreground">{membership.monthly_label}</h3>
+              <p className="mt-2 font-display text-4xl font-bold text-gold">
+                ${monthlyPrice}<span className="text-base text-muted-foreground">/month</span>
+              </p>
+              <ul className="mt-6 space-y-3 font-body text-sm text-muted-foreground">
+                <li>✦ All premium editorials</li>
+                <li>✦ Save & bookmark articles</li>
+                <li>✦ Earn engagement points</li>
+                <li>✦ Personal dashboard</li>
+              </ul>
+              <Button onClick={() => handleCheckout("monthly")} className="mt-8 w-full bg-gold text-foreground hover:bg-gold/90">
+                Get Started — ${monthlyPrice}/mo
+              </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="relative rounded-lg border-2 border-gold p-8"
+            >
+              <Badge className="absolute -top-3 right-4 bg-gold text-foreground">Editor's Choice</Badge>
+              <h3 className="font-display text-xl font-bold text-foreground">{membership.yearly_label}</h3>
+              <p className="mt-2 font-display text-4xl font-bold text-gold">
+                ${yearlyPrice}<span className="text-base text-muted-foreground">/year</span>
+              </p>
+              <ul className="mt-6 space-y-3 font-body text-sm text-muted-foreground">
+                <li>✦ Everything in {membership.monthly_label}</li>
+                <li>✦ Best value — save more</li>
+                <li>✦ Priority article submissions</li>
+                <li>✦ Exclusive member badge</li>
+                <li>✦ Early access to forecasts</li>
+              </ul>
+              <Button onClick={() => handleCheckout("yearly")} className="mt-8 w-full bg-gold text-foreground hover:bg-gold/90">
+                Get Started — ${yearlyPrice}/yr
+              </Button>
+            </motion.div>
+          </div>
+        )}
 
         {!user && (
           <p className="mt-8 text-center font-body text-sm text-muted-foreground">
