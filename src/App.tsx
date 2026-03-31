@@ -28,6 +28,7 @@ import AuthorProfile from "./pages/AuthorProfile";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
 import Trends from "./pages/Trends";
+import Unsubscribe from "./pages/Unsubscribe";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
