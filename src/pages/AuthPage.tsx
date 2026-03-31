@@ -28,7 +28,7 @@ const AuthPage = () => {
         navigate("/dashboard");
       }
     } else {
-      const { error } = await supabase.auth.signUp({
+      const { data: signUpData, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -39,6 +39,17 @@ const AuthPage = () => {
       if (error) {
         toast({ title: "Signup failed", description: error.message, variant: "destructive" });
       } else {
+        // Send welcome email
+        if (signUpData.user?.email) {
+          supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "welcome",
+              recipientEmail: signUpData.user.email,
+              idempotencyKey: `welcome-${signUpData.user.id}`,
+              templateData: { name: displayName || undefined },
+            },
+          }).catch(() => {}); // fire-and-forget
+        }
         toast({
           title: "Check your email",
           description: "We sent you a confirmation link to verify your account.",
