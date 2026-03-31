@@ -23,6 +23,7 @@ import AdminAnalytics from "@/components/admin/AdminAnalytics";
 import AdminCodeInjection from "@/components/admin/AdminCodeInjection";
 import AdminMarketingIntegrations from "@/components/admin/AdminMarketingIntegrations";
 import AdminEmailTemplates from "@/components/admin/AdminEmailTemplates";
+import AdminMediaKit from "@/components/admin/AdminMediaKit";
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
