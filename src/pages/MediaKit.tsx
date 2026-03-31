@@ -160,41 +160,6 @@ const MediaKit = () => {
           </motion.div>
         </div>
 
-        {/* Brand Assets */}
-        <motion.div {...anim(0.3)}>
-          <h2 className="mb-6 font-display text-2xl font-bold tracking-tight">Brand Assets</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <a
-              href="/afrivogue-logo.png"
-              download="AfriVogue_Logo.png"
-              className="flex items-center gap-4 rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary/40"
-            >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                <Image className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-display text-sm font-semibold">AfriVogue Logo (PNG)</p>
-                <p className="font-body text-xs text-muted-foreground">Transparent background · High resolution</p>
-              </div>
-              <Download className="ml-auto h-4 w-4 text-muted-foreground" />
-            </a>
-            <a
-              href="/AfriVogue_Brand_Kit.pdf"
-              download="AfriVogue_Brand_Kit.pdf"
-              className="flex items-center gap-4 rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary/40"
-            >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                <FileText className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-display text-sm font-semibold">Brand Kit (PDF)</p>
-                <p className="font-body text-xs text-muted-foreground">Logo usage · Colors · Creative direction</p>
-              </div>
-              <Download className="ml-auto h-4 w-4 text-muted-foreground" />
-            </a>
-          </div>
-        </motion.div>
-
         {/* CTA */}
         <motion.div
           {...anim(0.35)}
