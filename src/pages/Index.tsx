@@ -33,6 +33,19 @@ const Index = () => {
     },
   });
 
+  // Fetch admin-selected hero trend ID
+  const { data: heroTrendId } = useQuery({
+    queryKey: ["hero-trend-id"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "hero_trend_id")
+        .maybeSingle();
+      return (data?.value as string) || "";
+    },
+  });
+
   const allTrends = useMemo(() => {
     if (dbTrends && dbTrends.length > 0) return dbTrends;
     return fallbackTrends.map((t) => ({
@@ -55,11 +68,21 @@ const Index = () => {
     }));
   }, [dbTrends]);
 
-  // Hero = first trend
-  const hero = allTrends[0];
-  // Trends section = next 6 (2 rows × 3)
-  const trendCards = allTrends.slice(1, 7);
-  // Editorials = Editorial Feature / Premium Long-Form tiers
+  // Hero: use admin-selected trend if set, otherwise first
+  const hero = useMemo(() => {
+    if (heroTrendId) {
+      const found = allTrends.find((t) => t.id === heroTrendId);
+      if (found) return found;
+    }
+    return allTrends[0];
+  }, [allTrends, heroTrendId]);
+
+  // Trends section = 6 items excluding hero
+  const trendCards = useMemo(() => {
+    return allTrends.filter((t) => t.id !== hero?.id).slice(0, 6);
+  }, [allTrends, hero]);
+
+  // Editorials
   const editorials = allTrends
     .filter((t) => ["Editorial Feature", "Premium Long-Form"].includes(t.content_tier))
     .slice(0, 6);
@@ -101,7 +124,7 @@ const Index = () => {
       )}
 
       <main>
-        {/* ── Trends Section (3 rows on desktop) ── */}
+        {/* ── Trends Section ── */}
         <section className="py-14 px-6 md:px-16 lg:px-24">
           <div className="flex items-end justify-between mb-8">
             <div>
@@ -139,7 +162,7 @@ const Index = () => {
           <LeadGenWidget variant="banner" />
         </section>
 
-        {/* ── Editorials (2 rows) ── */}
+        {/* ── Editorials ── */}
         {editorials.length > 0 && (
           <section className="py-14 px-6 md:px-16 lg:px-24">
             <div className="flex items-end justify-between mb-8">
