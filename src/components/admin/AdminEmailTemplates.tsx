@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { Save, Mail, Eye, EyeOff, FileText, Send } from "lucide-react";
 import type { Json } from "@/integrations/supabase/types";
+import ImageUrlUpload from "./ImageUrlUpload";
 
 interface EmailTemplateOverride {
   subject?: string;
