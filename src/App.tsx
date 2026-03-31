@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import CodeInjectionRenderer from "@/components/CodeInjectionRenderer";
 import { CartProvider } from "@/hooks/useCart";
 import Index from "./pages/Index";
 import TrendDetail from "./pages/TrendDetail";
@@ -38,6 +39,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <CodeInjectionRenderer />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />

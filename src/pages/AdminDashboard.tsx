@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { LogOut, Users, FileText, Crown, Gamepad2, ShoppingBag, BarChart3, Package, Target, Newspaper, FolderTree, Shield, LineChart } from "lucide-react";
+import { LogOut, Users, FileText, Crown, Gamepad2, ShoppingBag, BarChart3, Package, Target, Newspaper, FolderTree, Shield, LineChart, Code, Megaphone, Mail } from "lucide-react";
 import AdminTrends from "@/components/admin/AdminTrends";
 import AdminForecasts from "@/components/admin/AdminForecasts";
 import AdminSiteSettings from "@/components/admin/AdminSiteSettings";
@@ -20,6 +20,8 @@ import AdminEditorials from "@/components/admin/AdminEditorials";
 import AdminCategories from "@/components/admin/AdminCategories";
 import AdminRoles from "@/components/admin/AdminRoles";
 import AdminAnalytics from "@/components/admin/AdminAnalytics";
+import AdminCodeInjection from "@/components/admin/AdminCodeInjection";
+import AdminMarketingIntegrations from "@/components/admin/AdminMarketingIntegrations";
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -93,6 +95,8 @@ const AdminDashboard = () => {
               { value: "categories", label: "Categories", icon: FolderTree },
               { value: "roles", label: "Roles", icon: Shield },
               { value: "users", label: "Users", icon: Users },
+              { value: "marketing", label: "Marketing", icon: Megaphone },
+              { value: "code", label: "Code Inject", icon: Code },
               { value: "site", label: "Settings", icon: Crown },
             ].map((tab) => (
               <TabsTrigger
@@ -139,6 +143,8 @@ const AdminDashboard = () => {
             <TabsContent value="categories" className="mt-0"><AdminCategories /></TabsContent>
             <TabsContent value="roles" className="mt-0"><AdminRoles /></TabsContent>
             <TabsContent value="users" className="mt-0"><AdminUsers /></TabsContent>
+            <TabsContent value="marketing" className="mt-0"><AdminMarketingIntegrations /></TabsContent>
+            <TabsContent value="code" className="mt-0"><AdminCodeInjection /></TabsContent>
             <TabsContent value="site" className="mt-0"><AdminSiteSettings /></TabsContent>
           </div>
         </Tabs>
