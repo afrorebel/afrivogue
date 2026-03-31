@@ -29,6 +29,7 @@ import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
 import Trends from "./pages/Trends";
 import Unsubscribe from "./pages/Unsubscribe";
+import MediaKit from "./pages/MediaKit";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -66,6 +67,7 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<About />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
+            <Route path="/media-kit" element={<MediaKit />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

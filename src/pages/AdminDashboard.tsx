@@ -23,6 +23,7 @@ import AdminAnalytics from "@/components/admin/AdminAnalytics";
 import AdminCodeInjection from "@/components/admin/AdminCodeInjection";
 import AdminMarketingIntegrations from "@/components/admin/AdminMarketingIntegrations";
 import AdminEmailTemplates from "@/components/admin/AdminEmailTemplates";
+import AdminMediaKit from "@/components/admin/AdminMediaKit";
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -98,6 +99,7 @@ const AdminDashboard = () => {
               { value: "users", label: "Users", icon: Users },
               { value: "marketing", label: "Marketing", icon: Megaphone },
               { value: "emails", label: "Emails", icon: Inbox },
+              { value: "mediakit", label: "Media Kit", icon: FileText },
               { value: "code", label: "Code Inject", icon: Code },
               { value: "site", label: "Settings", icon: Crown },
             ].map((tab) => (
@@ -147,6 +149,7 @@ const AdminDashboard = () => {
             <TabsContent value="users" className="mt-0"><AdminUsers /></TabsContent>
             <TabsContent value="marketing" className="mt-0"><AdminMarketingIntegrations /></TabsContent>
             <TabsContent value="emails" className="mt-0"><AdminEmailTemplates /></TabsContent>
+            <TabsContent value="mediakit" className="mt-0"><AdminMediaKit /></TabsContent>
             <TabsContent value="code" className="mt-0"><AdminCodeInjection /></TabsContent>
             <TabsContent value="site" className="mt-0"><AdminSiteSettings /></TabsContent>
           </div>
