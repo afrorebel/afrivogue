@@ -99,6 +99,7 @@ const AdminDashboard = () => {
               { value: "users", label: "Users", icon: Users },
               { value: "marketing", label: "Marketing", icon: Megaphone },
               { value: "emails", label: "Emails", icon: Inbox },
+              { value: "mediakit", label: "Media Kit", icon: FileText },
               { value: "code", label: "Code Inject", icon: Code },
               { value: "site", label: "Settings", icon: Crown },
             ].map((tab) => (
