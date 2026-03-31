@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import ImageUrlUpload from "./ImageUrlUpload";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Pencil, Trash2, CheckCircle, AlertCircle, RefreshCw } from "lucide-react";
@@ -234,10 +235,14 @@ const AdminTrends = () => {
                     </Select>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label>Featured Image URL</Label>
-                  <Input value={form.featured_image_url || ""} onChange={(e) => setForm({ ...form, featured_image_url: e.target.value })} placeholder="https://... (leave empty to use category image)" />
-                </div>
+                <ImageUrlUpload
+                  label="Featured Image"
+                  value={form.featured_image_url || ""}
+                  onChange={(url) => setForm({ ...form, featured_image_url: url })}
+                  placeholder="https://... or upload (leave empty for category image)"
+                  bucket="trend-images"
+                  folder="trends"
+                />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Source Name</Label>

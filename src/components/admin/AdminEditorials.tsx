@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/hooks/use-toast";
 import { Check, X, Eye, Trash2, Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import ImageUrlUpload from "./ImageUrlUpload";
 import { useState } from "react";
 import RichTextEditor from "@/components/RichTextEditor";
 import ImageUpload from "@/components/shop/ImageUpload";
@@ -339,10 +340,14 @@ const AdminEditorials = () => {
                 </Select>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label>Featured Image URL</Label>
-              <Input value={form.featured_image_url} onChange={(e) => setForm({ ...form, featured_image_url: e.target.value })} placeholder="https://..." />
-            </div>
+            <ImageUrlUpload
+              label="Featured Image"
+              value={form.featured_image_url}
+              onChange={(url) => setForm({ ...form, featured_image_url: url })}
+              placeholder="https://... or upload"
+              bucket="trend-images"
+              folder="editorials"
+            />
             <div className="space-y-2">
               <Label>Additional Images</Label>
               <ImageUpload bucket="trend-images" folder="editorials" value={form.images} onChange={(imgs) => setForm({ ...form, images: imgs })} />

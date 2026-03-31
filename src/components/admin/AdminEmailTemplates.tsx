@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { Save, Mail, Eye, EyeOff, FileText, Send } from "lucide-react";
 import type { Json } from "@/integrations/supabase/types";
+import ImageUrlUpload from "./ImageUrlUpload";
 
 interface EmailTemplateOverride {
   subject?: string;
@@ -149,13 +150,15 @@ const AdminEmailTemplates = () => {
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label>Logo URL</Label>
-              <Input
+              <ImageUrlUpload
+                label="Logo URL"
                 value={getOverride("_global").logo_url || ""}
-                onChange={(e) => updateField("_global", "logo_url", e.target.value)}
+                onChange={(url) => updateField("_global", "logo_url", url)}
                 placeholder="https://your-domain.com/logo.png"
+                bucket="email-assets"
+                folder="branding"
               />
-              <p className="text-xs text-muted-foreground">Used at the top of all emails. Current default: Afrivogue logo in storage.</p>
+              <p className="text-xs text-muted-foreground">Used at the top of all emails. Upload or paste a URL.</p>
             </div>
             <div className="space-y-2">
               <Label>Primary Brand Color</Label>
