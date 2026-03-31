@@ -2,12 +2,13 @@
 
 import * as React from 'npm:react@18.3.1'
 import {
-  Body, Button, Container, Head, Heading, Hr, Html, Preview, Text,
+  Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Text,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
 const SITE_NAME = "Afrivogue Pulse"
 const SITE_URL = "https://afrivogue.com"
+const LOGO_URL = "https://mafitpqnezbkjmtaqcjq.supabase.co/storage/v1/object/public/email-assets/logo.png"
 
 interface WelcomeProps {
   name?: string
@@ -19,7 +20,7 @@ const WelcomeEmail = ({ name }: WelcomeProps) => (
     <Preview>Welcome to {SITE_NAME} — your cultural pulse starts here</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>{SITE_NAME}</Text>
+        <Img src={LOGO_URL} alt={SITE_NAME} width="160" height="40" style={logo} />
         <Hr style={divider} />
         <Heading style={h1}>
           {name ? `Welcome, ${name}!` : 'Welcome to Afrivogue Pulse!'}
@@ -50,7 +51,7 @@ export const template = {
 
 const main = { backgroundColor: '#ffffff', fontFamily: "'DM Sans', 'Helvetica Neue', Arial, sans-serif" }
 const container = { padding: '32px 28px' }
-const brand = { fontSize: '18px', fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 'bold' as const, color: '#D4A243', margin: '0 0 8px', letterSpacing: '0.5px' }
+const logo = { objectFit: 'contain' as const, margin: '0 0 8px' }
 const divider = { borderColor: '#E8E0D4', margin: '16px 0 24px' }
 const h1 = { fontSize: '24px', fontWeight: 'bold' as const, color: '#1A1710', margin: '0 0 20px', fontFamily: "'Playfair Display', Georgia, serif" }
 const text = { fontSize: '15px', color: '#6B6158', lineHeight: '1.6', margin: '0 0 24px' }

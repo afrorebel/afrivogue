@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { Save, Mail, Eye, EyeOff, FileText } from "lucide-react";
+import { Save, Mail, Eye, EyeOff, FileText, Send } from "lucide-react";
 import type { Json } from "@/integrations/supabase/types";
 
 interface EmailTemplateOverride {
@@ -60,9 +60,6 @@ const AdminEmailTemplates = () => {
 
   const [localOverrides, setLocalOverrides] = useState<TemplateOverrides>({});
 
-  // Sync from DB on load
-  const mergedOverrides = { ...overrides, ...localOverrides };
-
   const getOverride = (key: string): EmailTemplateOverride => ({
     ...DEFAULT_OVERRIDE,
     ...(overrides?.[key] || {}),
@@ -83,7 +80,7 @@ const AdminEmailTemplates = () => {
 
   const saveMut = useMutation({
     mutationFn: async () => {
-      const merged: TemplateOverrides = {};
+      const merged: TemplateOverrides = { _global: getOverride("_global") };
       for (const t of TEMPLATE_CONFIGS) {
         merged[t.key] = getOverride(t.key);
       }
@@ -158,7 +155,7 @@ const AdminEmailTemplates = () => {
                 onChange={(e) => updateField("_global", "logo_url", e.target.value)}
                 placeholder="https://your-domain.com/logo.png"
               />
-              <p className="text-xs text-muted-foreground">Used at the top of all emails</p>
+              <p className="text-xs text-muted-foreground">Used at the top of all emails. Current default: Afrivogue logo in storage.</p>
             </div>
             <div className="space-y-2">
               <Label>Primary Brand Color</Label>
@@ -218,7 +215,7 @@ const AdminEmailTemplates = () => {
                         onClick={() => setPreviewing(previewing === t.key ? null : t.key)}
                       >
                         {previewing === t.key ? <EyeOff className="mr-1 h-4 w-4" /> : <Eye className="mr-1 h-4 w-4" />}
-                        {previewing === t.key ? "Hide Preview" : "Preview"}
+                        {previewing === t.key ? "Hide" : "Preview"}
                       </Button>
                       <Button
                         variant="outline"
@@ -226,7 +223,7 @@ const AdminEmailTemplates = () => {
                         onClick={() => sendTestMut.mutate(t.key)}
                         disabled={sendTestMut.isPending}
                       >
-                        <Send className="mr-1 h-4 w-4" /> Send Test
+                        <Send className="mr-1 h-4 w-4" /> Test
                       </Button>
                     </div>
                   </div>
@@ -321,8 +318,5 @@ const AdminEmailTemplates = () => {
     </div>
   );
 };
-
-// Fix: import Send icon
-import { Send } from "lucide-react";
 
 export default AdminEmailTemplates;
