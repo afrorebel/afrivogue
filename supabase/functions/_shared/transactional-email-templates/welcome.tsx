@@ -23,7 +23,7 @@ const WelcomeEmail = ({ name }: WelcomeProps) => (
         <Img src={LOGO_URL} alt={SITE_NAME} width="160" height="40" style={logo} />
         <Hr style={divider} />
         <Heading style={h1}>
-          {name ? `Welcome, ${name}!` : 'Welcome to Afrivogue Pulse!'}
+          {name ? `Welcome, ${name}!` : 'Welcome to Afrivogue!'}
         </Heading>
         <Text style={text}>
           You're now part of a community that celebrates African culture, fashion, art, and design through a bold editorial lens.
