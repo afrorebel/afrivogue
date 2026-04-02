@@ -38,7 +38,7 @@ const ContactConfirmationEmail = ({ name, subject }: ContactConfirmationProps) =
 
 export const template = {
   component: ContactConfirmationEmail,
-  subject: 'Thanks for contacting Afrivogue Pulse',
+  subject: 'Thanks for contacting Afrivogue',
   displayName: 'Contact form confirmation',
   previewData: { name: 'Jane', subject: 'Collaboration inquiry' },
 } satisfies TemplateEntry

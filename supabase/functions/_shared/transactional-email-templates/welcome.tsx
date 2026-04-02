@@ -44,7 +44,7 @@ const WelcomeEmail = ({ name }: WelcomeProps) => (
 
 export const template = {
   component: WelcomeEmail,
-  subject: 'Welcome to Afrivogue Pulse',
+  subject: 'Welcome to Afrivogue',
   displayName: 'Welcome email',
   previewData: { name: 'Amara' },
 } satisfies TemplateEntry
