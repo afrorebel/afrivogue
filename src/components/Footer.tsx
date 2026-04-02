@@ -4,9 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 const socialLinks = [
-  { label: "Instagram", href: "https://instagram.com/afrivogue", icon: "IG" },
+  { label: "Instagram", href: "https://www.instagram.com/afrivoguemagazine", icon: "IG" },
   { label: "TikTok", href: "https://tiktok.com/@afrivogue", icon: "TT" },
-  { label: "X", href: "https://x.com/afrivogue", icon: "X" },
+  { label: "X", href: "https://x.com/afrivogueonline", icon: "X" },
   { label: "Pinterest", href: "https://pinterest.com/afrivogue", icon: "PT" },
   { label: "YouTube", href: "https://youtube.com/@afrivogue", icon: "YT" },
 ];
