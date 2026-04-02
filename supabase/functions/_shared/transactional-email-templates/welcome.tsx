@@ -6,7 +6,7 @@ import {
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
-const SITE_NAME = "Afrivogue Pulse"
+const SITE_NAME = "Afrivogue"
 const SITE_URL = "https://afrivogue.com"
 const LOGO_URL = "https://mafitpqnezbkjmtaqcjq.supabase.co/storage/v1/object/public/email-assets/afrivogue-logo.png"
 
@@ -23,7 +23,7 @@ const WelcomeEmail = ({ name }: WelcomeProps) => (
         <Img src={LOGO_URL} alt={SITE_NAME} width="160" height="40" style={logo} />
         <Hr style={divider} />
         <Heading style={h1}>
-          {name ? `Welcome, ${name}!` : 'Welcome to Afrivogue Pulse!'}
+          {name ? `Welcome, ${name}!` : 'Welcome to Afrivogue!'}
         </Heading>
         <Text style={text}>
           You're now part of a community that celebrates African culture, fashion, art, and design through a bold editorial lens.
@@ -44,7 +44,7 @@ const WelcomeEmail = ({ name }: WelcomeProps) => (
 
 export const template = {
   component: WelcomeEmail,
-  subject: 'Welcome to Afrivogue Pulse',
+  subject: 'Welcome to Afrivogue',
   displayName: 'Welcome email',
   previewData: { name: 'Amara' },
 } satisfies TemplateEntry

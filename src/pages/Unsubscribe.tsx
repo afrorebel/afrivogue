@@ -53,7 +53,7 @@ const Unsubscribe = () => {
               <MailX className="h-10 w-10 text-gold mx-auto" />
               <h1 className="font-display text-xl font-bold text-foreground">Unsubscribe</h1>
               <p className="font-body text-sm text-muted-foreground">
-                Are you sure you want to unsubscribe from Afrivogue Pulse emails?
+                Are you sure you want to unsubscribe from Afrivogue emails?
               </p>
               <Button onClick={handleConfirm} disabled={processing} className="w-full">
                 {processing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}

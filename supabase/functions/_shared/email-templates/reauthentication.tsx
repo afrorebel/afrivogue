@@ -23,7 +23,7 @@ export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => 
     <Preview>Your verification code</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>Afrivogue Pulse</Text>
+        <Text style={brand}>Afrivogue</Text>
         <Hr style={divider} />
         <Heading style={h1}>Confirm reauthentication</Heading>
         <Text style={text}>Use the code below to confirm your identity:</Text>
