@@ -6,7 +6,7 @@ import {
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
-const SITE_NAME = "Afrivogue Pulse"
+const SITE_NAME = "Afrivogue"
 const LOGO_URL = "https://mafitpqnezbkjmtaqcjq.supabase.co/storage/v1/object/public/email-assets/afrivogue-logo.png"
 
 interface OrderReceiptProps {
