@@ -49,7 +49,7 @@ const TrendCard = ({ trend, index, isPaywalled = false }: TrendCardProps) => {
   const displayDate = date ? new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : "";
 
   // Use featured image if available, fall back to category image
-  const imageUrl = trend.featured_image_url || getCategoryImage(trend.category);
+  const imageUrl = (trend.featured_image_url && trend.featured_image_url.trim() !== "") ? trend.featured_image_url : getCategoryImage(trend.category);
 
   return (
     <article
