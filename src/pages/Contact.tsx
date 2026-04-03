@@ -13,7 +13,7 @@ const socials = [
   { label: "Pinterest", href: "https://pinterest.com/afrivogue", icon: "pinterest" },
   { label: "Instagram", href: "https://www.instagram.com/afrivoguemagazine", icon: "instagram" },
   { label: "YouTube", href: "https://www.youtube.com/afrivogue", icon: "youtube" },
-  { label: "X (Twitter)", href: "https://twitter.com/afrivogueonline", icon: "twitter" },
+  { label: "X (Twitter)", href: "https://x.com/afrivogueonline", icon: "twitter" },
   { label: "Facebook", href: "https://facebook.com/afrivogueonline", icon: "facebook" },
   { label: "Website", href: "https://afrivogue.com/", icon: "globe" },
 ];
