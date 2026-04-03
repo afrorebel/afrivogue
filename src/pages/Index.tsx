@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import afrivogueIcon from "@/assets/afrivogue-icon.png";
 import Navbar from "@/components/Navbar";
 import TrendCard from "@/components/TrendCard";
 import LeadGenWidget from "@/components/LeadGenWidget";
