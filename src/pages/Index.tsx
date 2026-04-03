@@ -88,7 +88,9 @@ const Index = () => {
     .filter((t) => ["Editorial Feature", "Premium Long-Form"].includes(t.content_tier))
     .slice(0, 6);
 
-  const heroImage = hero?.featured_image_url || getCategoryImage(hero?.category || "Fashion");
+  const heroImage = (hero?.featured_image_url && hero.featured_image_url.trim() !== "")
+    ? hero.featured_image_url
+    : getCategoryImage(hero?.category || "Fashion");
 
   return (
     <div className="min-h-screen bg-background">
