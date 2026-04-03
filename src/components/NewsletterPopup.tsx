@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,18 +10,67 @@ const NewsletterPopup = () => {
   const [loading, setLoading] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
+  const trigger = useCallback(() => {
+    setShow(true);
+  }, []);
+
   useEffect(() => {
+    // Don't show if already dismissed this session
+    if (sessionStorage.getItem("afrivogue_newsletter_dismissed")) {
+      setDismissed(true);
+      return;
+    }
+    // Don't show if shown recently (12h cooldown)
     const lastShown = localStorage.getItem("afrivogue_newsletter_ts");
     const TWELVE_HOURS = 12 * 60 * 60 * 1000;
-    if (lastShown && Date.now() - parseInt(lastShown, 10) < TWELVE_HOURS) return;
+    if (lastShown && Date.now() - parseInt(lastShown, 10) < TWELVE_HOURS) {
+      setDismissed(true);
+      return;
+    }
 
-    const timer = setTimeout(() => setShow(true), 25000);
-    return () => clearTimeout(timer);
-  }, []);
+    let triggered = false;
+    const fire = () => {
+      if (triggered) return;
+      triggered = true;
+      trigger();
+      cleanup();
+    };
+
+    // (a) 45-second timer
+    const timer = setTimeout(fire, 45000);
+
+    // (b) 60% scroll
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (docHeight > 0 && scrollTop / docHeight >= 0.6) {
+        fire();
+      }
+    };
+
+    // (c) Exit intent — cursor moves to top of viewport
+    const handleMouseLeave = (e: MouseEvent) => {
+      if (e.clientY <= 0) {
+        fire();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    document.addEventListener("mouseleave", handleMouseLeave);
+
+    const cleanup = () => {
+      clearTimeout(timer);
+      window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("mouseleave", handleMouseLeave);
+    };
+
+    return cleanup;
+  }, [trigger]);
 
   const handleClose = () => {
     setShow(false);
     setDismissed(true);
+    sessionStorage.setItem("afrivogue_newsletter_dismissed", "1");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,6 +96,7 @@ const NewsletterPopup = () => {
     }
 
     localStorage.setItem("afrivogue_newsletter_ts", Date.now().toString());
+    sessionStorage.setItem("afrivogue_newsletter_dismissed", "1");
     setShow(false);
   };
 
@@ -70,7 +120,6 @@ const NewsletterPopup = () => {
             onClick={(e) => e.stopPropagation()}
             className="relative w-full max-w-md overflow-hidden rounded-lg border border-border bg-card"
           >
-            {/* Gold accent top */}
             <div className="h-1 w-full gradient-gold" />
 
             <button

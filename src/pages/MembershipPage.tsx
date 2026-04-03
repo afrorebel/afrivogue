@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
@@ -28,6 +29,9 @@ const DEFAULT_MEMBERSHIP: MembershipSettings = {
 const MembershipPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [joinEmail, setJoinEmail] = useState("");
+  const [joinLoading, setJoinLoading] = useState(false);
+  const [joinSuccess, setJoinSuccess] = useState(false);
 
   const { data: membership = DEFAULT_MEMBERSHIP } = useQuery({
     queryKey: ["membership-settings"],
@@ -51,6 +55,21 @@ const MembershipPage = () => {
     }
   };
 
+  const handleFoundingJoin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!joinEmail) return;
+    setJoinLoading(true);
+    const { error } = await supabase
+      .from("newsletter_subscribers")
+      .insert({ email: joinEmail, source: "founding-member" });
+    setJoinLoading(false);
+    if (error && error.code !== "23505") {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      return;
+    }
+    setJoinSuccess(true);
+  };
+
   const handleCheckout = async (plan: "monthly" | "yearly") => {
     if (!user) {
       navigate("/auth");
@@ -68,8 +87,6 @@ const MembershipPage = () => {
   };
 
   const pricingEnabled = membership.pricing_enabled;
-  const monthlyPrice = membership.monthly_price;
-  const yearlyPrice = membership.yearly_price;
 
   return (
     <div className="min-h-screen bg-background">
@@ -80,7 +97,10 @@ const MembershipPage = () => {
             Join the <span className="text-gold">Afrivogue Collective</span>
           </h1>
           <p className="mx-auto mt-4 max-w-2xl font-body text-lg text-muted-foreground">
-            Unlock premium editorials, earn from your contributions, and join a global community of culture shapers.
+            Get full access to Afrivogue's platform — premium editorials, cultural forecasts, community features, and exclusive content from a global Afrocentric lens.
+          </p>
+          <p className="mx-auto mt-3 max-w-xl font-body text-sm text-gold/80">
+            We're in our founding phase. Early members are helping shape what Afrivogue becomes — your voice matters from day one.
           </p>
         </motion.div>
 
@@ -114,9 +134,9 @@ const MembershipPage = () => {
             className="mt-16 mx-auto max-w-lg rounded-lg border-2 border-gold p-10 text-center"
           >
             <Crown className="mx-auto mb-4 h-12 w-12 text-gold" />
-            <h3 className="font-display text-2xl font-bold text-foreground">Free Membership</h3>
+            <h3 className="font-display text-2xl font-bold text-foreground">Become a Founding Member</h3>
             <p className="mt-3 font-body text-sm text-muted-foreground">
-              Sign up with your email to unlock all premium content, earn engagement points, and join the collective — completely free.
+              Join the Afrivogue Collective as a founding member. Get full access to our platform, community, and exclusive content — completely free during our founding phase.
             </p>
             <ul className="mt-6 space-y-3 font-body text-sm text-muted-foreground text-left max-w-xs mx-auto">
               <li>✦ All premium editorials</li>
@@ -126,9 +146,36 @@ const MembershipPage = () => {
               <li>✦ Submit your own articles</li>
               <li>✦ Community access</li>
             </ul>
-            <Button onClick={handleFreeSignup} className="mt-8 w-full bg-gold text-foreground hover:bg-gold/90">
-              {user ? "Go to Dashboard" : "Join Free — Sign Up"}
-            </Button>
+
+            {user ? (
+              <Button onClick={handleFreeSignup} className="mt-8 w-full bg-gold text-primary-foreground hover:bg-gold/90">
+                Go to Dashboard
+              </Button>
+            ) : joinSuccess ? (
+              <div className="mt-8 rounded-md border border-gold/30 bg-gold/10 p-5">
+                <p className="font-display text-lg font-bold text-gold">Welcome, Founding Member ✦</p>
+                <p className="mt-2 font-body text-sm text-muted-foreground">
+                  You're officially part of the Afrivogue Collective. Check your inbox for next steps.
+                </p>
+                <Button asChild className="mt-4 bg-gold text-primary-foreground hover:bg-gold/90">
+                  <Link to="/auth">Create Your Account</Link>
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={handleFoundingJoin} className="mt-8 flex flex-col gap-3">
+                <input
+                  type="email"
+                  value={joinEmail}
+                  onChange={(e) => setJoinEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                  className="w-full rounded-sm border border-border bg-background px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                />
+                <Button type="submit" disabled={joinLoading} className="w-full bg-gold text-primary-foreground hover:bg-gold/90">
+                  {joinLoading ? "Joining…" : "Join as Founding Member"}
+                </Button>
+              </form>
+            )}
           </motion.div>
         )}
 
@@ -142,7 +189,7 @@ const MembershipPage = () => {
             >
               <h3 className="font-display text-xl font-bold text-foreground">{membership.monthly_label}</h3>
               <p className="mt-2 font-display text-4xl font-bold text-gold">
-                ${monthlyPrice}<span className="text-base text-muted-foreground">/month</span>
+                ${membership.monthly_price}<span className="text-base text-muted-foreground">/month</span>
               </p>
               <ul className="mt-6 space-y-3 font-body text-sm text-muted-foreground">
                 <li>✦ All premium editorials</li>
@@ -150,8 +197,8 @@ const MembershipPage = () => {
                 <li>✦ Earn engagement points</li>
                 <li>✦ Personal dashboard</li>
               </ul>
-              <Button onClick={() => handleCheckout("monthly")} className="mt-8 w-full bg-gold text-foreground hover:bg-gold/90">
-                Get Started — ${monthlyPrice}/mo
+              <Button onClick={() => handleCheckout("monthly")} className="mt-8 w-full bg-gold text-primary-foreground hover:bg-gold/90">
+                Get Started — ${membership.monthly_price}/mo
               </Button>
             </motion.div>
 
@@ -160,10 +207,10 @@ const MembershipPage = () => {
               animate={{ opacity: 1, x: 0 }}
               className="relative rounded-lg border-2 border-gold p-8"
             >
-              <Badge className="absolute -top-3 right-4 bg-gold text-foreground">Editor's Choice</Badge>
+              <Badge className="absolute -top-3 right-4 bg-gold text-primary-foreground">Editor's Choice</Badge>
               <h3 className="font-display text-xl font-bold text-foreground">{membership.yearly_label}</h3>
               <p className="mt-2 font-display text-4xl font-bold text-gold">
-                ${yearlyPrice}<span className="text-base text-muted-foreground">/year</span>
+                ${membership.yearly_price}<span className="text-base text-muted-foreground">/year</span>
               </p>
               <ul className="mt-6 space-y-3 font-body text-sm text-muted-foreground">
                 <li>✦ Everything in {membership.monthly_label}</li>
@@ -172,14 +219,14 @@ const MembershipPage = () => {
                 <li>✦ Exclusive member badge</li>
                 <li>✦ Early access to forecasts</li>
               </ul>
-              <Button onClick={() => handleCheckout("yearly")} className="mt-8 w-full bg-gold text-foreground hover:bg-gold/90">
-                Get Started — ${yearlyPrice}/yr
+              <Button onClick={() => handleCheckout("yearly")} className="mt-8 w-full bg-gold text-primary-foreground hover:bg-gold/90">
+                Get Started — ${membership.yearly_price}/yr
               </Button>
             </motion.div>
           </div>
         )}
 
-        {!user && (
+        {!user && !joinSuccess && (
           <p className="mt-8 text-center font-body text-sm text-muted-foreground">
             Already a member?{" "}
             <Link to="/auth" className="text-gold hover:underline">Sign in</Link>
