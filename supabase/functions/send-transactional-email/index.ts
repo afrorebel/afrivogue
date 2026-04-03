@@ -308,12 +308,17 @@ Deno.serve(async (req) => {
     status: 'pending',
   })
 
+  // Determine from address based on template type
+  const fromAddress = templateName.startsWith('contact')
+    ? `${SITE_NAME} <contact@${FROM_DOMAIN}>`
+    : `${SITE_NAME} <hello@${FROM_DOMAIN}>`
+
   const { error: enqueueError } = await supabase.rpc('enqueue_email', {
     queue_name: 'transactional_emails',
     payload: {
       message_id: messageId,
       to: effectiveRecipient,
-      from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+      from: fromAddress,
       sender_domain: SENDER_DOMAIN,
       subject: resolvedSubject,
       html,

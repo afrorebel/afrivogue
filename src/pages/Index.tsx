@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import afrivogueIcon from "@/assets/afrivogue-icon.png";
 import Navbar from "@/components/Navbar";
 import TrendCard from "@/components/TrendCard";
 import LeadGenWidget from "@/components/LeadGenWidget";
@@ -87,7 +88,9 @@ const Index = () => {
     .filter((t) => ["Editorial Feature", "Premium Long-Form"].includes(t.content_tier))
     .slice(0, 6);
 
-  const heroImage = hero?.featured_image_url || getCategoryImage(hero?.category || "Fashion");
+  const heroImage = (hero?.featured_image_url && hero.featured_image_url.trim() !== "")
+    ? hero.featured_image_url
+    : getCategoryImage(hero?.category || "Fashion");
 
   return (
     <div className="min-h-screen bg-background">
@@ -99,7 +102,28 @@ const Index = () => {
       {hero && (
         <section className="relative h-[75vh] min-h-[520px] overflow-hidden">
           <div className="absolute inset-0">
-            <img src={heroImage} alt={hero.headline} className="h-full w-full object-cover object-top" />
+            <img
+              src={heroImage}
+              alt={hero.headline}
+              className="h-full w-full object-cover object-top"
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.style.display = "none";
+                const parent = target.parentElement;
+                if (parent) {
+                  parent.style.background = "linear-gradient(135deg, hsl(38 65% 20%), hsl(30 10% 6%))";
+                  parent.style.display = "flex";
+                  parent.style.alignItems = "center";
+                  parent.style.justifyContent = "center";
+                  const icon = document.createElement("img");
+                  icon.src = afrivogueIcon;
+                  icon.alt = "Afrivogue";
+                  icon.style.width = "120px";
+                  icon.style.opacity = "0.4";
+                  parent.appendChild(icon);
+                }
+              }}
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent" />
           </div>
           <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-14 md:px-16 lg:px-24">
