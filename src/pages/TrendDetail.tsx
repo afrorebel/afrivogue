@@ -53,7 +53,6 @@ const TrendDetail = () => {
     enabled: !!id,
   });
 
-  // Fetch category-level paywall settings
   const { data: paywalledCategories = [] } = useQuery({
     queryKey: ["paywalled-categories"],
     queryFn: async () => {
@@ -66,6 +65,7 @@ const TrendDetail = () => {
       return (data?.value as unknown as string[]) || [];
     },
   });
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -96,8 +96,11 @@ const TrendDetail = () => {
     );
   }
 
+  // Check if editorial_content has rich HTML body
+  const editorialContent = trend.editorial_content as { body?: string } | null;
+  const hasRichContent = editorialContent?.body && editorialContent.body.includes("<");
+
   const pullQuote = extractPullQuote(trend.cultural_significance);
-  // Split on double-newlines first (AI-produced paragraphs), fall back to sentence-based split
   const paragraphs = trend.cultural_significance.includes("\n\n")
     ? trend.cultural_significance.split(/\n\n+/).filter((p) => p.trim())
     : (() => {
@@ -177,29 +180,47 @@ const TrendDetail = () => {
       <article className="mx-auto max-w-4xl px-6 py-16 md:px-16">
         <div className="grid gap-12 lg:grid-cols-[1fr_280px]">
           <div className="space-y-10">
-            {/* Lead paragraph — larger type */}
-            {paragraphs.length > 0 && (
-              <p className="font-display text-xl leading-relaxed text-foreground/90 md:text-2xl">
-                {linkifyText(paragraphs[0])}
-              </p>
+            {hasRichContent ? (
+              /* Render rich HTML from the editor */
+              <>
+                <div
+                  className="prose prose-lg dark:prose-invert max-w-none
+                    prose-headings:font-display prose-headings:text-foreground
+                    prose-p:font-body prose-p:text-base prose-p:leading-[1.9] prose-p:text-muted-foreground
+                    prose-a:text-gold prose-a:no-underline hover:prose-a:underline
+                    prose-blockquote:border-gold prose-blockquote:text-foreground/80 prose-blockquote:italic
+                    prose-img:rounded-lg prose-img:border prose-img:border-border
+                    prose-strong:text-foreground"
+                  dangerouslySetInnerHTML={{ __html: editorialContent!.body! }}
+                />
+
+                {images.length > 0 && <ImageCarousel images={images} alt={trend.headline} />}
+              </>
+            ) : (
+              /* Fallback: render plain text cultural_significance */
+              <>
+                {paragraphs.length > 0 && (
+                  <p className="font-display text-xl leading-relaxed text-foreground/90 md:text-2xl">
+                    {linkifyText(paragraphs[0])}
+                  </p>
+                )}
+
+                {images.length > 0 && <ImageCarousel images={images} alt={trend.headline} />}
+
+                <blockquote className="relative border-l-2 border-gold py-4 pl-8">
+                  <span className="absolute -left-3 -top-2 font-display text-5xl leading-none text-gold/30">"</span>
+                  <p className="font-display text-lg italic leading-relaxed text-foreground/80 md:text-xl">
+                    {pullQuote}
+                  </p>
+                </blockquote>
+
+                {paragraphs.slice(1).map((para, i) => (
+                  <p key={i} className="font-body text-base leading-[1.9] text-muted-foreground">
+                    {linkifyText(para)}
+                  </p>
+                ))}
+              </>
             )}
-
-            {/* Image carousel if post has images */}
-            {images.length > 0 && <ImageCarousel images={images} alt={trend.headline} />}
-
-            <blockquote className="relative border-l-2 border-gold py-4 pl-8">
-              <span className="absolute -left-3 -top-2 font-display text-5xl leading-none text-gold/30">"</span>
-              <p className="font-display text-lg italic leading-relaxed text-foreground/80 md:text-xl">
-                {pullQuote}
-              </p>
-            </blockquote>
-
-            {/* Remaining paragraphs */}
-            {paragraphs.slice(1).map((para, i) => (
-              <p key={i} className="font-body text-base leading-[1.9] text-muted-foreground">
-                {linkifyText(para)}
-              </p>
-            ))}
 
             {/* Source attribution */}
             {trend.source_name && (
@@ -217,7 +238,6 @@ const TrendDetail = () => {
               </div>
             )}
 
-            {/* Lead gen inline */}
             <LeadGenWidget variant="banner" category={trend.category} />
 
             {/* Cultural Context */}
@@ -272,13 +292,11 @@ const TrendDetail = () => {
                 </div>
               </div>
 
-              {/* Sidebar lead gen */}
               <LeadGenWidget variant="sidebar" category={trend.category} />
             </div>
           </aside>
         </div>
 
-        {/* Comments section */}
         <Comments trendId={trend.id} />
       </article>
       )}
