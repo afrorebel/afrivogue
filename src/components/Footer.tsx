@@ -35,34 +35,6 @@ const communityLinks = [
 ];
 
 const Footer = () => {
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-    setLoading(true);
-
-    const { error } = await supabase
-      .from("newsletter_subscribers")
-      .insert({ email, source: "footer" });
-
-    setLoading(false);
-
-    if (error) {
-      if (error.code === "23505") {
-        toast({ title: "Already subscribed", description: "You're already on the list." });
-      } else {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
-        return;
-      }
-    } else {
-      toast({ title: "Welcome to Afrivogue", description: "You're now on the insider list." });
-    }
-
-    localStorage.setItem("afrivogue_newsletter", "true");
-    setEmail("");
-  };
 
   const ColumnTitle = ({ children }: { children: React.ReactNode }) => (
     <h4 className="mb-4 font-display text-xs font-bold uppercase tracking-[0.2em] text-gold">
