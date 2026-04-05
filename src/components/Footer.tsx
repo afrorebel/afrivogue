@@ -102,29 +102,12 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Newsletter */}
           <div className="sm:col-span-2 lg:col-span-1">
             <ColumnTitle>Newsletter</ColumnTitle>
             <p className="font-body text-sm text-muted-foreground">
               Trend reports & cultural forecasts — delivered weekly.
             </p>
-            <form onSubmit={handleSubscribe} className="mt-4 flex flex-col gap-2">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                required
-                className="w-full rounded-sm border border-border bg-background px-3 py-2 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-ring"
-              />
-              <button
-                type="submit"
-                disabled={loading}
-                className="rounded-sm bg-primary px-4 py-2 font-body text-xs font-bold uppercase tracking-wider text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
-              >
-                {loading ? "…" : "Subscribe"}
-              </button>
-            </form>
+            <SubstackEmbed className="mt-4" />
           </div>
         </div>
 
