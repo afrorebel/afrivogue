@@ -1,31 +1,10 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { toast } from "@/hooks/use-toast";
 import { ExternalLink, Newspaper, Users } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const AdminNewsletter = () => {
-  const qc = useQueryClient();
-  const [substackUrl, setSubstackUrl] = useState("afrivogue.substack.com");
-
-  // Load saved Substack URL from site_settings
-  const { data: settings } = useQuery({
-    queryKey: ["admin-substack-settings"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("site_settings")
-        .select("value")
-        .eq("key", "substack_url")
-        .maybeSingle();
-      return data?.value as string | null;
-    },
-  });
-
-  // Load legacy newsletter subscribers (for reference/export)
   const { data: subscribers = [] } = useQuery({
     queryKey: ["admin-newsletter-subs"],
     queryFn: async () => {
@@ -63,7 +42,7 @@ const AdminNewsletter = () => {
         </CardContent>
       </Card>
 
-      {/* Legacy subscribers collected before Substack migration */}
+      {/* Legacy subscribers collected before Supascribe migration */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-display text-lg">
@@ -73,7 +52,7 @@ const AdminNewsletter = () => {
         </CardHeader>
         <CardContent>
           <p className="mb-4 font-body text-xs text-muted-foreground">
-            These emails were collected before the Substack migration. You can import them into Substack via Settings → Import.
+            These emails were collected before the Supascribe migration. You can import them into Supascribe via your dashboard.
           </p>
           {subscribers.length === 0 ? (
             <p className="font-body text-sm text-muted-foreground">No legacy subscribers.</p>
