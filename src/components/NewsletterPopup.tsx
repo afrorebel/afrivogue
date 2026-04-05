@@ -1,13 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import SubstackEmbed from "./SubstackEmbed";
 
 const NewsletterPopup = () => {
   const [show, setShow] = useState(false);
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
   const trigger = useCallback(() => {
@@ -15,12 +12,10 @@ const NewsletterPopup = () => {
   }, []);
 
   useEffect(() => {
-    // Don't show if already dismissed this session
     if (sessionStorage.getItem("afrivogue_newsletter_dismissed")) {
       setDismissed(true);
       return;
     }
-    // Don't show if shown recently (12h cooldown)
     const lastShown = localStorage.getItem("afrivogue_newsletter_ts");
     const TWELVE_HOURS = 12 * 60 * 60 * 1000;
     if (lastShown && Date.now() - parseInt(lastShown, 10) < TWELVE_HOURS) {
@@ -36,23 +31,16 @@ const NewsletterPopup = () => {
       cleanup();
     };
 
-    // (a) 45-second timer
     const timer = setTimeout(fire, 45000);
 
-    // (b) 60% scroll
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (docHeight > 0 && scrollTop / docHeight >= 0.6) {
-        fire();
-      }
+      if (docHeight > 0 && scrollTop / docHeight >= 0.6) fire();
     };
 
-    // (c) Exit intent — cursor moves to top of viewport
     const handleMouseLeave = (e: MouseEvent) => {
-      if (e.clientY <= 0) {
-        fire();
-      }
+      if (e.clientY <= 0) fire();
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -71,33 +59,7 @@ const NewsletterPopup = () => {
     setShow(false);
     setDismissed(true);
     sessionStorage.setItem("afrivogue_newsletter_dismissed", "1");
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-    setLoading(true);
-
-    const { error } = await supabase
-      .from("newsletter_subscribers")
-      .insert({ email, source: "popup" });
-
-    setLoading(false);
-
-    if (error) {
-      if (error.code === "23505") {
-        toast({ title: "Already subscribed", description: "You're already on the list." });
-      } else {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
-        return;
-      }
-    } else {
-      toast({ title: "Welcome to Afrivogue", description: "You're now on the insider list." });
-    }
-
     localStorage.setItem("afrivogue_newsletter_ts", Date.now().toString());
-    sessionStorage.setItem("afrivogue_newsletter_dismissed", "1");
-    setShow(false);
   };
 
   if (dismissed) return null;
@@ -140,23 +102,7 @@ const NewsletterPopup = () => {
                 Join the Afrivogue insider list for curated trend reports, cultural forecasts, and editorial exclusives — delivered weekly.
               </p>
 
-              <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-3">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  required
-                  className="w-full rounded-sm border border-border bg-background px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
-                />
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full rounded-sm bg-gold px-4 py-3 font-body text-sm font-bold uppercase tracking-wider text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
-                >
-                  {loading ? "Subscribing…" : "Get Insider Access"}
-                </button>
-              </form>
+              <SubstackEmbed className="mt-6" />
 
               <p className="mt-4 font-body text-[10px] text-muted-foreground/60">
                 No spam. Unsubscribe anytime. We respect your inbox.
