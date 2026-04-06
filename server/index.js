@@ -1,4 +1,6 @@
+// Load .env from server/ dir first, fall back to project root
 require('dotenv').config({ path: `${__dirname}/.env` });
+require('dotenv').config({ path: `${__dirname}/../.env` });
 
 const express = require('express');
 const helmet = require('helmet');
