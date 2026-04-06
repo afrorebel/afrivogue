@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { uploadImage } from "@/lib/uploadImage";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, Loader2 } from "lucide-react";
@@ -30,12 +30,8 @@ const ImageUrlUpload = ({
     if (!file) return;
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop();
-      const path = `${folder ? folder + "/" : ""}${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error } = await supabase.storage.from(bucket).upload(path, file);
-      if (error) throw error;
-      const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-      onChange(data.publicUrl);
+      const publicUrl = await uploadImage(file);
+      onChange(publicUrl);
       toast({ title: "Image uploaded" });
     } catch (err: any) {
       toast({ title: "Upload failed", description: err.message, variant: "destructive" });

@@ -49,7 +49,7 @@ const AdminUsers = () => {
       const { data } = await supabase
         .from("site_settings")
         .select("value")
-        .eq("key", "manual_premium_users")
+        .eq("setting_key", "manual_premium_users")
         .maybeSingle();
       return (data?.value as string[]) || [];
     },
@@ -62,7 +62,7 @@ const AdminUsers = () => {
         : [...manualPremiumUsers, userId];
       const { error } = await supabase
         .from("site_settings")
-        .upsert({ key: "manual_premium_users", value: updated as any });
+        .upsert({ setting_key: "manual_premium_users", value: updated as any });
       if (error) throw error;
     },
     onSuccess: () => {

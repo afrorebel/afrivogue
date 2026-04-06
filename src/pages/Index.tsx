@@ -28,7 +28,7 @@ const Index = () => {
       const { data } = await supabase
         .from("site_settings")
         .select("value")
-        .eq("key", "paywalled_categories")
+        .eq("setting_key", "paywalled_categories")
         .maybeSingle();
       return (data?.value as string[]) || [];
     },
@@ -41,7 +41,7 @@ const Index = () => {
       const { data } = await supabase
         .from("site_settings")
         .select("value")
-        .eq("key", "hero_trend_id")
+        .eq("setting_key", "hero_trend_id")
         .maybeSingle();
       return (data?.value as string) || "";
     },

@@ -52,7 +52,7 @@ const AdminEmailTemplates = () => {
       const { data, error } = await supabase
         .from("site_settings")
         .select("value")
-        .eq("key", "email_template_overrides")
+        .eq("setting_key", "email_template_overrides")
         .maybeSingle();
       if (error) throw error;
       return (data?.value as unknown as TemplateOverrides) || {};
@@ -88,13 +88,13 @@ const AdminEmailTemplates = () => {
       const { data, error } = await supabase
         .from("site_settings")
         .update({ value: merged as unknown as Json })
-        .eq("key", "email_template_overrides")
+        .eq("setting_key", "email_template_overrides")
         .select();
       if (error) throw error;
       if (!data || data.length === 0) {
         const { error: insertError } = await supabase
           .from("site_settings")
-          .insert({ key: "email_template_overrides", value: merged as unknown as Json });
+          .insert({ setting_key: "email_template_overrides", value: merged as unknown as Json });
         if (insertError) throw insertError;
       }
     },

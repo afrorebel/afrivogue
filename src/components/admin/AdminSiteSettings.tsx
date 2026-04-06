@@ -59,7 +59,7 @@ const AdminSiteSettings = () => {
       const { data, error } = await supabase.from("site_settings").select("*");
       if (error) throw error;
       const map: Record<string, Json> = {};
-      data.forEach((row) => { map[row.key] = row.value; });
+      data.forEach((row) => { map[row.setting_key] = row.value; });
       return map;
     },
   });
@@ -97,10 +97,10 @@ const AdminSiteSettings = () => {
 
   const saveMut = useMutation({
     mutationFn: async ({ key, value }: { key: string; value: Json }) => {
-      const { data, error } = await supabase.from("site_settings").update({ value }).eq("key", key).select();
+      const { data, error } = await supabase.from("site_settings").update({ value }).eq("setting_key", key).select();
       if (error) throw error;
       if (!data || data.length === 0) {
-        const { error: insertError } = await supabase.from("site_settings").insert({ key, value });
+        const { error: insertError } = await supabase.from("site_settings").insert({ setting_key: key, value });
         if (insertError) throw insertError;
       }
     },

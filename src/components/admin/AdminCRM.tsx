@@ -70,7 +70,7 @@ const AdminCRM = () => {
       const [profilesRes, ordersRes, premiumRes] = await Promise.all([
         supabase.from("profiles").select("id", { count: "exact", head: true }),
         supabase.from("orders").select("total").eq("status", "paid"),
-        supabase.from("site_settings").select("value").eq("key", "manual_premium_users").maybeSingle(),
+        supabase.from("site_settings").select("value").eq("setting_key", "manual_premium_users").maybeSingle(),
       ]);
       const totalRevenue = (ordersRes.data || []).reduce((a: number, o: any) => a + Number(o.total), 0);
       const premiumCount = ((premiumRes.data?.value as string[]) || []).length;

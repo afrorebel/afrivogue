@@ -73,7 +73,7 @@ const MediaKit = () => {
       const { data } = await supabase
         .from("site_settings")
         .select("value")
-        .eq("key", "media_kit")
+        .eq("setting_key", "media_kit")
         .maybeSingle();
       return data?.value ? { ...DEFAULT_DATA, ...(data.value as unknown as Partial<MediaKitData>) } : DEFAULT_DATA;
     },

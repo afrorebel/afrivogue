@@ -33,14 +33,13 @@ const AuthPage = () => {
         password,
         options: {
           data: { display_name: displayName },
-          emailRedirectTo: "https://afrivogue.com",
         },
       });
       if (error) {
         toast({ title: "Signup failed", description: error.message, variant: "destructive" });
       } else {
-        // Send welcome email
-        if (signUpData.user?.email) {
+        // Send welcome email (fire-and-forget)
+        if (signUpData?.user?.email) {
           supabase.functions.invoke("send-transactional-email", {
             body: {
               templateName: "welcome",
@@ -48,12 +47,10 @@ const AuthPage = () => {
               idempotencyKey: `welcome-${signUpData.user.id}`,
               templateData: { name: displayName || undefined },
             },
-          }).catch(() => {}); // fire-and-forget
+          }).catch(() => {});
         }
-        toast({
-          title: "Check your email",
-          description: "We sent you a confirmation link to verify your account.",
-        });
+        toast({ title: "Account created", description: "Welcome to AfriVogue!" });
+        navigate("/dashboard");
       }
     }
     setLoading(false);

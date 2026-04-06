@@ -34,7 +34,7 @@ const Trends = () => {
       const { data } = await supabase
         .from("site_settings")
         .select("value")
-        .eq("key", "paywalled_categories")
+        .eq("setting_key", "paywalled_categories")
         .maybeSingle();
       return (data?.value as string[]) || [];
     },

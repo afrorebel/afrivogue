@@ -43,7 +43,7 @@ const AdminMediaKit = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["admin-media-kit"],
     queryFn: async () => {
-      const { data } = await supabase.from("site_settings").select("value").eq("key", "media_kit").maybeSingle();
+      const { data } = await supabase.from("site_settings").select("value").eq("setting_key", "media_kit").maybeSingle();
       return data?.value ? (data.value as unknown as MediaKitData) : null;
     },
   });
@@ -54,9 +54,9 @@ const AdminMediaKit = () => {
 
   const save = useMutation({
     mutationFn: async () => {
-      const { data: existing } = await supabase.from("site_settings").update({ value: kit as unknown as Json }).eq("key", "media_kit").select();
+      const { data: existing } = await supabase.from("site_settings").update({ value: kit as unknown as Json }).eq("setting_key", "media_kit").select();
       if (!existing || existing.length === 0) {
-        await supabase.from("site_settings").insert({ key: "media_kit", value: kit as unknown as Json });
+        await supabase.from("site_settings").insert({ setting_key: "media_kit", value: kit as unknown as Json });
       }
     },
     onSuccess: () => {

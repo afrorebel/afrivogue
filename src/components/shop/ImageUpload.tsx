@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { uploadImage } from "@/lib/uploadImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,12 +30,8 @@ const ImageUpload = ({ bucket, folder = "", value, onChange, multiple = true, la
 
     try {
       for (const file of Array.from(files)) {
-        const ext = file.name.split(".").pop();
-        const path = `${folder ? folder + "/" : ""}${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-        const { error } = await supabase.storage.from(bucket).upload(path, file);
-        if (error) throw error;
-        const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path);
-        newUrls.push(urlData.publicUrl);
+        const publicUrl = await uploadImage(file);
+        newUrls.push(publicUrl);
       }
       onChange(multiple ? [...value, ...newUrls] : newUrls.slice(0, 1));
       toast({ title: `${newUrls.length} image(s) uploaded` });

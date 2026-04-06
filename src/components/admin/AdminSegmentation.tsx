@@ -71,7 +71,7 @@ const AdminSegmentation = () => {
       const { data } = await supabase.from("orders").select("user_id");
       userIds = [...new Set((data || []).map((o: any) => o.user_id))];
     } else if (criteria.type === "premium_member") {
-      const { data } = await supabase.from("site_settings").select("value").eq("key", "manual_premium_users").maybeSingle();
+      const { data } = await supabase.from("site_settings").select("value").eq("setting_key", "manual_premium_users").maybeSingle();
       userIds = (data?.value as string[]) || [];
     } else if (criteria.type === "high_spender") {
       const threshold = parseFloat(criteria.value) || 100;

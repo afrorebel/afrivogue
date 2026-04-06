@@ -59,7 +59,7 @@ const TrendDetail = () => {
       const { data, error } = await supabase
         .from("site_settings")
         .select("value")
-        .eq("key", "paywalled_categories")
+        .eq("setting_key", "paywalled_categories")
         .maybeSingle();
       if (error) throw error;
       return (data?.value as unknown as string[]) || [];

@@ -39,7 +39,7 @@ const MembershipPage = () => {
       const { data } = await supabase
         .from("site_settings")
         .select("value")
-        .eq("key", "membership")
+        .eq("setting_key", "membership")
         .maybeSingle();
       if (data?.value) return { ...DEFAULT_MEMBERSHIP, ...(data.value as unknown as MembershipSettings) };
       return DEFAULT_MEMBERSHIP;

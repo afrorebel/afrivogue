@@ -1,10 +1,21 @@
 import { useState, useEffect, createContext, useContext, ReactNode, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import type { User, Session } from "@supabase/supabase-js";
+import { api, getStoredUser, getToken } from "@/integrations/api/client";
+
+// ─── Types (compatible with existing component usage) ─────────────────────────
+export interface AppUser {
+  id: string;
+  email: string;
+  roles: string[];
+  profile?: {
+    display_name: string | null;
+    bio: string | null;
+    avatar_url: string | null;
+  };
+}
 
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
+  user: AppUser | null;
+  session: { user: AppUser; access_token: string } | null;
   isAdmin: boolean;
   loading: boolean;
   subscribed: boolean;
@@ -17,35 +28,30 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
+  const [session, setSession] = useState<{ user: AppUser; access_token: string } | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [subscribed, setSubscribed] = useState(false);
   const [subscriptionLoading, setSubscriptionLoading] = useState(false);
 
-  const checkAdmin = async (userId: string) => {
-    const { data } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
-    setIsAdmin(!!data);
+  const resolveAdmin = (u: AppUser | null) => {
+    setIsAdmin(!!u && Array.isArray(u.roles) && u.roles.includes("admin"));
   };
 
   const checkSubscription = useCallback(async (userId?: string) => {
     try {
       setSubscriptionLoading(true);
-      // Check Stripe subscription
-      const { data, error } = await supabase.functions.invoke("check-subscription");
-      if (!error && data?.subscribed) {
-        setSubscribed(true);
-        return;
-      }
-      // Check manual premium grant
+      // Check manual premium grant via site settings
       if (userId) {
-        const { data: setting } = await supabase
+        const { data: setting } = await api
           .from("site_settings")
           .select("value")
-          .eq("key", "manual_premium_users")
+          .eq("setting_key", "manual_premium_users")
           .maybeSingle();
-        const manualUsers = (setting?.value as string[]) || [];
+        const manualUsers: string[] = Array.isArray(setting?.value)
+          ? setting.value
+          : [];
         if (manualUsers.includes(userId)) {
           setSubscribed(true);
           return;
@@ -60,29 +66,45 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const refreshSubscription = useCallback(async () => {
-    await checkSubscription();
-  }, [checkSubscription]);
+    if (user) await checkSubscription(user.id);
+  }, [checkSubscription, user]);
 
+  // Initialize from stored token on mount
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        setTimeout(() => checkAdmin(session.user.id), 0);
-        setTimeout(() => checkSubscription(session.user.id), 0);
+    const token = getToken();
+    const storedUser = getStoredUser();
+
+    if (token && storedUser) {
+      const appUser: AppUser = {
+        id: storedUser.id || storedUser.userId,
+        email: storedUser.email,
+        roles: storedUser.roles || [],
+      };
+      setUser(appUser);
+      setSession({ user: appUser, access_token: token });
+      resolveAdmin(appUser);
+      checkSubscription(appUser.id);
+    }
+
+    setLoading(false);
+
+    // Listen for auth state changes (login / logout events)
+    const { data: { subscription } } = api.auth.onAuthStateChange((_event, sess) => {
+      if (sess?.user) {
+        const appUser: AppUser = {
+          id: sess.user.id || sess.user.userId,
+          email: sess.user.email,
+          roles: sess.user.roles || [],
+        };
+        setUser(appUser);
+        setSession({ user: appUser, access_token: sess.access_token });
+        resolveAdmin(appUser);
+        checkSubscription(appUser.id);
       } else {
+        setUser(null);
+        setSession(null);
         setIsAdmin(false);
         setSubscribed(false);
-      }
-      setLoading(false);
-    });
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        checkAdmin(session.user.id);
-        checkSubscription(session.user.id);
       }
       setLoading(false);
     });
@@ -91,16 +113,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [checkSubscription]);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error: error as Error | null };
+    const { data, error } = await api.auth.signInWithPassword({ email, password });
+    if (error) return { error: new Error(error.message) };
+    if (data?.user) {
+      const appUser: AppUser = {
+        id: data.user.id || data.user.userId,
+        email: data.user.email,
+        roles: data.user.roles || [],
+      };
+      setUser(appUser);
+      setSession({ user: appUser, access_token: data.token });
+      resolveAdmin(appUser);
+    }
+    return { error: null };
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    await api.auth.signOut();
+    setUser(null);
+    setSession(null);
+    setIsAdmin(false);
+    setSubscribed(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isAdmin, loading, subscribed, subscriptionLoading, signIn, signOut, refreshSubscription }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        isAdmin,
+        loading,
+        subscribed,
+        subscriptionLoading,
+        signIn,
+        signOut,
+        refreshSubscription,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

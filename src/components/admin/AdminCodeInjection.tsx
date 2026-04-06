@@ -31,7 +31,7 @@ const AdminCodeInjection = () => {
       const { data, error } = await supabase
         .from("site_settings")
         .select("value")
-        .eq("key", "code_injection")
+        .eq("setting_key", "code_injection")
         .maybeSingle();
       if (error) throw error;
       return (data?.value as unknown as CodeInjectionSettings) || DEFAULT_SETTINGS;
@@ -47,13 +47,13 @@ const AdminCodeInjection = () => {
       const { data, error } = await supabase
         .from("site_settings")
         .update({ value: settings as unknown as Json })
-        .eq("key", "code_injection")
+        .eq("setting_key", "code_injection")
         .select();
       if (error) throw error;
       if (!data || data.length === 0) {
         const { error: insertError } = await supabase
           .from("site_settings")
-          .insert({ key: "code_injection", value: settings as unknown as Json });
+          .insert({ setting_key: "code_injection", value: settings as unknown as Json });
         if (insertError) throw insertError;
       }
     },

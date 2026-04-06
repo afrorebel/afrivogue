@@ -15,7 +15,7 @@ const CodeInjectionRenderer = () => {
       const { data, error } = await supabase
         .from("site_settings")
         .select("value")
-        .eq("key", "code_injection")
+        .eq("setting_key", "code_injection")
         .maybeSingle();
       if (error) throw error;
       return (data?.value as unknown as CodeInjectionSettings) || null;
@@ -28,10 +28,10 @@ const CodeInjectionRenderer = () => {
 
     // Inject head code
     if (settings.head_code) {
-      const existing = document.getElementById("lovable-head-injection");
+      const existing = document.getElementById("afrivogue-head-injection");
       if (existing) existing.remove();
       const container = document.createElement("div");
-      container.id = "lovable-head-injection";
+      container.id = "afrivogue-head-injection";
       container.innerHTML = settings.head_code;
       // Move child nodes into <head>
       Array.from(container.childNodes).forEach((node) => {
@@ -42,10 +42,10 @@ const CodeInjectionRenderer = () => {
 
     // Inject body start code
     if (settings.body_start_code) {
-      const existing = document.getElementById("lovable-body-start-injection");
+      const existing = document.getElementById("afrivogue-body-start-injection");
       if (existing) existing.remove();
       const wrapper = document.createElement("div");
-      wrapper.id = "lovable-body-start-injection";
+      wrapper.id = "afrivogue-body-start-injection";
       wrapper.innerHTML = settings.body_start_code;
       const root = document.getElementById("root");
       if (root) {
@@ -55,18 +55,18 @@ const CodeInjectionRenderer = () => {
 
     // Inject body end code
     if (settings.body_end_code) {
-      const existing = document.getElementById("lovable-body-end-injection");
+      const existing = document.getElementById("afrivogue-body-end-injection");
       if (existing) existing.remove();
       const wrapper = document.createElement("div");
-      wrapper.id = "lovable-body-end-injection";
+      wrapper.id = "afrivogue-body-end-injection";
       wrapper.innerHTML = settings.body_end_code;
       document.body.appendChild(wrapper);
     }
 
     return () => {
-      document.getElementById("lovable-head-injection")?.remove();
-      document.getElementById("lovable-body-start-injection")?.remove();
-      document.getElementById("lovable-body-end-injection")?.remove();
+      document.getElementById("afrivogue-head-injection")?.remove();
+      document.getElementById("afrivogue-body-start-injection")?.remove();
+      document.getElementById("afrivogue-body-end-injection")?.remove();
     };
   }, [settings]);
 

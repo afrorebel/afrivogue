@@ -37,7 +37,7 @@ const AdminDashboard = () => {
         supabase.from("profiles").select("id", { count: "exact", head: true }),
         supabase.from("trends").select("id", { count: "exact", head: true }).eq("published", true),
         supabase.from("trivia_questions").select("id", { count: "exact", head: true }).eq("published", true),
-        supabase.from("site_settings").select("value").eq("key", "manual_premium_users").maybeSingle(),
+        supabase.from("site_settings").select("value").eq("setting_key", "manual_premium_users").maybeSingle(),
       ]);
       return {
         users: profilesRes.count ?? 0,

@@ -43,7 +43,7 @@ const PublicProfile = () => {
       const { data } = await supabase
         .from("site_settings")
         .select("value")
-        .eq("key", "manual_premium_users")
+        .eq("setting_key", "manual_premium_users")
         .maybeSingle();
       return ((data?.value as string[]) || []).includes(userId!);
     },
