@@ -12,16 +12,23 @@ const app = express();
 app.use(helmet());
 
 // CORS configuration
-const corsOptions = {
-  origin: [
-    process.env.SITE_URL,
-    'http://localhost:5173',
-    'http://localhost:3000'
-  ].filter(Boolean),
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'https://afrivogue.com',
+  'https://www.afrivogue.com',
+  'http://localhost:5173',
+  'http://localhost:3000'
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, server-to-server)
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
+}));
 
 // Body parsing
 app.use(express.json());
@@ -81,6 +88,17 @@ app.use('/api/upload', require('./routes/upload'));
 
 // Generic REST table router — mounted LAST so named routes take priority
 app.use('/api', require('./routes/rest'));
+
+// ─── Serve React frontend (production) ───────────────────────────────────────
+// In production (Hostinger), serve the built React app for all non-API routes
+if (process.env.NODE_ENV === 'production') {
+  const distPath = path.join(__dirname, '..', 'dist');
+  app.use(express.static(distPath));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 // Global error handler
 app.use((err, req, res, next) => {
