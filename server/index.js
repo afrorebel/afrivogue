@@ -11,7 +11,11 @@ const path = require('path');
 const app = express();
 
 // Security middleware
-app.use(helmet());
+// Disable CSP so Vite's hashed JS/CSS assets load correctly in the browser.
+// A strict CSP can be re-added later once the site is stable.
+app.use(helmet({
+  contentSecurityPolicy: false,
+}));
 
 // CORS configuration
 const allowedOrigins = [
@@ -91,15 +95,14 @@ app.use('/api/upload', require('./routes/upload'));
 // Generic REST table router — mounted LAST so named routes take priority
 app.use('/api', require('./routes/rest'));
 
-// ─── Serve React frontend (production) ───────────────────────────────────────
-// In production (Hostinger), serve the built React app for all non-API routes
-if (process.env.NODE_ENV === 'production') {
-  const distPath = path.join(__dirname, '..', 'dist');
-  app.use(express.static(distPath));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(distPath, 'index.html'));
-  });
-}
+// ─── Serve React frontend ─────────────────────────────────────────────────────
+// Always serve the Vite-built React app for all non-API routes.
+// The dist/ folder is created by `npm run build` during Hostinger deployment.
+const distPath = path.join(__dirname, '..', 'dist');
+app.use(express.static(distPath));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Global error handler
