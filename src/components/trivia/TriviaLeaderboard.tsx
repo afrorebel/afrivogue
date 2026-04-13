@@ -36,8 +36,8 @@ const TriviaLeaderboard = () => {
 
       return (data || []).map((s) => ({
         ...s,
-        display_name: profileMap.get(s.user_id)?.display_name || "Anonymous",
-        avatar_url: profileMap.get(s.user_id)?.avatar_url || null,
+        display_name: (profileMap.get(s.user_id) as any)?.display_name || "Anonymous",
+        avatar_url: (profileMap.get(s.user_id) as any)?.avatar_url || null,
       })) as ScoreEntry[];
     },
     staleTime: 30_000,
