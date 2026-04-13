@@ -1,5 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface DbTrend {
@@ -24,8 +23,6 @@ export interface DbTrend {
 }
 
 export function useTrends() {
-  const queryClient = useQueryClient();
-
   const query = useQuery({
     queryKey: ["trends-public"],
     queryFn: async () => {
@@ -41,23 +38,6 @@ export function useTrends() {
     refetchInterval: 60_000,
     staleTime: 30_000,
   });
-
-  useEffect(() => {
-    const channel = supabase
-      .channel("trends-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "trends" },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ["trends-public"] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
 
   return query;
 }

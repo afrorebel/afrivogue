@@ -65,7 +65,7 @@ const AdminTrivia = () => {
     }
   };
 
-  const categories = ["All", ...Array.from(new Set(questions.map((q) => q.category)))];
+  const categories = ["All", ...Array.from(new Set((questions as any[]).map((q: any) => q.category)))];
 
   const filtered = questions.filter((q) => {
     if (filterCat !== "All" && q.category !== filterCat) return false;

@@ -100,8 +100,33 @@ class QueryBuilder {
     return this;
   }
 
+  neq(column: string, value: any) {
+    this._filters[`${column}__neq`] = value;
+    return this;
+  }
+
+  lt(column: string, value: any) {
+    this._filters[`${column}__lt`] = value;
+    return this;
+  }
+
+  gt(column: string, value: any) {
+    this._filters[`${column}__gt`] = value;
+    return this;
+  }
+
   is(column: string, value: any) {
     this._filters[column] = value;
+    return this;
+  }
+
+  in(column: string, values: any[]) {
+    this._filters[`${column}__in`] = values.join(',');
+    return this;
+  }
+
+  ilike(column: string, pattern: string) {
+    this._filters[`${column}__ilike`] = pattern;
     return this;
   }
 
