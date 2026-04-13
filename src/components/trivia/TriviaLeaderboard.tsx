@@ -31,7 +31,7 @@ const TriviaLeaderboard = () => {
         .in("id", userIds);
 
       const profileMap = new Map(
-        (profiles || []).map((p) => [p.id, p])
+        (profiles || []).map((p: any) => [p.id, p])
       );
 
       return (data || []).map((s) => ({
