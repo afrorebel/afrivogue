@@ -223,23 +223,37 @@ const Index = () => {
 
         {/* ── Editorials ── */}
         {editorials.length > 0 && (
-          <section className="py-14 px-6 md:px-16 lg:px-24">
-            <div className="flex items-end justify-between mb-8">
-              <div>
-                <p className="font-body text-xs uppercase tracking-[0.2em] text-gold">Deep Reads</p>
-                <h2 className="mt-1 font-display text-2xl font-bold text-foreground md:text-3xl">Editorials</h2>
+          <section className="px-6 py-24 md:px-12 lg:px-16">
+            <div className="mx-auto max-w-7xl">
+              <div className="relative mb-20 flex items-center justify-center">
+                <div className="absolute h-px w-full bg-border" />
+                <span className="relative bg-background px-10 font-body text-[10px] font-bold uppercase tracking-[0.5em] text-gold">
+                  Afrivogue Editorials
+                </span>
               </div>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/editorials">View All <ArrowRight className="ml-1 h-3 w-3" /></Link>
-              </Button>
-            </div>
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {editorials.map((trend, i) => (
-                <TrendCard key={trend.id} trend={trend} index={i} isPaywalled={paywalledCategories.includes(trend.category)} />
-              ))}
+              <div className="grid gap-x-12 gap-y-20 md:grid-cols-3">
+                {editorials.map((trend, i) => (
+                  <EditorialTile
+                    key={trend.id}
+                    trend={trend as any}
+                    index={i}
+                    size="mood"
+                    isPaywalled={paywalledCategories.includes(trend.category)}
+                  />
+                ))}
+              </div>
+              <div className="mt-20 flex justify-center">
+                <Link
+                  to="/editorials"
+                  className="border-b border-border pb-1 font-body text-[10px] uppercase tracking-[0.4em] text-foreground transition-colors hover:border-gold hover:text-gold"
+                >
+                  All Editorials
+                </Link>
+              </div>
             </div>
           </section>
         )}
+
 
         {/* ── Shop Promotion ── */}
         <FeaturedProducts />
