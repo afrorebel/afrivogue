@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { api } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MailX, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
@@ -10,23 +10,29 @@ type Status = "loading" | "valid" | "already" | "invalid" | "success" | "error";
 const Unsubscribe = () => {
   const [params] = useSearchParams();
   const token = params.get("token");
-  const email = params.get("email");
   const [status, setStatus] = useState<Status>("loading");
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
-    if (!token && !email) { setStatus("invalid"); return; }
-    // Link is valid — show confirmation prompt
-    setStatus("valid");
-  }, [token, email]);
+    if (!token) { setStatus("invalid"); return; }
+    (async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/handle-email-unsubscribe?token=${token}`,
+          { headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY } }
+        );
+        const data = await res.json();
+        if (!res.ok) { setStatus("invalid"); return; }
+        if (data.valid === false && data.reason === "already_unsubscribed") { setStatus("already"); return; }
+        setStatus("valid");
+      } catch { setStatus("invalid"); }
+    })();
+  }, [token]);
 
   const handleConfirm = async () => {
     setProcessing(true);
     try {
-      const { error } = await api.fetch("/newsletter/unsubscribe", {
-        method: "POST",
-        body: JSON.stringify({ token: token ?? undefined, email: email ?? undefined }),
-      });
+      const { error } = await supabase.functions.invoke("handle-email-unsubscribe", { body: { token } });
       setStatus(error ? "error" : "success");
     } catch { setStatus("error"); }
     setProcessing(false);
@@ -47,7 +53,7 @@ const Unsubscribe = () => {
               <MailX className="h-10 w-10 text-gold mx-auto" />
               <h1 className="font-display text-xl font-bold text-foreground">Unsubscribe</h1>
               <p className="font-body text-sm text-muted-foreground">
-                Are you sure you want to unsubscribe from AfriVogue emails?
+                Are you sure you want to unsubscribe from Afrivogue emails?
               </p>
               <Button onClick={handleConfirm} disabled={processing} className="w-full">
                 {processing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}

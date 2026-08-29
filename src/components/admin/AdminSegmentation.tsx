@@ -69,9 +69,9 @@ const AdminSegmentation = () => {
 
     if (criteria.type === "has_ordered") {
       const { data } = await supabase.from("orders").select("user_id");
-      userIds = [...new Set((data || []).map((o: any) => o.user_id))] as string[];
+      userIds = [...new Set((data || []).map((o: any) => o.user_id))];
     } else if (criteria.type === "premium_member") {
-      const { data } = await supabase.from("site_settings").select("value").eq("setting_key", "manual_premium_users").maybeSingle();
+      const { data } = await supabase.from("site_settings").select("value").eq("key", "manual_premium_users").maybeSingle();
       userIds = (data?.value as string[]) || [];
     } else if (criteria.type === "high_spender") {
       const threshold = parseFloat(criteria.value) || 100;
@@ -82,7 +82,7 @@ const AdminSegmentation = () => {
     } else if (criteria.type === "cart_abandoner") {
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
       const { data } = await supabase.from("cart_items").select("user_id").lt("created_at", oneHourAgo);
-      userIds = [...new Set((data || []).map((c: any) => c.user_id))] as string[];
+      userIds = [...new Set((data || []).map((c: any) => c.user_id))];
     } else if (criteria.type === "new_user") {
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const { data } = await supabase.from("profiles").select("id").gte("created_at", thirtyDaysAgo);
@@ -95,10 +95,10 @@ const AdminSegmentation = () => {
       userIds = (all || []).filter((p: any) => !activeIds.has(p.id)).map((p: any) => p.id);
     } else if (criteria.type === "reviewer") {
       const { data } = await supabase.from("product_reviews").select("user_id");
-      userIds = [...new Set((data || []).map((r: any) => r.user_id))] as string[];
+      userIds = [...new Set((data || []).map((r: any) => r.user_id))];
     } else if (criteria.type === "wishlist_user") {
       const { data } = await supabase.from("wishlists").select("user_id");
-      userIds = [...new Set((data || []).map((w: any) => w.user_id))] as string[];
+      userIds = [...new Set((data || []).map((w: any) => w.user_id))];
     }
 
     // Clear existing and insert new

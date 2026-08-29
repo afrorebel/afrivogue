@@ -1,7 +1,6 @@
 import { useState, useMemo, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { uploadImage } from "@/lib/uploadImage";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { motion, AnimatePresence } from "framer-motion";
@@ -105,8 +104,12 @@ const GlobalMoodboard = () => {
     setUploading(true);
     try {
       const file = files[0];
-      const publicUrl = await uploadImage(file);
-      setSubmitForm((p) => ({ ...p, image_url: publicUrl }));
+      const ext = file.name.split(".").pop();
+      const path = `moodboard/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from("trend-images").upload(path, file);
+      if (error) throw error;
+      const { data: urlData } = supabase.storage.from("trend-images").getPublicUrl(path);
+      setSubmitForm((p) => ({ ...p, image_url: urlData.publicUrl }));
       toast({ title: "Image uploaded" });
     } catch (err: any) {
       toast({ title: "Upload failed", description: err.message, variant: "destructive" });

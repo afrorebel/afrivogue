@@ -66,7 +66,7 @@ const AdminMarketingIntegrations = () => {
       const { data, error } = await supabase
         .from("site_settings")
         .select("value")
-        .eq("setting_key", "marketing_integrations")
+        .eq("key", "marketing_integrations")
         .maybeSingle();
       if (error) throw error;
       return (data?.value as unknown as MarketingSettings) || DEFAULT_SETTINGS;
@@ -82,13 +82,13 @@ const AdminMarketingIntegrations = () => {
       const { data, error } = await supabase
         .from("site_settings")
         .update({ value: settings as unknown as Json })
-        .eq("setting_key", "marketing_integrations")
+        .eq("key", "marketing_integrations")
         .select();
       if (error) throw error;
       if (!data || data.length === 0) {
         const { error: insertError } = await supabase
           .from("site_settings")
-          .insert({ setting_key: "marketing_integrations", value: settings as unknown as Json });
+          .insert({ key: "marketing_integrations", value: settings as unknown as Json });
         if (insertError) throw insertError;
       }
     },
