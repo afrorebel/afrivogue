@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import afrivogueIcon from "@/assets/afrivogue-icon.png";
 import Navbar from "@/components/Navbar";
 import TrendCard from "@/components/TrendCard";
+import EditorialTile from "@/components/EditorialTile";
 import LeadGenWidget from "@/components/LeadGenWidget";
 import NewsletterPopup from "@/components/NewsletterPopup";
 import TrendingTicker from "@/components/TrendingTicker";
