@@ -95,15 +95,14 @@ const Contributors = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="mx-auto max-w-5xl px-6 pb-20 pt-28">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12 text-center">
-          <h1 className="font-display text-4xl font-bold text-foreground md:text-5xl">
-            Our <span className="text-gold">Voices</span>
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl font-body text-sm leading-relaxed text-muted-foreground">
-            The cultural commentators, writers, and creators shaping the Afrivogue narrative. Discover their perspectives and follow your favorites.
-          </p>
-        </motion.div>
+      <PageMasthead
+        eyebrow="The Contributors"
+        title="Our"
+        accent="Voices"
+        intro="The cultural commentators, writers and creators shaping the Afrivogue narrative."
+      />
+      <main className="mx-auto max-w-7xl px-6 pb-20 md:px-12 lg:px-16">
+
 
         {isLoading ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

@@ -62,24 +62,14 @@ const Contact = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
-      {/* Hero */}
-      <section className="relative flex items-center justify-center px-6 pb-16 pt-32 md:px-16 lg:px-24">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent" />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="relative z-10 text-center"
-        >
-          <p className="font-body text-xs uppercase tracking-[0.3em] text-primary">Get In Touch</p>
-          <h1 className="mt-3 font-display text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-            Contact <span className="text-primary">Us</span>
-          </h1>
-          <p className="mx-auto mt-4 max-w-lg font-body text-sm leading-relaxed text-muted-foreground md:text-base">
-            Have a story tip, partnership inquiry, or just want to say hello? We'd love to hear from you.
-          </p>
-        </motion.div>
-      </section>
+      {/* Masthead */}
+      <PageMasthead
+        eyebrow="Get In Touch"
+        title="Contact"
+        accent="Us"
+        intro="Story tips, partnership inquiries or a simple hello — we read everything."
+      />
+
 
       {/* Content */}
       <section className="mx-auto max-w-6xl px-6 pb-24 md:px-16 lg:px-24">

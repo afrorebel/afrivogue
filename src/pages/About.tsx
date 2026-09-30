@@ -41,19 +41,14 @@ const About = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
-      {/* Hero */}
-      <section className="relative flex items-center justify-center px-6 pb-16 pt-32 md:px-16 lg:px-24">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent" />
-        <motion.div {...fade()} className="relative z-10 text-center">
-          <p className="font-body text-xs uppercase tracking-[0.3em] text-primary">Who We Are</p>
-          <h1 className="mt-3 font-display text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-            About <span className="text-primary">Afrivogue</span>
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl font-body text-sm leading-relaxed text-muted-foreground md:text-base">
-            Afrivogue is a global fashion, culture, entertainment, and lifestyle platform — through an African lens. From the continent to the diaspora, from Hollywood to the Caribbean, we celebrate the creativity and influence that shapes the world.
-          </p>
-        </motion.div>
-      </section>
+      {/* Masthead */}
+      <PageMasthead
+        eyebrow="Who We Are"
+        title="About"
+        accent="Afrivogue"
+        intro="A global fashion, culture, entertainment and lifestyle platform — through an African lens, from the continent to the diaspora."
+      />
+
 
       {/* Mission */}
       <section className="mx-auto max-w-4xl px-6 pb-20 md:px-16 lg:px-24">
