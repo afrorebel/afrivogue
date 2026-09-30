@@ -15,9 +15,9 @@ import { trends as fallbackTrends } from "@/lib/trendData";
 import type { Category } from "@/lib/trendData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Crown } from "lucide-react";
-import { motion } from "framer-motion";
+import SectionRule from "@/components/editorial/SectionRule";
+import MembershipCTA from "@/components/editorial/MembershipCTA";
+
 import { getCategoryImage } from "@/lib/categoryImages";
 
 const Index = () => {
@@ -100,7 +100,7 @@ const Index = () => {
       <NewsletterPopup />
 
       {/* ── Editorial Masthead + Hero ── */}
-      <div className="px-6 pt-10 md:px-12 lg:px-16">
+      <div className="px-6 pt-28 md:px-12 lg:px-16">
         <div className="mx-auto max-w-7xl">
           <div className="mb-10 flex items-center justify-between border-b border-border/60 pb-4">
             <span className="font-body text-[9px] uppercase tracking-[0.4em] text-muted-foreground">
@@ -167,12 +167,8 @@ const Index = () => {
         {/* ── Latest Stories ── */}
         <section className="px-6 py-24 md:px-12 lg:px-16">
           <div className="mx-auto max-w-7xl">
-            <div className="relative mb-20 flex items-center justify-center">
-              <div className="absolute h-px w-full bg-border" />
-              <span className="relative bg-background px-10 font-body text-[10px] font-bold uppercase tracking-[0.5em] text-gold">
-                Latest Stories
-              </span>
-            </div>
+            <SectionRule label="Latest Stories" className="mb-20" />
+
 
             {isLoading ? (
               <div className="grid gap-12 md:grid-cols-3 lg:grid-cols-4">
@@ -225,12 +221,8 @@ const Index = () => {
         {editorials.length > 0 && (
           <section className="px-6 py-24 md:px-12 lg:px-16">
             <div className="mx-auto max-w-7xl">
-              <div className="relative mb-20 flex items-center justify-center">
-                <div className="absolute h-px w-full bg-border" />
-                <span className="relative bg-background px-10 font-body text-[10px] font-bold uppercase tracking-[0.5em] text-gold">
-                  Afrivogue Editorials
-                </span>
-              </div>
+              <SectionRule label="Afrivogue Editorials" className="mb-20" />
+
               <div className="grid gap-x-12 gap-y-20 md:grid-cols-3">
                 {editorials.map((trend, i) => (
                   <EditorialTile
@@ -259,30 +251,8 @@ const Index = () => {
         <FeaturedProducts />
 
         {/* ── Membership CTA ── */}
-        <section className="py-16 px-6 md:px-16 lg:px-24">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="rounded-lg border border-gold/30 bg-card p-10 md:p-14 text-center"
-          >
-            <Crown className="mx-auto h-10 w-10 text-gold mb-4" />
-            <h2 className="font-display text-3xl font-bold text-foreground md:text-4xl">
-              Join the <span className="text-gold">Afrivogue Collective</span>
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl font-body text-base text-muted-foreground">
-              Unlock premium editorials, earn from your contributions, and join a global community of culture shapers.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button asChild className="bg-gold text-primary-foreground hover:bg-gold/90 px-8">
-                <Link to="/membership">Become a Member</Link>
-              </Button>
-              <Button variant="outline" asChild>
-                <Link to="/about">Learn More</Link>
-              </Button>
-            </div>
-          </motion.div>
-        </section>
+        <MembershipCTA />
+
       </main>
 
       <Footer />
