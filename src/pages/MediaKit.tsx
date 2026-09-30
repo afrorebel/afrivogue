@@ -85,19 +85,14 @@ const MediaKit = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
-      {/* Hero */}
-      <section className="relative flex items-center justify-center px-6 pb-16 pt-32 md:px-16 lg:px-24">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent" />
-        <motion.div {...anim()} className="relative z-10 text-center">
-          <p className="font-body text-xs uppercase tracking-[0.3em] text-primary">Partner With Us</p>
-          <h1 className="mt-3 font-display text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-            Media <span className="text-primary">Kit</span>
-          </h1>
-          <p className="mx-auto mt-4 max-w-md font-body text-sm leading-relaxed text-muted-foreground md:text-base">
-            Global Fashion · Culture · Black Excellence
-          </p>
-        </motion.div>
-      </section>
+      {/* Masthead */}
+      <PageMasthead
+        eyebrow="Partner With Us"
+        title="Media"
+        accent="Kit"
+        intro="Global fashion · culture · Black excellence — partnership formats, audience and reach."
+      />
+
 
       <section className="mx-auto max-w-5xl space-y-16 px-6 pb-24 md:px-16 lg:px-24">
         {/* About + Audience */}

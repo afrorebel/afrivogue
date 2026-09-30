@@ -69,15 +69,14 @@ const Shop = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="mx-auto max-w-7xl px-4 pt-24 pb-16 md:px-8">
-        {/* Hero */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12 text-center">
-          <p className="font-body text-xs uppercase tracking-[0.2em] text-gold">The Afrivogue Collection</p>
-          <h1 className="mt-2 font-display text-4xl font-bold text-foreground md:text-5xl">Shop</h1>
-          <p className="mx-auto mt-3 max-w-lg font-body text-sm text-muted-foreground">
-            Curated custom pieces and affiliate selections celebrating African elegance and contemporary style.
-          </p>
-        </motion.div>
+      <PageMasthead
+        eyebrow="The Collection"
+        title="The"
+        accent="Shop"
+        intro="Curated custom pieces and affiliate selections celebrating African elegance and contemporary style."
+      />
+      <main className="mx-auto max-w-7xl px-6 pb-16 md:px-12 lg:px-16">
+
 
         {/* Flash Sales Banner */}
         {flashProducts.length > 0 && (

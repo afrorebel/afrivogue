@@ -154,15 +154,13 @@ const GlobalMoodboard = () => {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
-      <header className="pt-28 pb-12 px-6 md:px-16 lg:px-24">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <p className="font-body text-[11px] font-semibold uppercase tracking-[0.2em] text-gold mb-4">Visual Inspiration</p>
-          <h1 className="font-display text-4xl md:text-6xl font-bold tracking-tight mb-4">Global Moodboard</h1>
-          <p className="font-body text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed">
-            A curated gallery of visual ideas shaping global fashion and culture.
-          </p>
-        </motion.div>
-      </header>
+      <PageMasthead
+        eyebrow="Visual Inspiration"
+        title="Global"
+        accent="Moodboard"
+        intro="A curated gallery of visual ideas shaping global fashion and culture."
+      />
+
 
       <div className="px-6 md:px-16 lg:px-24 flex flex-wrap items-center gap-2 mb-10">
         <button className={pill(activeCategory === "All")} onClick={() => setActiveCategory("All")}>All</button>
