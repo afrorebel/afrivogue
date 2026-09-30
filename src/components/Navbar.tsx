@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X, User } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,14 +20,37 @@ const navLinks = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { user } = useAuth();
+  const { pathname } = useLocation();
+
+  // On the homepage the large masthead already carries the wordmark,
+  // so the compact one only appears once it scrolls out of view.
+  const isHome = pathname === "/";
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 420);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const showWordmark = !isHome || scrolled;
 
   return (
     <>
-      <nav className="fixed top-0 z-50 flex w-full items-center justify-between border-b border-border/50 bg-background/80 px-6 py-4 backdrop-blur-md md:px-16 lg:px-24">
-        <Link to="/" className="font-display text-2xl font-bold tracking-tight text-foreground">
-          AFRI<span className="text-gold">VOGUE</span>
+      <nav className="fixed top-0 z-50 flex w-full items-center justify-between border-b border-border/50 bg-background/80 px-6 py-4 backdrop-blur-md md:px-12 lg:px-16">
+        <Link
+          to="/"
+          aria-hidden={!showWordmark}
+          tabIndex={showWordmark ? 0 : -1}
+          className={`font-display text-xl italic tracking-tight text-foreground transition-opacity duration-500 ${
+            showWordmark ? "opacity-100" : "pointer-events-none opacity-0"
+          }`}
+        >
+          Afri<span className="text-gold">Vogue</span>
         </Link>
+
 
         <div className="hidden items-center gap-8 font-body text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground md:flex">
           {navLinks.map((l) => (
