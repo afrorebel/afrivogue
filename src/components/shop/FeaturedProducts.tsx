@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRight, ShoppingBag } from "lucide-react";
 import { motion } from "framer-motion";
+
 
 const FeaturedProducts = () => {
   const { data: products = [] } = useQuery({
