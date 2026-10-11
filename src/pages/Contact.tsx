@@ -1,3 +1,4 @@
+import PageMasthead from "@/components/editorial/PageMasthead";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Send, MapPin, ExternalLink } from "lucide-react";
