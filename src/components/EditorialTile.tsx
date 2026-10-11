@@ -41,13 +41,18 @@ const EditorialTile = ({ trend, index, isPaywalled, size = "mood" }: EditorialTi
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.6, delay: (index % 3) * 0.08 }}
-      className="group flex flex-col"
+      className="group flex min-w-0 flex-col"
     >
       <Link to={href} className="relative mb-6 block overflow-hidden">
         <img
           src={image}
           alt={trend.headline}
           loading="lazy"
+          onError={(e) => {
+            // Remote images can disappear or block hotlinking — fall back to the category art.
+            const fallback = getCategoryImage(trend.category);
+            if (!e.currentTarget.src.endsWith(fallback)) e.currentTarget.src = fallback;
+          }}
           className={`w-full ${aspectBySize[size]} bg-surface object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105`}
         />
         <span className="absolute left-4 top-4 bg-gold px-3 py-1 font-body text-[8px] font-bold uppercase tracking-[0.2em] text-primary-foreground">
@@ -65,7 +70,7 @@ const EditorialTile = ({ trend, index, isPaywalled, size = "mood" }: EditorialTi
       </span>
 
       <h3
-        className={`font-display italic leading-tight text-foreground transition-colors group-hover:text-gold ${
+        className={`break-words font-display italic leading-tight text-foreground transition-colors group-hover:text-gold ${
           size === "lead" ? "mb-5 text-3xl md:text-4xl" : "mb-4 text-2xl"
         }`}
       >

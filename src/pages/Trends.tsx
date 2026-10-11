@@ -102,7 +102,7 @@ const Trends = () => {
           </div>
 
           {isLoading ? (
-            <div className="grid gap-x-12 gap-y-20 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-x-12 gap-y-20 md:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 9 }).map((_, i) => (
                 <div key={i} className="space-y-4">
                   <Skeleton className="aspect-[4/5] w-full" />
@@ -118,7 +118,7 @@ const Trends = () => {
             </p>
           ) : (
             <>
-              <div className="grid gap-x-12 gap-y-20 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-x-12 gap-y-20 md:grid-cols-2 lg:grid-cols-3">
                 {paged.map((trend, i) => (
                   <EditorialTile
                     key={trend.id}

@@ -1,8 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Heart, ShoppingBag, ExternalLink, Clock, Crown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,7 +32,7 @@ interface Props {
 const CountdownTimer = ({ endDate }: { endDate: string }) => {
   const [timeLeft, setTimeLeft] = useState("");
 
-  useState(() => {
+  useEffect(() => {
     const update = () => {
       const diff = new Date(endDate).getTime() - Date.now();
       if (diff <= 0) { setTimeLeft("Ended"); return; }
@@ -46,12 +44,12 @@ const CountdownTimer = ({ endDate }: { endDate: string }) => {
     update();
     const id = setInterval(update, 1000);
     return () => clearInterval(id);
-  });
+  }, [endDate]);
 
   return (
-    <div className="flex items-center gap-1 rounded-sm bg-destructive px-2 py-1 text-destructive-foreground">
+    <div className="flex items-center gap-1 bg-destructive px-2 py-1 text-destructive-foreground">
       <Clock className="h-3 w-3" />
-      <span className="font-body text-[10px] font-bold uppercase tracking-wider">{timeLeft}</span>
+      <span className="font-body text-[8px] font-bold uppercase tracking-[0.2em]">{timeLeft}</span>
     </div>
   );
 };
@@ -89,65 +87,92 @@ const ProductCard = ({ product, isWishlisted, onWishlistToggle }: Props) => {
   };
 
   const img = product.images?.[0] || "/placeholder.svg";
+  const badge = "px-2 py-1 font-body text-[8px] font-bold uppercase tracking-[0.2em]";
+  const linkProps =
+    isAffiliate && product.affiliate_url
+      ? { href: product.affiliate_url, target: "_blank", rel: "noopener noreferrer sponsored" }
+      : null;
+
+  const body = (
+    <>
+      <div className="relative aspect-[3/4] overflow-hidden bg-surface">
+        <img
+          src={img}
+          alt={product.name}
+          loading="lazy"
+          onError={(e) => {
+            if (!e.currentTarget.src.endsWith("/placeholder.svg")) e.currentTarget.src = "/placeholder.svg";
+          }}
+          className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
+        />
+
+        {/* Badges */}
+        <div className="absolute left-3 top-3 flex flex-col items-start gap-1">
+          {isCustom && (
+            <span className={`${badge} flex items-center gap-1 bg-gold text-primary-foreground`}>
+              <Crown className="h-3 w-3" /> Members
+            </span>
+          )}
+          {product.featured && !isCustom && <span className={`${badge} bg-gold text-primary-foreground`}>Featured</span>}
+          {isFlashActive && <CountdownTimer endDate={product.flash_sale_end!} />}
+          {isAffiliate && (
+            <span className={`${badge} flex items-center gap-1 bg-background/80 text-foreground backdrop-blur-sm`}>
+              <ExternalLink className="h-3 w-3" /> Partner
+            </span>
+          )}
+          {outOfStock && <span className={`${badge} bg-destructive text-destructive-foreground`}>Sold Out</span>}
+          {showCompare && (
+            <span className={`${badge} bg-destructive text-destructive-foreground`}>
+              {Math.round((1 - effectivePrice / product.compare_at_price!) * 100)}% Off
+            </span>
+          )}
+        </div>
+
+        {/* Quick actions — always visible on touch screens, revealed on hover on desktop */}
+        <div className="absolute right-3 top-3 flex flex-col gap-2 transition-opacity md:opacity-0 md:group-hover:opacity-100">
+          <button
+            type="button"
+            aria-label={isWishlisted ? "Remove from wishlist" : "Save to wishlist"}
+            onClick={handleWishlist}
+            className="flex h-8 w-8 items-center justify-center bg-background/80 text-foreground backdrop-blur-sm transition-colors hover:text-gold"
+          >
+            <Heart className={`h-4 w-4 ${isWishlisted ? "fill-destructive text-destructive" : ""}`} />
+          </button>
+          {!isAffiliate && !outOfStock && !premiumRequired && (
+            <button
+              type="button"
+              aria-label="Add to cart"
+              onClick={handleAddToCart}
+              className="flex h-8 w-8 items-center justify-center bg-background/80 text-foreground backdrop-blur-sm transition-colors hover:text-gold"
+            >
+              <ShoppingBag className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      <p className="mt-4 font-body text-[9px] uppercase tracking-[0.25em] text-muted-foreground">{product.category}</p>
+      <h3 className="mt-2 font-display text-lg italic leading-tight text-foreground transition-colors line-clamp-2 group-hover:text-gold">
+        {product.name}
+      </h3>
+      <div className="mt-2 flex items-center gap-3">
+        <span className="font-body text-xs tracking-[0.15em] text-gold">${effectivePrice.toFixed(2)}</span>
+        {(showCompare || isFlashActive) && (
+          <span className="font-body text-xs text-muted-foreground line-through">
+            ${(product.compare_at_price || product.price).toFixed(2)}
+          </span>
+        )}
+      </div>
+    </>
+  );
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="group relative overflow-hidden rounded-lg border border-border bg-card"
-    >
-      <Link to={isAffiliate && product.affiliate_url ? product.affiliate_url : `/shop/${product.id}`} target={isAffiliate ? "_blank" : undefined}>
-        <div className="relative aspect-[3/4] overflow-hidden">
-          <img src={img} alt={product.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-
-          {/* Badges */}
-          <div className="absolute left-3 top-3 flex flex-col gap-1">
-            {isCustom && (
-              <Badge className="bg-gold text-primary-foreground font-body text-[10px]">
-                <Crown className="mr-1 h-3 w-3" /> Members Only
-              </Badge>
-            )}
-            {product.featured && !isCustom && <Badge className="bg-gold text-primary-foreground font-body text-[10px]">Featured</Badge>}
-            {isFlashActive && <CountdownTimer endDate={product.flash_sale_end!} />}
-            {isAffiliate && (
-              <Badge variant="secondary" className="font-body text-[10px]">
-                <ExternalLink className="mr-1 h-3 w-3" /> Affiliate
-              </Badge>
-            )}
-            {outOfStock && <Badge variant="destructive" className="font-body text-[10px]">Out of stock</Badge>}
-            {showCompare && (
-              <Badge className="bg-destructive text-destructive-foreground font-body text-[10px]">
-                {Math.round((1 - effectivePrice / product.compare_at_price!) * 100)}% OFF
-              </Badge>
-            )}
-          </div>
-
-          {/* Quick actions */}
-          <div className="absolute right-3 top-3 flex flex-col gap-2 opacity-0 transition-opacity group-hover:opacity-100">
-            <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full" onClick={handleWishlist}>
-              <Heart className={`h-4 w-4 ${isWishlisted ? "fill-destructive text-destructive" : ""}`} />
-            </Button>
-            {!isAffiliate && !outOfStock && !premiumRequired && (
-              <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full" onClick={handleAddToCart}>
-                <ShoppingBag className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        </div>
-
-        <div className="p-4">
-          <p className="font-body text-[10px] uppercase tracking-[0.15em] text-muted-foreground">{product.category}</p>
-          <h3 className="mt-1 font-display text-sm font-semibold text-foreground line-clamp-2">{product.name}</h3>
-          <div className="mt-2 flex items-center gap-2">
-            <span className="font-display text-lg font-bold text-gold">${effectivePrice.toFixed(2)}</span>
-            {(showCompare || isFlashActive) && (
-              <span className="font-body text-xs text-muted-foreground line-through">
-                ${(product.compare_at_price || product.price).toFixed(2)}
-              </span>
-            )}
-          </div>
-        </div>
-      </Link>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="group relative min-w-0">
+      {linkProps ? (
+        <a {...linkProps} className="block">{body}</a>
+      ) : (
+        <Link to={`/shop/${product.id}`} className="block">{body}</Link>
+      )}
     </motion.div>
   );
 };

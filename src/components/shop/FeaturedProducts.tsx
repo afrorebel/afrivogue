@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-
 const FeaturedProducts = () => {
   const { data: products = [] } = useQuery({
     queryKey: ["featured-products-home"],
@@ -92,9 +91,6 @@ const FeaturedProducts = () => {
           })}
         </div>
       </div>
-    </section>
-  );
-
     </section>
   );
 };

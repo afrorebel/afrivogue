@@ -1,9 +1,10 @@
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Globe, Clock, Signal, TrendingUp, ChevronDown } from "lucide-react";
+import { Globe, Clock, Signal, TrendingUp, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import PageMasthead from "@/components/editorial/PageMasthead";
 import { supabase } from "@/integrations/supabase/client";
 import { linkifyText } from "@/lib/linkify";
 import {
@@ -18,6 +19,8 @@ import type {
   ForecastHorizon,
   ForecastSignalStrength,
 } from "@/lib/forecastData";
+
+const PER_PAGE = 12;
 
 /* ─────────────────── signal badge colours ─────────────────── */
 const signalBadge: Record<ForecastSignalStrength, string> = {
@@ -99,8 +102,8 @@ const ForecastCard = ({
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.5, delay: index * 0.07 }}
-      className="group relative flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all duration-300 hover:border-gold/30 hover:shadow-[0_0_40px_-12px_hsl(var(--gold)/0.12)]"
+      transition={{ duration: 0.5, delay: (index % PER_PAGE) * 0.05 }}
+      className="group relative flex min-w-0 flex-col overflow-hidden border border-border/60 bg-card transition-colors duration-300 hover:border-gold/40"
     >
       {/* top accent line */}
       <div className="h-[2px] w-full gradient-gold opacity-50 transition-opacity group-hover:opacity-100" />
@@ -109,12 +112,12 @@ const ForecastCard = ({
         {/* meta row */}
         <div className="mb-5 flex flex-wrap items-center gap-2">
           <span
-            className={`flex items-center gap-1.5 rounded-sm border px-2.5 py-1 font-body text-[10px] font-bold uppercase tracking-wider ${signalBadge[forecast.signalStrength]}`}
+            className={`flex items-center gap-1.5 border px-2.5 py-1 font-body text-[8px] font-bold uppercase tracking-[0.2em] ${signalBadge[forecast.signalStrength]}`}
           >
             <Signal className="h-2.5 w-2.5" />
             {forecast.signalStrength}
           </span>
-          <span className="flex items-center gap-1.5 rounded-sm border border-border px-2.5 py-1 font-body text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+          <span className="flex items-center gap-1.5 border border-border px-2.5 py-1 font-body text-[8px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
             {horizonIcon[forecast.horizon]}
             {forecast.horizon}
           </span>
@@ -124,12 +127,12 @@ const ForecastCard = ({
         </div>
 
         {/* title */}
-        <h3 className="mb-3 font-display text-xl font-bold leading-tight text-foreground transition-colors group-hover:text-gold sm:text-2xl">
+        <h3 className="mb-3 break-words font-display text-2xl italic leading-tight text-foreground transition-colors group-hover:text-gold sm:text-3xl">
           {forecast.title}
         </h3>
 
         {/* projection */}
-        <p className="font-body text-sm leading-relaxed text-foreground/80">
+        <p className={`font-body text-sm leading-relaxed text-foreground/80 ${expanded ? "" : "line-clamp-5"}`}>
           {forecast.projection}
         </p>
 
@@ -178,9 +181,9 @@ const ForecastCard = ({
           </div>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="font-body text-xs font-medium text-gold transition-colors hover:text-foreground"
+            className="font-body text-[9px] uppercase tracking-[0.3em] text-gold transition-colors hover:text-foreground"
           >
-            {expanded ? "Collapse ↑" : "Full Analysis →"}
+            {expanded ? "Collapse" : "Full Analysis"}
           </button>
         </div>
       </div>
@@ -220,6 +223,7 @@ const CulturalForecast = () => {
   const [domain, setDomain] = useState<ForecastDomain | "All">("All");
   const [horizon, setHorizon] = useState<ForecastHorizon | "All">("All");
   const [signal, setSignal] = useState<ForecastSignalStrength | "All">("All");
+  const [page, setPage] = useState(1);
   const [openFilter, setOpenFilter] = useState<"category" | "horizon" | "signal" | null>(null);
 
   const toggleFilter = (key: "category" | "horizon" | "signal") =>
@@ -234,8 +238,17 @@ const CulturalForecast = () => {
     });
   }, [domain, horizon, signal, allForecasts]);
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+  const safePage = Math.min(page, totalPages);
+  const paged = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE);
+
+  const goToPage = (next: number) => {
+    setPage(next);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const pill = (active: boolean) =>
-    `cursor-pointer rounded-sm border px-3 py-1.5 font-body text-xs font-medium uppercase tracking-wider transition-all duration-200 ${
+    `cursor-pointer border px-3 py-1.5 font-body text-[9px] uppercase tracking-[0.25em] transition-all duration-200 ${
       active
         ? "border-gold bg-gold text-primary-foreground"
         : "border-border bg-transparent text-muted-foreground hover:border-gold/40 hover:text-foreground"
@@ -244,11 +257,11 @@ const CulturalForecast = () => {
   const headerBtn = (key: "category" | "horizon" | "signal", label: string, activeValue: string) => (
     <button
       onClick={() => toggleFilter(key)}
-      className="flex items-center gap-1.5 font-body text-[11px] font-semibold uppercase tracking-[0.15em] text-foreground/80 hover:text-foreground transition-colors"
+      className="flex items-center gap-1.5 font-body text-[9px] uppercase tracking-[0.3em] text-foreground/80 transition-colors hover:text-gold"
     >
       <span>{label}</span>
       {activeValue !== "All" && (
-        <span className="rounded-sm bg-gold/20 px-1.5 py-0.5 text-[10px] text-gold">{activeValue}</span>
+        <span className="bg-gold/20 px-1.5 py-0.5 text-gold">{activeValue}</span>
       )}
       <ChevronDown
         className={`h-3 w-3 transition-transform duration-200 ${openFilter === key ? "rotate-180" : ""}`}
@@ -261,47 +274,19 @@ const CulturalForecast = () => {
       <Navbar />
       <AmbientField />
 
-      {/* Hero */}
-      <header className="relative z-10 px-6 pb-8 pt-28 md:px-16 lg:px-24">
-        <Link
-          to="/"
-          className="mb-8 inline-flex items-center gap-2 font-body text-xs font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:text-gold"
-        >
-          <ArrowLeft className="h-3 w-3" />
-          Afrivogue Feed
-        </Link>
-
-        <div className="max-w-3xl">
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="mb-3 font-body text-[10px] font-bold uppercase tracking-[0.3em] text-gold"
-          >
-            Cultural Forecast · Q1 2026
-          </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="font-display text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-5xl"
-          >
-            Signals from <span className="italic text-gold">Tomorrow</span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="mt-4 max-w-xl font-body text-sm leading-relaxed text-muted-foreground sm:text-base"
-          >
-            Intelligent projections across fashion, entertainment, luxury, culture, and the creative
-            economy — from the African continent to Hollywood, the Caribbean to global capitals.
-          </motion.p>
-        </div>
-      </header>
+      <div className="relative z-10">
+        <PageMasthead
+          eyebrow="Cultural Forecast"
+          title="Signals from"
+          accent="Tomorrow"
+          intro="Intelligent projections across fashion, entertainment, luxury, culture and the creative economy — from the African continent to global capitals."
+          meta={`${filtered.length} Signals`}
+        />
+      </div>
 
       {/* Filters */}
-      <div className="relative z-10 px-6 md:px-16 lg:px-24 space-y-2">
+      <div className="relative z-10 px-6 md:px-12 lg:px-16">
+        <div className="mx-auto max-w-7xl space-y-2 border-b border-border/60 pb-4">
         <div className="flex flex-wrap items-center gap-4 md:gap-6">
           {headerBtn("category", "Category", domain)}
           <span className="hidden md:block h-4 w-px bg-border" />
@@ -323,25 +308,25 @@ const CulturalForecast = () => {
               <div className="flex flex-wrap items-center gap-2 pt-2 pb-1">
                 {openFilter === "category" && (
                   <>
-                    <button className={pill(domain === "All")} onClick={() => setDomain("All")}>All</button>
+                    <button className={pill(domain === "All")} onClick={() => { setDomain("All"); setPage(1); }}>All</button>
                     {forecastDomains.map((d) => (
-                      <button key={d} className={pill(domain === d)} onClick={() => setDomain(d)}>{d}</button>
+                      <button key={d} className={pill(domain === d)} onClick={() => { setDomain(d); setPage(1); }}>{d}</button>
                     ))}
                   </>
                 )}
                 {openFilter === "horizon" && (
                   <>
-                    <button className={pill(horizon === "All")} onClick={() => setHorizon("All")}>All</button>
+                    <button className={pill(horizon === "All")} onClick={() => { setHorizon("All"); setPage(1); }}>All</button>
                     {forecastHorizons.map((h) => (
-                      <button key={h} className={pill(horizon === h)} onClick={() => setHorizon(h)}>{h}</button>
+                      <button key={h} className={pill(horizon === h)} onClick={() => { setHorizon(h); setPage(1); }}>{h}</button>
                     ))}
                   </>
                 )}
                 {openFilter === "signal" && (
                   <>
-                    <button className={pill(signal === "All")} onClick={() => setSignal("All")}>All</button>
+                    <button className={pill(signal === "All")} onClick={() => { setSignal("All"); setPage(1); }}>All</button>
                     {signalStrengths.map((s) => (
-                      <button key={s} className={pill(signal === s)} onClick={() => setSignal(s)}>{s}</button>
+                      <button key={s} className={pill(signal === s)} onClick={() => { setSignal(s); setPage(1); }}>{s}</button>
                     ))}
                   </>
                 )}
@@ -349,13 +334,15 @@ const CulturalForecast = () => {
             </motion.div>
           )}
         </AnimatePresence>
+        </div>
       </div>
 
       {/* Cards grid */}
-      <section className="relative z-10 mt-10 px-6 pb-24 md:px-16 lg:px-24">
+      <section className="relative z-10 mt-12 px-6 pb-24 md:px-12 lg:px-16">
+        <div className="mx-auto max-w-7xl">
         <AnimatePresence mode="popLayout">
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-2">
-            {filtered.map((f, i) => (
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+            {paged.map((f, i) => (
               <ForecastCard key={f.id} forecast={f} index={i} />
             ))}
           </div>
@@ -363,7 +350,7 @@ const CulturalForecast = () => {
 
         {filtered.length === 0 && (
           <div className="mt-16 text-center">
-            <p className="font-display text-xl text-muted-foreground">
+            <p className="font-display text-2xl italic text-muted-foreground">
               No forecasts match your filters.
             </p>
             <p className="mt-2 font-body text-sm text-muted-foreground">
@@ -372,18 +359,33 @@ const CulturalForecast = () => {
           </div>
         )}
 
-        {/* Footer */}
-        <footer className="mt-24 border-t border-border pt-10">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <div className="font-display text-lg font-bold text-foreground">
-              AFRI<span className="text-gold">VOGUE</span>
-            </div>
-            <p className="font-body text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-              Afrivogue does not chase the future. It defines it.
-            </p>
+        {totalPages > 1 && (
+          <div className="mt-24 flex items-center justify-between border-t border-border/60 pt-6">
+            <button
+              disabled={safePage <= 1}
+              onClick={() => goToPage(safePage - 1)}
+              className="inline-flex items-center gap-2 font-body text-[10px] uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold disabled:pointer-events-none disabled:opacity-30"
+            >
+              <ChevronLeft className="h-3 w-3" /> Previous
+            </button>
+            <span className="font-body text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              {safePage} / {totalPages}
+            </span>
+            <button
+              disabled={safePage >= totalPages}
+              onClick={() => goToPage(safePage + 1)}
+              className="inline-flex items-center gap-2 font-body text-[10px] uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold disabled:pointer-events-none disabled:opacity-30"
+            >
+              Next <ChevronRight className="h-3 w-3" />
+            </button>
           </div>
-        </footer>
+        )}
+        </div>
       </section>
+
+      <div className="relative z-10">
+        <Footer />
+      </div>
     </div>
   );
 };

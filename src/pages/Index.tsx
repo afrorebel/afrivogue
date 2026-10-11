@@ -121,8 +121,8 @@ const Index = () => {
 
       {hero && (
         <section className="px-6 md:px-12 lg:px-16">
-          <div className="mx-auto grid max-w-7xl grid-cols-12 items-start gap-8">
-            <div className="col-span-12 md:col-span-7">
+          <div className="mx-auto grid max-w-7xl grid-cols-1 items-start gap-8 md:grid-cols-12">
+            <div className="md:col-span-7">
               <div className="overflow-hidden">
                 <img
                   src={heroImage}
@@ -145,7 +145,7 @@ const Index = () => {
               </div>
             </div>
 
-            <div className="col-span-12 pt-6 md:col-span-5 md:pl-16 md:pt-32">
+            <div className="md:col-span-5 md:pl-16 md:pt-32">
               <div className="max-w-xs">
                 <p className="mb-8 font-body text-xs uppercase leading-relaxed tracking-[0.2em] text-foreground line-clamp-6">
                   {hero.cultural_significance}
@@ -171,7 +171,7 @@ const Index = () => {
 
 
             {isLoading ? (
-              <div className="grid gap-12 md:grid-cols-3 lg:grid-cols-4">
+              <div className="grid grid-cols-1 gap-12 md:grid-cols-3 lg:grid-cols-4">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="space-y-4">
                     <Skeleton className="aspect-[3/4] w-full" />
@@ -223,7 +223,7 @@ const Index = () => {
             <div className="mx-auto max-w-7xl">
               <SectionRule label="Afrivogue Editorials" className="mb-20" />
 
-              <div className="grid gap-x-12 gap-y-20 md:grid-cols-3">
+              <div className="grid grid-cols-1 gap-x-12 gap-y-20 md:grid-cols-3">
                 {editorials.map((trend, i) => (
                   <EditorialTile
                     key={trend.id}

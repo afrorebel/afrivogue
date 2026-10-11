@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import PageMasthead from "@/components/editorial/PageMasthead";
 import { motion } from "framer-motion";
 import { Crown, BookOpen, Star, Users } from "lucide-react";
 
@@ -91,21 +93,20 @@ const MembershipPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="mx-auto max-w-5xl px-6 pb-20 pt-28">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-          <h1 className="font-display text-4xl font-bold text-foreground md:text-5xl">
-            Join the <span className="text-gold">Afrivogue Collective</span>
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl font-body text-lg text-muted-foreground">
-            Get full access to Afrivogue's platform — premium editorials, cultural forecasts, community features, and exclusive content from a global Afrocentric lens.
-          </p>
-          <p className="mx-auto mt-3 max-w-xl font-body text-sm text-gold/80">
-            We're in our founding phase. Early members are helping shape what Afrivogue becomes — your voice matters from day one.
-          </p>
-        </motion.div>
+      <PageMasthead
+        eyebrow="Membership"
+        title="Join the"
+        accent="Collective"
+        intro="Full access to Afrivogue — premium editorials, cultural forecasts, community features and exclusive content from a global Afrocentric lens."
+        meta="Founding Phase"
+      />
+      <main className="mx-auto max-w-5xl px-6 pb-24 pt-4">
+        <p className="mx-auto max-w-xl text-center font-body text-[10px] uppercase leading-relaxed tracking-[0.25em] text-gold/80">
+          We're in our founding phase. Early members are helping shape what Afrivogue becomes — your voice matters from day one.
+        </p>
 
         {/* Features */}
-        <div className="mt-16 grid gap-8 md:grid-cols-4">
+        <div className="mt-16 grid grid-cols-2 gap-8 md:grid-cols-4">
           {[
             { icon: Crown, title: "Premium Content", desc: "Access exclusive editorials and long-form features" },
             { icon: Star, title: "Earn Points", desc: "Get rewarded for reading, sharing, and contributing" },
@@ -119,8 +120,8 @@ const MembershipPage = () => {
               transition={{ delay: i * 0.1 }}
               className="text-center"
             >
-              <f.icon className="mx-auto mb-3 h-8 w-8 text-gold" />
-              <h3 className="font-display text-sm font-bold text-foreground">{f.title}</h3>
+              <f.icon className="mx-auto mb-4 h-6 w-6 text-gold" />
+              <h3 className="font-display text-lg italic text-foreground">{f.title}</h3>
               <p className="mt-1 font-body text-xs text-muted-foreground">{f.desc}</p>
             </motion.div>
           ))}
@@ -233,6 +234,7 @@ const MembershipPage = () => {
           </p>
         )}
       </main>
+      <Footer />
     </div>
   );
 };

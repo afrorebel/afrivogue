@@ -10,14 +10,14 @@ const MembershipCTA = () => (
       viewport={{ once: true }}
       className="mx-auto max-w-7xl border-y border-gold/30 py-16"
     >
-      <div className="grid grid-cols-12 items-end gap-8">
-        <div className="col-span-12 md:col-span-7">
+      <div className="grid grid-cols-1 items-end gap-8 md:grid-cols-12">
+        <div className="md:col-span-7">
           <p className="mb-5 font-body text-[9px] uppercase tracking-[0.4em] text-gold">Membership</p>
           <h2 className="font-display text-4xl italic leading-[0.95] text-foreground md:text-6xl">
             Join the <span className="text-gold">Collective</span>
           </h2>
         </div>
-        <div className="col-span-12 md:col-span-5">
+        <div className="md:col-span-5">
           <p className="mb-8 font-body text-xs uppercase leading-relaxed tracking-[0.18em] text-muted-foreground">
             Unlock premium editorials, earn from your contributions, and stand with a global community of culture
             shapers.

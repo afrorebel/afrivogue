@@ -56,7 +56,7 @@ const Editorials = () => {
       <main className="px-6 md:px-12 lg:px-16">
         <div className="mx-auto max-w-7xl">
           {isLoading ? (
-            <div className="grid gap-x-12 gap-y-20 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-x-12 gap-y-20 md:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="space-y-4">
                   <Skeleton className="aspect-[4/5] w-full" />
@@ -78,7 +78,7 @@ const Editorials = () => {
             </div>
           ) : (
             <>
-              <div className="grid gap-x-12 gap-y-20 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-x-12 gap-y-20 md:grid-cols-2 lg:grid-cols-3">
                 {paged.map((editorial, i) => (
                   <EditorialTile key={editorial.id} trend={editorial as any} index={i} size="mood" />
                 ))}

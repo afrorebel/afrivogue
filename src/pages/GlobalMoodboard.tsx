@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
+import PageMasthead from "@/components/editorial/PageMasthead";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Plus, X, ExternalLink, Upload, Send, Loader2, Link as LinkIconLucide } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getCategoryImage } from "@/lib/categoryImages";
 
 const MOODBOARD_CATEGORIES = ["Fashion", "Beauty", "Art", "Design", "Street Style", "Culture"] as const;
 type MoodboardCategory = (typeof MOODBOARD_CATEGORIES)[number];
@@ -292,7 +294,17 @@ const GlobalMoodboard = () => {
                   className="group relative break-inside-avoid rounded-lg overflow-hidden cursor-pointer"
                   onClick={() => setLightboxItem(item)}
                 >
-                  <img src={item.image_url} alt={item.caption} className="w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                  <img
+                    src={item.image_url}
+                    alt={item.caption}
+                    className="w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                    onError={(e) => {
+                      // Hotlinked images can be blocked by their source — fall back to category art.
+                      const fallback = getCategoryImage(item.category);
+                      if (!e.currentTarget.src.endsWith(fallback)) e.currentTarget.src = fallback;
+                    }}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
                     <p className="font-body text-sm text-white/90 line-clamp-2">{item.caption}</p>
                     <div className="flex items-center gap-2 mt-1">
@@ -381,7 +393,16 @@ const GlobalMoodboard = () => {
               <Link key={trend.id} to={`/trend/${trend.id}`} className="group block rounded-lg overflow-hidden border border-border/50 hover:border-gold/30 transition-colors">
                 {trend.featured_image_url && (
                   <div className="aspect-video overflow-hidden">
-                    <img src={trend.featured_image_url} alt={trend.headline} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <img
+                      src={trend.featured_image_url}
+                      alt={trend.headline}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                      onError={(e) => {
+                        const fallback = getCategoryImage(trend.category);
+                        if (!e.currentTarget.src.endsWith(fallback)) e.currentTarget.src = fallback;
+                      }}
+                    />
                   </div>
                 )}
                 <div className="p-4">

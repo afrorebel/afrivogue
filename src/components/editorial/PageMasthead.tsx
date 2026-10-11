@@ -28,13 +28,13 @@ const PageMasthead = ({ eyebrow, title, accent, intro, meta }: PageMastheadProps
         </span>
       </div>
 
-      <div className="grid grid-cols-12 gap-8 pb-10 pt-12">
-        <h1 className="col-span-12 font-display text-5xl italic leading-[0.9] tracking-tight text-foreground md:col-span-7 md:text-7xl">
+      <div className="grid grid-cols-1 gap-6 pb-10 pt-12 md:grid-cols-12 md:gap-8">
+        <h1 className="font-display text-5xl italic leading-[0.9] tracking-tight text-foreground md:col-span-7 md:text-7xl">
           {title}
           {accent && <span className="text-gold"> {accent}</span>}
         </h1>
         {intro && (
-          <p className="col-span-12 self-end font-body text-xs uppercase leading-relaxed tracking-[0.18em] text-muted-foreground md:col-span-5 md:pl-10">
+          <p className="self-end font-body text-xs uppercase leading-relaxed tracking-[0.18em] text-muted-foreground md:col-span-5 md:pl-10">
             {intro}
           </p>
         )}
