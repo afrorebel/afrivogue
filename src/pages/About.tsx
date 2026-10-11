@@ -43,7 +43,7 @@ const memberBenefits = [
   "Early access to our cultural forecasts, so you see the next wave first",
   "Publish with us: pitch your story and get paid for approved pieces",
   "Points for reading, sharing and contributing, redeemable across AfriVogue",
-  "Member-only pieces and first access to drops in the shop",
+  "Insider-only pieces and first access to drops in the shop",
   "A real say in what we cover, plus member-only conversations",
 ];
 
@@ -138,7 +138,7 @@ const About = () => {
           >
             <div className="md:col-span-5">
               <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-gold/15 px-3.5 py-1.5 font-body text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
-                <Crown className="h-3.5 w-3.5" /> Membership
+                <Crown className="h-3.5 w-3.5" /> The Collective · Free to join
               </p>
               <h2 className="font-display text-4xl italic leading-[1.02] text-foreground md:text-5xl">
                 Inside the <span className="text-gold">Collective</span>

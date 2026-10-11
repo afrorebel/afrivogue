@@ -70,7 +70,7 @@ const ProductCard = ({ product, isWishlisted, onWishlistToggle }: Props) => {
     e.preventDefault();
     e.stopPropagation();
     if (!user) { toast({ title: "Sign in to add to cart", variant: "destructive" }); return; }
-    if (premiumRequired) { toast({ title: "Members only", description: "Custom pieces are exclusive to Collective members.", variant: "destructive" }); return; }
+    if (premiumRequired) { toast({ title: "An Insider exclusive", description: "Join the Collective free to unlock custom pieces." }); return; }
     await addToCart(product.id);
     toast({ title: `${product.name} added to cart` });
   };
@@ -111,7 +111,7 @@ const ProductCard = ({ product, isWishlisted, onWishlistToggle }: Props) => {
         <div className="absolute left-3 top-3 flex flex-col items-start gap-1">
           {isCustom && (
             <span className={`${badge} flex items-center gap-1 bg-gold text-primary-foreground`}>
-              <Crown className="h-3 w-3" /> Members
+              <Crown className="h-3 w-3" /> Insider
             </span>
           )}
           {product.featured && !isCustom && <span className={`${badge} bg-gold text-primary-foreground`}>Featured</span>}

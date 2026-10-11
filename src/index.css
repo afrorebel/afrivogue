@@ -6,65 +6,65 @@
 
 @layer base {
   :root {
-    --background: 24 16% 6%;
-    --foreground: 36 33% 93%;
+    --background: 240 7% 4%;
+    --foreground: 40 33% 95%;
 
-    --card: 24 14% 10%;
-    --card-foreground: 36 33% 93%;
+    --card: 240 6% 8%;
+    --card-foreground: 40 33% 95%;
 
-    --popover: 24 14% 10%;
-    --popover-foreground: 36 33% 93%;
+    --popover: 240 6% 8%;
+    --popover-foreground: 40 33% 95%;
 
-    --primary: 40 74% 58%;
-    --primary-foreground: 24 16% 6%;
+    --primary: 42 85% 60%;
+    --primary-foreground: 240 7% 5%;
 
     --secondary: 14 62% 52%;
     --secondary-foreground: 36 33% 97%;
 
-    --muted: 24 10% 15%;
-    --muted-foreground: 30 12% 64%;
+    --muted: 240 5% 13%;
+    --muted-foreground: 40 10% 70%;
 
     /* accent = hover/selection surface used by shared UI components */
-    --accent: 24 10% 17%;
-    --accent-foreground: 36 33% 93%;
+    --accent: 240 5% 14%;
+    --accent-foreground: 40 33% 95%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 24 10% 17%;
-    --input: 24 10% 20%;
-    --ring: 40 74% 58%;
+    --border: 240 5% 16%;
+    --input: 240 5% 19%;
+    --ring: 42 85% 60%;
 
     --radius: 1rem;
 
-    --sidebar-background: 30 8% 8%;
+    --sidebar-background: 240 6% 7%;
     --sidebar-foreground: 38 30% 90%;
     --sidebar-primary: 38 65% 55%;
     --sidebar-primary-foreground: 30 10% 6%;
-    --sidebar-accent: 30 6% 16%;
+    --sidebar-accent: 240 5% 14%;
     --sidebar-accent-foreground: 38 30% 90%;
-    --sidebar-border: 30 8% 18%;
+    --sidebar-border: 240 5% 16%;
     --sidebar-ring: 38 65% 55%;
 
     /* Custom tokens */
-    --gold: 40 74% 58%;
+    --gold: 42 85% 60%;
     --terracotta: 14 62% 52%;
-    --warm-white: 36 33% 93%;
-    --deep-charcoal: 24 16% 6%;
-    --surface: 24 12% 13%;
+    --warm-white: 40 33% 95%;
+    --deep-charcoal: 240 7% 4%;
+    --surface: 240 6% 11%;
 
     color-scheme: dark;
 
     /* Category colours — one hue per section, used for chips and accents */
-    --cat-fashion: 12 80% 60%;
-    --cat-beauty: 340 72% 68%;
-    --cat-luxury: 40 74% 58%;
-    --cat-culture: 158 50% 46%;
-    --cat-art: 226 74% 66%;
-    --cat-business: 188 58% 46%;
-    --cat-entertainment: 292 56% 64%;
-    --cat-lifestyle: 28 88% 60%;
-    --cat-accessories: 262 54% 68%;
+    --cat-fashion: 10 88% 63%;
+    --cat-beauty: 336 82% 70%;
+    --cat-luxury: 42 85% 60%;
+    --cat-culture: 158 62% 48%;
+    --cat-art: 226 86% 70%;
+    --cat-business: 186 70% 48%;
+    --cat-entertainment: 290 70% 68%;
+    --cat-lifestyle: 30 95% 60%;
+    --cat-accessories: 262 72% 72%;
 
     --font-display: 'Playfair Display', Georgia, serif;
     --font-body: 'DM Sans', system-ui, sans-serif;
@@ -205,7 +205,7 @@
     box-shadow: 0 1px 2px hsl(24 30% 2% / 0.18), 0 12px 32px -12px hsl(24 30% 2% / 0.35);
   }
   .shadow-lift {
-    box-shadow: 0 2px 4px hsl(24 30% 2% / 0.2), 0 24px 48px -16px hsl(24 30% 2% / 0.5);
+    box-shadow: 0 2px 4px hsl(240 20% 2% / 0.25), 0 24px 48px -16px hsl(240 20% 2% / 0.55), 0 0 0 1px hsl(var(--gold) / 0.08);
   }
 
   /* Warm sunset wash for feature panels (newsletter, membership) */

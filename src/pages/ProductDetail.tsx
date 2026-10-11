@@ -166,7 +166,7 @@ const ProductDetail = () => {
               <div className="rounded-lg border border-gold/30 bg-gold/5 p-4 space-y-2">
                 <div className="flex items-center gap-2">
                   <Crown className="h-5 w-5 text-gold" />
-                  <p className="font-display text-sm font-bold text-foreground">Members Exclusive</p>
+                  <p className="font-display text-sm font-bold text-foreground">Insider Exclusive</p>
                 </div>
                 <p className="font-body text-xs text-muted-foreground">
                   Custom pieces are available exclusively to Afrivogue Collective members.

@@ -28,7 +28,7 @@ const primaryLinks = [
 const moreLinks = [
   { label: "AfriTrivia", href: "/trivia" },
   { label: "Voices", href: "/contributors" },
-  { label: "Membership", href: "/membership" },
+  { label: "The Collective", href: "/membership" },
   { label: "Media Kit", href: "/media-kit" },
   { label: "Contact", href: "/contact" },
 ];

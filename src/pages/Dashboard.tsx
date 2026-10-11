@@ -195,7 +195,7 @@ const Dashboard = () => {
 
         <Tabs defaultValue="membership" className="space-y-6">
           <TabsList className="flex-wrap">
-            <TabsTrigger value="membership">Membership</TabsTrigger>
+            <TabsTrigger value="membership">The Collective</TabsTrigger>
             <TabsTrigger value="saved">Saved Articles</TabsTrigger>
             <TabsTrigger value="history">Reading History</TabsTrigger>
             <TabsTrigger value="points">Points & Earnings</TabsTrigger>

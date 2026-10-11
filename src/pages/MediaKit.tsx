@@ -15,7 +15,6 @@ interface MediaKitData {
   stats: { label: string; value: string }[];
   packages: { name: string; deliverables: string; investment: string }[];
   coverage_areas: string;
-  inspiration_brands: string;
   cta_headline: string;
   cta_email: string;
 }
@@ -57,7 +56,6 @@ const DEFAULT_DATA: MediaKitData = {
     },
   ],
   coverage_areas: "Fashion · Beauty · Luxury Lifestyle · Culture & Art · Business of Fashion · Celebrity & Influence",
-  inspiration_brands: "Vogue · Harper's Bazaar · Essence · Nataal · OkayAfrica · i-D · Business of Fashion",
   cta_headline: "Let's Build Something Iconic",
   cta_email: "contact@afrivogue.com",
 };
@@ -145,17 +143,11 @@ const MediaKit = () => {
           </div>
         </motion.div>
 
-        {/* Coverage + Inspiration */}
-        <div className="grid gap-8 md:grid-cols-2">
-          <motion.div {...anim(0.25)} className="space-y-2">
-            <h3 className="font-display text-lg font-semibold">What We Cover</h3>
-            <p className="font-body text-sm text-muted-foreground">{d.coverage_areas}</p>
-          </motion.div>
-          <motion.div {...anim(0.3)} className="space-y-2">
-            <h3 className="font-display text-lg font-semibold">Inspiration Brands</h3>
-            <p className="font-body text-sm italic text-muted-foreground">{d.inspiration_brands}</p>
-          </motion.div>
-        </div>
+        {/* Coverage */}
+        <motion.div {...anim(0.25)} className="space-y-2">
+          <h3 className="font-display text-lg font-semibold">What We Cover</h3>
+          <p className="font-body text-sm text-muted-foreground">{d.coverage_areas}</p>
+        </motion.div>
 
         {/* CTA */}
         <motion.div

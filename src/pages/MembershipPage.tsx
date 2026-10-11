@@ -94,7 +94,7 @@ const MembershipPage = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <PageMasthead
-        eyebrow="Membership"
+        eyebrow="The Collective · Free to join"
         title="Join the"
         accent="Collective"
         intro="Go deeper into the culture. Premium editorials, early forecasts, paid publishing and a community that truly gets it."

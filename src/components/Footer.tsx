@@ -32,7 +32,7 @@ const categoryLinks = [
 
 const communityLinks = [
   { label: "Join Afrivogue", href: "/auth" },
-  { label: "Membership", href: "/membership" },
+  { label: "The Collective", href: "/membership" },
   { label: "Submit an Article", href: "/submit" },
   { label: "About Us", href: "/about" },
   { label: "Contact", href: "/contact" },

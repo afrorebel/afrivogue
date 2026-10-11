@@ -77,7 +77,7 @@ const EditorialTile = ({ trend, index, isPaywalled, size = "mood", aspect, showE
         <CategoryChip category={trend.category} variant="solid" className="absolute left-3 top-3" />
         {isPaywalled && (
           <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-black/55 px-2.5 py-1 font-body text-[10px] font-semibold uppercase tracking-[0.12em] text-gold backdrop-blur-md">
-            <Lock className="h-3 w-3" /> Members
+            <Lock className="h-3 w-3" /> Insider
           </span>
         )}
         <span className="absolute bottom-3 right-3 flex translate-y-2 items-center gap-1 rounded-full bg-white px-3.5 py-1.5 font-body text-xs font-semibold text-neutral-900 opacity-0 shadow-soft transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">

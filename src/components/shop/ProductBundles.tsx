@@ -75,7 +75,7 @@ const ProductBundles = ({ currentProductId }: { currentProductId?: string }) => 
     if (!user) { toast({ title: "Sign in to add to cart", variant: "destructive" }); return; }
     const hasCustom = bundle.products.some((p) => p.product_type === "custom");
     if (hasCustom && !subscribed && !isAdmin) {
-      toast({ title: "Members only", description: "This bundle contains exclusive items.", variant: "destructive" });
+      toast({ title: "An Insider exclusive", description: "Join the Collective free to unlock this bundle." });
       return;
     }
     for (const p of bundle.products) {
@@ -131,7 +131,7 @@ const ProductBundles = ({ currentProductId }: { currentProductId?: string }) => 
                 </div>
                 {premiumRequired ? (
                   <Button size="sm" asChild className="bg-gold hover:bg-gold/90">
-                    <Link to="/membership"><Crown className="mr-1 h-3 w-3" /> Members Only</Link>
+                    <Link to="/membership"><Crown className="mr-1 h-3 w-3" /> Insider exclusive</Link>
                   </Button>
                 ) : (
                   <Button size="sm" onClick={() => handleAddBundle(bundle)}>

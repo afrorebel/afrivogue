@@ -19,7 +19,6 @@ interface MediaKitData {
   stats: Stat[];
   packages: Package[];
   coverage_areas: string;
-  inspiration_brands: string;
   cta_headline: string;
   cta_email: string;
 }
@@ -31,7 +30,6 @@ const DEFAULTS: MediaKitData = {
   stats: [{ label: "", value: "" }],
   packages: [{ name: "", deliverables: "", investment: "" }],
   coverage_areas: "",
-  inspiration_brands: "",
   cta_headline: "Let's Build Something Iconic",
   cta_email: "contact@afrivogue.com",
 };
@@ -141,7 +139,6 @@ const AdminMediaKit = () => {
         <CardHeader><CardTitle className="font-display text-lg">Coverage & CTA</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2"><Label>What We Cover</Label><Input value={kit.coverage_areas} onChange={(e) => setKit({ ...kit, coverage_areas: e.target.value })} /></div>
-          <div className="space-y-2"><Label>Inspiration Brands</Label><Input value={kit.inspiration_brands} onChange={(e) => setKit({ ...kit, inspiration_brands: e.target.value })} /></div>
           <div className="space-y-2"><Label>CTA Headline</Label><Input value={kit.cta_headline} onChange={(e) => setKit({ ...kit, cta_headline: e.target.value })} /></div>
           <div className="space-y-2"><Label>Contact Email</Label><Input value={kit.cta_email} onChange={(e) => setKit({ ...kit, cta_email: e.target.value })} /></div>
         </CardContent>
