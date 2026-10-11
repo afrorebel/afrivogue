@@ -1,5 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, type PanInfo } from "framer-motion";
 import { trends } from "@/lib/trendData";
 import type { Trend } from "@/lib/trendData";
@@ -176,7 +178,34 @@ function ParallaxWrapper({ children }: { children: React.ReactNode }) {
 
 const StoryMode = () => {
   const { id } = useParams<{ id: string }>();
-  const trend = trends.find((t) => t.id === id);
+  const staticTrend = trends.find((t) => t.id === id);
+
+  // Published stories live in the database; the bundled sample trends are only a fallback.
+  const { data: dbTrend, isLoading } = useQuery({
+    queryKey: ["story-mode-trend", id],
+    enabled: !!id && !staticTrend,
+    queryFn: async (): Promise<Trend | null> => {
+      const { data } = await supabase
+        .from("trends")
+        .select("id, headline, cultural_significance, geo_relevance, urgency, category, content_tier, created_at, image_hint")
+        .eq("id", id!)
+        .eq("published", true)
+        .maybeSingle();
+      if (!data) return null;
+      return {
+        id: data.id,
+        headline: data.headline,
+        culturalSignificance: data.cultural_significance,
+        geoRelevance: data.geo_relevance as Trend["geoRelevance"],
+        urgency: data.urgency as Trend["urgency"],
+        category: data.category as Trend["category"],
+        contentTier: data.content_tier as Trend["contentTier"],
+        timestamp: data.created_at,
+        imageHint: data.image_hint ?? undefined,
+      };
+    },
+  });
+  const trend = staticTrend ?? dbTrend ?? undefined;
   const [[activeIndex, direction], setPage] = useState<[number, number]>([0, 0]);
 
   const cards = trend ? buildStoryCards(trend) : [];
@@ -215,6 +244,14 @@ const StoryMode = () => {
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, [paginate]);
+
+  if (!trend && isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <p className="font-body text-[10px] uppercase tracking-[0.4em] text-muted-foreground">Loading story…</p>
+      </div>
+    );
+  }
 
   if (!trend) {
     return (

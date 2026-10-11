@@ -1,6 +1,7 @@
 import PageMasthead from "@/components/editorial/PageMasthead";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Mail, Send, MapPin, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
@@ -193,13 +194,13 @@ const Contact = () => {
               <p className="mt-2 font-body text-sm leading-relaxed text-muted-foreground">
                 For brand collaborations, media inquiries, or advertising opportunities, check out our media kit or reach out via email.
               </p>
-              <a
-                href="/media-kit"
+              <Link
+                to="/media-kit"
                 className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-primary bg-primary/5 px-4 py-2 font-body text-xs font-medium text-primary transition-colors hover:bg-primary/10"
               >
                 <ExternalLink className="h-3 w-3" />
                 View Media Kit
-              </a>
+              </Link>
             </div>
           </motion.div>
         </div>

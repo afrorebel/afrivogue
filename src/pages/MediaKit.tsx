@@ -1,5 +1,6 @@
 import PageMasthead from "@/components/editorial/PageMasthead";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
@@ -169,9 +170,9 @@ const MediaKit = () => {
               </a>
             </Button>
             <Button asChild variant="outline" size="lg" className="gap-2">
-              <a href="/contact">
+              <Link to="/contact">
                 <ExternalLink className="h-4 w-4" /> Contact Us
-              </a>
+              </Link>
             </Button>
           </div>
         </motion.div>
