@@ -40,8 +40,8 @@ const LeadGenWidget = ({ variant = "inline", category }: LeadGenWidgetProps) => 
   if (success) {
     return (
       <div className={`rounded-3xl border border-gold/25 bg-sunset p-8 text-center ${variant === "banner" ? "" : "my-6"}`}>
-        <p className="font-display text-2xl italic text-gold">You're in.</p>
-        <p className="mt-2 font-body text-sm text-muted-foreground">Watch your inbox for the latest from Afrivogue.</p>
+        <p className="font-display text-2xl italic text-gold">You are in.</p>
+        <p className="mt-2 font-body text-sm text-muted-foreground">Your first letter lands this Sunday. Welcome to the inner circle.</p>
       </div>
     );
   }
@@ -52,13 +52,13 @@ const LeadGenWidget = ({ variant = "inline", category }: LeadGenWidgetProps) => 
         <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2">
           <div>
             <p className="font-body text-[11px] font-semibold uppercase tracking-[0.25em] text-gold">
-              {category ? `${category} Insider` : "The Afrivogue Insider"}
+              {category ? `The ${category} Letter` : "The AfriVogue Letter"}
             </p>
             <h3 className="mt-3 font-display text-3xl italic leading-tight text-foreground md:text-4xl">
-              Curated {category?.toLowerCase() || "trend"} insights, every week
+              The week in {category?.toLowerCase() || "culture"}, beautifully edited
             </h3>
             <p className="mt-3 max-w-md font-body text-sm leading-relaxed text-muted-foreground md:text-base">
-              Join 10,000+ creatives and industry leaders who read our editorial briefing.
+              One letter every Sunday: the stories, looks and signals worth your time. Join 10,000+ readers who hear it here first.
             </p>
           </div>
           <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3 sm:flex-row lg:justify-end">
@@ -83,9 +83,9 @@ const LeadGenWidget = ({ variant = "inline", category }: LeadGenWidgetProps) => 
   if (variant === "sidebar") {
     return (
       <div className="rounded-3xl border border-gold/20 bg-sunset p-6">
-        <p className="font-body text-[11px] font-semibold uppercase tracking-[0.25em] text-gold">Stay informed</p>
-        <h4 className="mt-2 font-display text-xl italic text-foreground">Weekly {category || "Trend"} Brief</h4>
-        <p className="mt-2 font-body text-sm text-muted-foreground">Curated analysis delivered to your inbox.</p>
+        <p className="font-body text-[11px] font-semibold uppercase tracking-[0.25em] text-gold">Never miss a story</p>
+        <h4 className="mt-2 font-display text-xl italic text-foreground">The {category || "Culture"} Letter</h4>
+        <p className="mt-2 font-body text-sm text-muted-foreground">The best of the week, every Sunday.</p>
         <form onSubmit={handleSubmit} className="mt-5 space-y-2.5">
           <input
             type="email"
@@ -107,9 +107,9 @@ const LeadGenWidget = ({ variant = "inline", category }: LeadGenWidgetProps) => 
   // inline variant
   return (
     <div className="my-8 rounded-3xl border border-gold/20 bg-sunset p-6 md:p-8">
-      <p className="font-body text-[11px] font-semibold uppercase tracking-[0.25em] text-gold">Don't miss a signal</p>
-      <h3 className="mt-2 font-display text-2xl italic text-foreground">Subscribe to the Afrivogue Feed</h3>
-      <p className="mt-2 font-body text-sm text-muted-foreground">Curated trend analysis delivered to your inbox.</p>
+      <p className="font-body text-[11px] font-semibold uppercase tracking-[0.25em] text-gold">Never miss a story</p>
+      <h3 className="mt-2 font-display text-2xl italic text-foreground">Get the AfriVogue Letter</h3>
+      <p className="mt-2 font-body text-sm text-muted-foreground">One beautifully edited letter every Sunday.</p>
       <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-3 sm:flex-row">
         <input
           type="email"

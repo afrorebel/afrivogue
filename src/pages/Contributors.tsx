@@ -97,10 +97,10 @@ const Contributors = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <PageMasthead
-        eyebrow="The Contributors"
+        eyebrow="The contributors"
         title="Our"
         accent="Voices"
-        intro="The cultural commentators, writers and creators shaping the Afrivogue narrative."
+        intro="The writers, stylists and culture-watchers behind AfriVogue. Have a story only you can tell? Join them."
       />
       <main className="mx-auto max-w-7xl px-6 pb-20 md:px-12 lg:px-16">
 

@@ -22,20 +22,20 @@ const MembershipCTA = () => (
         </div>
         <div className="md:col-span-5">
           <p className="mb-7 font-body text-base leading-relaxed text-muted-foreground">
-            Unlock premium editorials, earn from your contributions, and stand with a global community of culture shapers.
+            Read deeper, see what is coming first and get paid to tell the stories you know best. Founding members join free while we build.
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <Link
               to="/membership"
               className="group inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 font-body text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
             >
-              Become a member <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              Claim your founding spot <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
               to="/about"
               className="rounded-full border border-border bg-background/50 px-6 py-3 font-body text-sm font-medium text-foreground transition-colors hover:border-gold hover:text-gold"
             >
-              Learn more
+              Why join
             </Link>
           </div>
         </div>

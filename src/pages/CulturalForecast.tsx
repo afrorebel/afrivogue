@@ -277,10 +277,10 @@ const CulturalForecast = () => {
 
       <div className="relative z-10">
         <PageMasthead
-          eyebrow="Cultural Forecast"
+          eyebrow="Cultural forecast"
           title="Signals from"
           accent="Tomorrow"
-          intro="Intelligent projections across fashion, entertainment, luxury, culture and the creative economy — from the African continent to global capitals."
+          intro="What the culture is about to do next. Researched projections on fashion, beauty, music and the creative economy, from Lagos to London to Los Angeles."
           meta={`${filtered.length} Signals`}
         />
       </div>

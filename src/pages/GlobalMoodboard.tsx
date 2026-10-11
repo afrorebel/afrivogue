@@ -157,10 +157,10 @@ const GlobalMoodboard = () => {
       <Navbar />
 
       <PageMasthead
-        eyebrow="Visual Inspiration"
+        eyebrow="Community curated"
         title="Global"
         accent="Moodboard"
-        intro="A curated gallery of visual ideas shaping global fashion and culture."
+        intro="A living wall of looks, textures and moments our community cannot stop thinking about. Add yours."
       />
 
 

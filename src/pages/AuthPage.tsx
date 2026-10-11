@@ -76,7 +76,7 @@ const AuthPage = () => {
               Join the <Wordmark tone="light" /> Collective
             </h2>
             <p className="mt-5 max-w-md font-body text-base leading-relaxed text-white/75">
-              Unlock premium editorials, earn points for your contributions, and become part of a global community shaping the narrative of African fashion and culture.
+              Read deeper, see what is coming first and help shape the stories the world tells about African style. Founding members join free.
             </p>
           </div>
           <p className="relative font-body text-xs text-white/50">© {new Date().getFullYear()} Afrivogue. All rights reserved.</p>

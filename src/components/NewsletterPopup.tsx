@@ -118,7 +118,7 @@ const NewsletterPopup = () => {
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-md overflow-hidden rounded-lg border border-border bg-card"
+            className="relative w-full max-w-md overflow-hidden rounded-3xl border border-border bg-card shadow-lift"
           >
             <div className="h-1 w-full gradient-gold" />
 
@@ -131,13 +131,13 @@ const NewsletterPopup = () => {
 
             <div className="px-8 pb-8 pt-10 text-center">
               <p className="mb-2 font-body text-[10px] font-bold uppercase tracking-[0.3em] text-gold">
-                Exclusive Access
+                The AfriVogue Letter
               </p>
-              <h3 className="font-display text-2xl font-bold text-foreground">
-                Stay Ahead of the Curve
+              <h3 className="font-display text-3xl italic text-foreground">
+                Hear it here first
               </h3>
               <p className="mt-3 font-body text-sm text-muted-foreground">
-                Join the Afrivogue insider list for curated trend reports, cultural forecasts, and editorial exclusives — delivered weekly.
+                One letter every Sunday with the stories, looks and signals shaping African style, before everyone else catches on.
               </p>
 
               <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-3">

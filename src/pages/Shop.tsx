@@ -71,10 +71,10 @@ const Shop = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <PageMasthead
-        eyebrow="The Collection"
+        eyebrow="The collection"
         title="The"
         accent="Shop"
-        intro="Curated custom pieces and affiliate selections celebrating African elegance and contemporary style."
+        intro="Pieces we would wear ourselves: member-exclusive designs and hand-picked finds from African and diaspora makers."
       />
       <main className="px-4 pb-24 md:px-8 lg:px-12">
         <div className="mx-auto max-w-[1440px]">

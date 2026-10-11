@@ -50,7 +50,7 @@ const Editorials = () => {
         eyebrow="Long reads"
         title="The"
         accent="Editorials"
-        intro="Long-form features and premium essays on the cultural forces reshaping African and diaspora fashion, beauty and luxury."
+        intro="Deep, beautifully told features on the people and ideas reshaping style. Pour something good and stay a while."
       />
 
       <main className="px-4 md:px-8 lg:px-12">

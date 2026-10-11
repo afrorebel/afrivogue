@@ -89,10 +89,10 @@ const MediaKit = () => {
 
       {/* Masthead */}
       <PageMasthead
-        eyebrow="Partner With Us"
+        eyebrow="Partner with us"
         title="Media"
         accent="Kit"
-        intro="Global fashion · culture · Black excellence — partnership formats, audience and reach."
+        intro="Reach an audience that sets the culture instead of following it. Our readers, our formats and how we partner."
       />
 
 

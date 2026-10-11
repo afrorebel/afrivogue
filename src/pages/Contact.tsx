@@ -67,10 +67,10 @@ const Contact = () => {
 
       {/* Masthead */}
       <PageMasthead
-        eyebrow="Get In Touch"
+        eyebrow="Say hello"
         title="Contact"
         accent="Us"
-        intro="Story tips, partnership inquiries or a simple hello — we read everything."
+        intro="Story tips, collaborations, press or simply a kind word. A real person reads every message."
       />
 
 

@@ -86,7 +86,7 @@ const Trends = () => {
         eyebrow="The feed"
         title="Latest"
         accent="Stories"
-        intro="The current record of fashion, culture and lifestyle across Africa and its diaspora — updated as the story moves."
+        intro="What is moving fashion, beauty and culture across Africa and the diaspora right now, updated as the story unfolds."
       />
 
       <main className="px-4 md:px-8 lg:px-12">

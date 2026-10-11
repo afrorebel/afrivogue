@@ -92,7 +92,7 @@ const Footer = () => {
               <Wordmark className="text-3xl" />
             </Link>
             <p className="mt-4 font-body text-sm leading-relaxed text-muted-foreground">
-              Curating culture, style, and tomorrow through a global Afrocentric lens.
+              Fashion, culture and lifestyle through an African lens. Made for the continent, the diaspora and everyone who loves them.
             </p>
             <div className="mt-6 flex items-center gap-3">
               {socialLinks.map((s) => (
@@ -139,7 +139,7 @@ const Footer = () => {
           <div className="sm:col-span-2 lg:col-span-1">
             <ColumnTitle>Newsletter</ColumnTitle>
             <p className="font-body text-sm text-muted-foreground">
-              Trend reports & cultural forecasts — delivered weekly.
+              One letter every Sunday: the stories, looks and signals worth your time.
             </p>
             <form onSubmit={handleSubscribe} className="mt-4 flex flex-col gap-2">
               <input
