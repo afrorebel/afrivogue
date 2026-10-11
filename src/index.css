@@ -24,8 +24,9 @@
     --muted: 24 10% 15%;
     --muted-foreground: 30 12% 64%;
 
-    --accent: 14 62% 52%;
-    --accent-foreground: 36 33% 97%;
+    /* accent = hover/selection surface used by shared UI components */
+    --accent: 24 10% 17%;
+    --accent-foreground: 36 33% 93%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -52,6 +53,8 @@
     --deep-charcoal: 24 16% 6%;
     --surface: 24 12% 13%;
 
+    color-scheme: dark;
+
     /* Category colours — one hue per section, used for chips and accents */
     --cat-fashion: 12 80% 60%;
     --cat-beauty: 340 72% 68%;
@@ -76,6 +79,7 @@
   }
 
   .light {
+    color-scheme: light;
     --background: 36 40% 97%;
     --foreground: 24 16% 10%;
 
@@ -94,8 +98,8 @@
     --muted: 40 15% 90%;
     --muted-foreground: 30 10% 40%;
 
-    --accent: 16 40% 50%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 36 24% 91%;
+    --accent-foreground: 24 16% 10%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;

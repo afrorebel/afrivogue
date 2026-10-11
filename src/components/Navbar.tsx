@@ -1,24 +1,39 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, User } from "lucide-react";
+import { ChevronDown, Menu, X, User } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import SearchDialog from "@/components/SearchDialog";
 import ThemeToggle from "@/components/ThemeToggle";
 import CartDrawer from "@/components/shop/CartDrawer";
 import Wordmark from "@/components/brand/Wordmark";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-const navLinks = [
-  { label: "Home", href: "/" },
+/** Always visible in the desktop bar. */
+const primaryLinks = [
   { label: "Stories", href: "/trends" },
   { label: "Editorials", href: "/editorials" },
   { label: "Moodboard", href: "/moodboard" },
-  { label: "Shop", href: "/shop" },
   { label: "Forecast", href: "/forecast" },
-  { label: "Voices", href: "/contributors" },
+  { label: "Shop", href: "/shop" },
   { label: "About", href: "/about" },
+];
+
+/** Tucked under "More" on desktop. */
+const moreLinks = [
+  { label: "AfriTrivia", href: "/trivia" },
+  { label: "Voices", href: "/contributors" },
+  { label: "Membership", href: "/membership" },
+  { label: "Media Kit", href: "/media-kit" },
   { label: "Contact", href: "/contact" },
 ];
+
+const navLinks = [{ label: "Home", href: "/" }, ...primaryLinks, ...moreLinks];
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -50,8 +65,8 @@ const Navbar = () => {
             <Wordmark className="text-2xl md:text-[1.7rem]" />
           </Link>
 
-          <div className="hidden items-center gap-0.5 xl:flex">
-            {navLinks.map((l) => (
+          <div className="hidden items-center gap-0.5 lg:flex">
+            {primaryLinks.map((l) => (
               <Link
                 key={l.label}
                 to={l.href}
@@ -64,6 +79,26 @@ const Navbar = () => {
                 {l.label}
               </Link>
             ))}
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className={`flex items-center gap-1 rounded-full px-3.5 py-2 font-body text-[13px] font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-gold/40 ${
+                  moreLinks.some((l) => isActive(l.href))
+                    ? "bg-gold/15 text-gold"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                More <ChevronDown className="h-3.5 w-3.5" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 rounded-2xl p-1.5">
+                {moreLinks.map((l) => (
+                  <DropdownMenuItem key={l.label} asChild className="cursor-pointer rounded-xl px-3 py-2 font-body text-sm">
+                    <Link to={l.href} className={isActive(l.href) ? "text-gold" : ""}>
+                      {l.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="flex items-center gap-1.5">
@@ -87,7 +122,7 @@ const Navbar = () => {
             )}
             <button
               onClick={() => setOpen(!open)}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted xl:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted lg:hidden"
               aria-label={open ? "Close menu" : "Open menu"}
             >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -103,7 +138,7 @@ const Navbar = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-40 overflow-y-auto bg-background/97 px-6 pb-10 pt-24 backdrop-blur-xl xl:hidden"
+            className="fixed inset-0 z-40 overflow-y-auto bg-background/97 px-6 pb-10 pt-24 backdrop-blur-xl lg:hidden"
           >
             <div className="mx-auto flex max-w-md flex-col gap-2">
               {navLinks.map((l, i) => (

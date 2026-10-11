@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Wordmark from "@/components/brand/Wordmark";
+import SocialIcon from "@/components/brand/SocialIcons";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 const socialLinks = [
-  { label: "Instagram", href: "https://www.instagram.com/afrivoguemagazine", icon: "IG" },
-  { label: "TikTok", href: "https://tiktok.com/@afrivogue", icon: "TT" },
-  { label: "X", href: "https://x.com/afrivogueonline", icon: "X" },
-  { label: "Pinterest", href: "https://pinterest.com/afrivogue", icon: "PT" },
-  { label: "YouTube", href: "https://youtube.com/@afrivogue", icon: "YT" },
+  { label: "Instagram", href: "https://www.instagram.com/afrivoguemagazine" },
+  { label: "TikTok", href: "https://tiktok.com/@afrivogue" },
+  { label: "X", href: "https://x.com/afrivogueonline" },
+  { label: "Pinterest", href: "https://pinterest.com/afrivogue" },
+  { label: "YouTube", href: "https://youtube.com/@afrivogue" },
 ];
 
 const exploreLinks = [
@@ -68,7 +69,7 @@ const Footer = () => {
   };
 
   const ColumnTitle = ({ children }: { children: React.ReactNode }) => (
-    <h4 className="mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.22em] text-gold">
+    <h4 className="mb-4 font-display text-xl italic text-gold">
       {children}
     </h4>
   );
@@ -101,9 +102,10 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   title={s.label}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/50 font-body text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-all hover:-translate-y-0.5 hover:border-gold hover:text-gold"
+                  aria-label={`Afrivogue on ${s.label}`}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/60 text-foreground/70 transition-all hover:-translate-y-0.5 hover:border-gold hover:bg-gold hover:text-primary-foreground"
                 >
-                  {s.icon}
+                  <SocialIcon name={s.label} />
                 </a>
               ))}
             </div>

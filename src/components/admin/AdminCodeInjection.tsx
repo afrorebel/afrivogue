@@ -70,8 +70,8 @@ const AdminCodeInjection = () => {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-lg border border-accent/30 bg-accent/5 p-4 flex items-start gap-3">
-        <AlertTriangle className="h-5 w-5 text-accent shrink-0 mt-0.5" />
+      <div className="rounded-lg border border-terracotta/30 bg-terracotta/5 p-4 flex items-start gap-3">
+        <AlertTriangle className="h-5 w-5 text-terracotta shrink-0 mt-0.5" />
         <div className="font-body text-sm text-muted-foreground">
           <p className="font-medium text-foreground mb-1">Use with caution</p>
           <p>
