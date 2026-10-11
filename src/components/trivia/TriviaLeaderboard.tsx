@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Trophy, Medal } from "lucide-react";
 
 interface ScoreEntry {
@@ -11,21 +11,30 @@ interface ScoreEntry {
   avatar_url: string | null;
 }
 
-const TriviaLeaderboard = () => {
+interface TriviaLeaderboardProps {
+  /** Only show scores saved under this round key, e.g. "daily-2026-10-11". */
+  category?: string;
+  title?: string;
+}
+
+const TriviaLeaderboard = ({ category, title = "Leaderboard" }: TriviaLeaderboardProps) => {
   const { data: scores = [], isLoading } = useQuery({
-    queryKey: ["trivia-leaderboard"],
+    queryKey: ["trivia-leaderboard", category ?? "all"],
     queryFn: async () => {
-      // Get top scores joined with profiles
-      const { data, error } = await supabase
+      // Top scores, then their display names
+      let query = api
         .from("trivia_scores")
         .select("user_id, score, total_questions, created_at")
         .order("score", { ascending: false })
-        .limit(20);
+        .order("created_at", { ascending: true })
+        .limit(10);
+      if (category) query = query.eq("category", category);
+      const { data, error } = await query;
       if (error) throw error;
 
       // Fetch profile names
       const userIds = [...new Set((data || []).map((s) => s.user_id))];
-      const { data: profiles } = await supabase
+      const { data: profiles } = await api
         .from("profiles")
         .select("id, display_name, avatar_url")
         .in("id", userIds);
@@ -62,12 +71,12 @@ const TriviaLeaderboard = () => {
     <div className="rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm p-6">
       <div className="flex items-center gap-2 mb-4">
         <Trophy className="h-5 w-5 text-gold" />
-        <h3 className="font-display text-lg font-bold">Leaderboard</h3>
+        <h3 className="font-display text-xl italic">{title}</h3>
       </div>
 
       {scores.length === 0 ? (
         <p className="text-sm text-muted-foreground text-center py-4">
-          No scores yet — be the first to play!
+          No scores yet. Play today's round and claim the top spot.
         </p>
       ) : (
         <div className="space-y-2">

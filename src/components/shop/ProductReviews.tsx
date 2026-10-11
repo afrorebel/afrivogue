@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,7 +37,7 @@ const ProductReviews = ({ productId }: Props) => {
   const { data: reviews = [], isLoading } = useQuery({
     queryKey: ["product-reviews", productId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("product_reviews")
         .select("*")
         .eq("product_id", productId)
@@ -47,7 +47,7 @@ const ProductReviews = ({ productId }: Props) => {
       // Fetch profiles for reviewers
       const userIds = [...new Set((data || []).map((r: any) => r.user_id))];
       if (userIds.length === 0) return [];
-      const { data: profiles } = await supabase.from("profiles").select("id, display_name, avatar_url").in("id", userIds);
+      const { data: profiles } = await api.from("profiles").select("id, display_name, avatar_url").in("id", userIds);
       const profileMap = Object.fromEntries((profiles || []).map((p: any) => [p.id, p]));
 
       return (data || []).map((r: any) => ({
@@ -61,7 +61,7 @@ const ProductReviews = ({ productId }: Props) => {
     mutationFn: async () => {
       if (!user) throw new Error("Sign in first");
       if (!content.trim()) throw new Error("Review content required");
-      const { error } = await supabase.from("product_reviews").insert({
+      const { error } = await api.from("product_reviews").insert({
         product_id: productId,
         user_id: user.id,
         rating,
@@ -82,7 +82,7 @@ const ProductReviews = ({ productId }: Props) => {
   });
 
   const deleteReview = async (id: string) => {
-    await supabase.from("product_reviews").delete().eq("id", id);
+    await api.from("product_reviews").delete().eq("id", id);
     qc.invalidateQueries({ queryKey: ["product-reviews", productId] });
     toast({ title: "Review deleted" });
   };

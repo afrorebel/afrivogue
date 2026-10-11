@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { LogOut, Users, FileText, Crown, Gamepad2, ShoppingBag, BarChart3, Package, Target, Newspaper, FolderTree, Shield, LineChart, Code, Megaphone, Mail, Inbox } from "lucide-react";
@@ -24,6 +24,8 @@ import AdminCodeInjection from "@/components/admin/AdminCodeInjection";
 import AdminMarketingIntegrations from "@/components/admin/AdminMarketingIntegrations";
 import AdminEmailTemplates from "@/components/admin/AdminEmailTemplates";
 import AdminMediaKit from "@/components/admin/AdminMediaKit";
+import AdminMessages from "@/components/admin/AdminMessages";
+import Wordmark from "@/components/brand/Wordmark";
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -33,10 +35,10 @@ const AdminDashboard = () => {
     queryKey: ["admin-stats"],
     queryFn: async () => {
       const [profilesRes, trendsRes, triviaRes, premiumRes] = await Promise.all([
-        supabase.from("profiles").select("id", { count: "exact", head: true }),
-        supabase.from("trends").select("id", { count: "exact", head: true }).eq("published", true),
-        supabase.from("trivia_questions").select("id", { count: "exact", head: true }).eq("published", true),
-        supabase.from("site_settings").select("value").eq("key", "manual_premium_users").maybeSingle(),
+        api.from("profiles").select("id", { count: "exact", head: true }),
+        api.from("trends").select("id", { count: "exact", head: true }).eq("published", true),
+        api.from("trivia_questions").select("id", { count: "exact", head: true }).eq("published", true),
+        api.from("site_settings").select("value").eq("key", "manual_premium_users").maybeSingle(),
       ]);
       return {
         users: profilesRes.count ?? 0,
@@ -68,7 +70,7 @@ const AdminDashboard = () => {
     <div className="flex min-h-screen flex-col bg-background">
       <header className="flex items-center justify-between border-b border-border px-6 py-4 md:px-12">
         <div className="font-display text-xl font-bold text-foreground">
-          AFRI<span className="text-gold">VOGUE</span>
+          <Wordmark />
           <span className="ml-3 font-body text-xs font-normal uppercase tracking-[0.15em] text-muted-foreground">Admin</span>
         </div>
         <div className="flex items-center gap-4">
@@ -85,6 +87,7 @@ const AdminDashboard = () => {
           <TabsList className="flex flex-col items-stretch h-auto w-52 shrink-0 border-r border-border bg-card rounded-none p-2 gap-0.5 justify-start overflow-y-auto">
             {[
               { value: "analytics", label: "Analytics", icon: BarChart3 },
+              { value: "messages", label: "Messages", icon: Mail },
               { value: "trends", label: "Trends", icon: FileText },
               { value: "editorials", label: "Editorials", icon: Newspaper },
               { value: "forecasts", label: "Forecasts", icon: LineChart },
@@ -135,6 +138,7 @@ const AdminDashboard = () => {
             )}
 
             <TabsContent value="analytics" className="mt-0"><AdminAnalytics /></TabsContent>
+            <TabsContent value="messages" className="mt-0"><AdminMessages /></TabsContent>
             <TabsContent value="trends" className="mt-0"><AdminTrends /></TabsContent>
             <TabsContent value="editorials" className="mt-0"><AdminEditorials /></TabsContent>
             <TabsContent value="trivia" className="mt-0"><AdminTrivia /></TabsContent>

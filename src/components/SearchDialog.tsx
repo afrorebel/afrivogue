@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import {
   CommandDialog,
   CommandInput,
@@ -46,13 +46,13 @@ const SearchDialog = () => {
     setSearching(true);
 
     const [trendsRes, forecastsRes] = await Promise.all([
-      supabase
+      api
         .from("trends")
         .select("id, headline")
         .eq("published", true)
         .ilike("headline", `%${q}%`)
         .limit(5),
-      supabase
+      api
         .from("forecasts")
         .select("id, title")
         .eq("published", true)
@@ -96,7 +96,7 @@ const SearchDialog = () => {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center justify-center rounded-sm p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+        className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         aria-label="Search"
       >
         <Search className="h-4 w-4" />

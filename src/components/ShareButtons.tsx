@@ -25,7 +25,7 @@ const ShareButtons = ({ title, url }: ShareButtonsProps) => {
         href={`https://x.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex h-8 w-8 items-center justify-center rounded-sm border border-border font-body text-[10px] font-bold text-muted-foreground transition-all hover:border-gold hover:text-gold"
+        className="flex h-8 w-8 items-center justify-center rounded-full border border-border font-body text-[10px] font-bold text-muted-foreground transition-all hover:border-gold hover:text-gold"
         title="Share on X"
       >
         X
@@ -34,14 +34,14 @@ const ShareButtons = ({ title, url }: ShareButtonsProps) => {
         href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex h-8 w-8 items-center justify-center rounded-sm border border-border font-body text-[10px] font-bold text-muted-foreground transition-all hover:border-gold hover:text-gold"
+        className="flex h-8 w-8 items-center justify-center rounded-full border border-border font-body text-[10px] font-bold text-muted-foreground transition-all hover:border-gold hover:text-gold"
         title="Share on WhatsApp"
       >
         WA
       </a>
       <button
         onClick={copyLink}
-        className="flex h-8 w-8 items-center justify-center rounded-sm border border-border text-muted-foreground transition-all hover:border-gold hover:text-gold"
+        className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-all hover:border-gold hover:text-gold"
         title="Copy link"
       >
         <LinkIcon className="h-3.5 w-3.5" />

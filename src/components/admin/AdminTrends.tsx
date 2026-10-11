@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Plus, Pencil, Trash2, CheckCircle, AlertCircle, RefreshCw } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import type { Tables, TablesInsert } from "@/integrations/supabase/types";
+import type { Tables, TablesInsert } from "@/integrations/api/types";
 
 type Trend = Tables<"trends"> & { needs_review?: boolean; original_source_content?: string };
 
@@ -44,12 +44,13 @@ const AdminTrends = () => {
   const [form, setForm] = useState(emptyTrend);
   const [reviewFilter, setReviewFilter] = useState<ReviewFilter>("all");
   const [isIngesting, setIsIngesting] = useState(false);
+  const [enriching, setEnriching] = useState<null | "editorial" | "story">(null);
   const [newCat, setNewCat] = useState("");
 
   const { data: categories = [] } = useQuery({
     queryKey: ["categories-list"],
     queryFn: async () => {
-      const { data } = await supabase.from("categories").select("name").is("parent_id", null).order("name");
+      const { data } = await api.from("categories").select("name").is("parent_id", null).order("name");
       return data?.map((c: any) => c.name) || [];
     },
   });
@@ -57,7 +58,7 @@ const AdminTrends = () => {
   const { data: trends = [], isLoading } = useQuery({
     queryKey: ["admin-trends"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("trends").select("*").order("created_at", { ascending: false });
+      const { data, error } = await api.from("trends").select("*").order("created_at", { ascending: false });
       if (error) throw error;
       return data as Trend[];
     },
@@ -74,10 +75,10 @@ const AdminTrends = () => {
   const upsert = useMutation({
     mutationFn: async (values: any) => {
       if (editing) {
-        const { error } = await supabase.from("trends").update(values).eq("id", editing.id);
+        const { error } = await api.from("trends").update(values).eq("id", editing.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("trends").insert(values);
+        const { error } = await api.from("trends").insert(values);
         if (error) throw error;
       }
     },
@@ -91,7 +92,7 @@ const AdminTrends = () => {
 
   const deleteMut = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("trends").delete().eq("id", id);
+      const { error } = await api.from("trends").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -102,7 +103,7 @@ const AdminTrends = () => {
 
   const markReviewed = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("trends").update({ needs_review: false } as any).eq("id", id);
+      const { error } = await api.from("trends").update({ needs_review: false } as any).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -114,7 +115,7 @@ const AdminTrends = () => {
   const triggerIngestion = async () => {
     setIsIngesting(true);
     try {
-      const { data, error } = await supabase.functions.invoke("ingest-trends");
+      const { data, error } = await api.functions.invoke("ingest-trends");
       if (error) throw error;
       toast({ title: "Pipeline triggered", description: `Ingested ${data?.ingested || 0} new trends` });
       qc.invalidateQueries({ queryKey: ["admin-trends"] });
@@ -122,6 +123,25 @@ const AdminTrends = () => {
       toast({ title: "Pipeline error", description: e.message, variant: "destructive" });
     } finally {
       setIsIngesting(false);
+    }
+  };
+
+  // Claude writes long-form editorials for features, or re-voices older short stories.
+  const runEnrichment = async (mode: "editorial" | "story") => {
+    setEnriching(mode);
+    try {
+      const { data, error } = await api.functions.invoke("enrich-content", { body: { mode } });
+      if (error) throw error;
+      const failed = data?.failed?.length ? `, ${data.failed.length} failed` : "";
+      toast({
+        title: mode === "editorial" ? "Editorials written" : "Stories re-voiced",
+        description: data?.processed ? `${data.processed} updated${failed}` : data?.message || "Nothing left to update",
+      });
+      qc.invalidateQueries({ queryKey: ["admin-trends"] });
+    } catch (e: any) {
+      toast({ title: "Content engine error", description: e.message, variant: "destructive" });
+    } finally {
+      setEnriching(null);
     }
   };
 
@@ -186,6 +206,14 @@ const AdminTrends = () => {
           <Button size="sm" variant="outline" onClick={triggerIngestion} disabled={isIngesting}>
             <RefreshCw className={`mr-1 h-4 w-4 ${isIngesting ? "animate-spin" : ""}`} />
             {isIngesting ? "Ingesting…" : "Run Pipeline"}
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => runEnrichment("editorial")} disabled={enriching !== null}>
+            <RefreshCw className={`mr-1 h-4 w-4 ${enriching === "editorial" ? "animate-spin" : ""}`} />
+            {enriching === "editorial" ? "Writing editorial…" : "Write Long-Form Editorial"}
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => runEnrichment("story")} disabled={enriching !== null}>
+            <RefreshCw className={`mr-1 h-4 w-4 ${enriching === "story" ? "animate-spin" : ""}`} />
+            {enriching === "story" ? "Re-voicing…" : "Re-voice Older Stories"}
           </Button>
 
           <Dialog open={open} onOpenChange={(v) => { if (!v) closeDialog(); else setOpen(true); }}>

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+import Wordmark from "@/components/brand/Wordmark";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -30,7 +31,7 @@ const AdminLogin = () => {
       <div className="w-full max-w-sm space-y-8">
         <div className="text-center">
           <h1 className="font-display text-3xl font-bold text-foreground">
-            AFRI<span className="text-gold">VOGUE</span>
+            <Wordmark />
           </h1>
           <p className="mt-2 font-body text-sm text-muted-foreground">Admin Access</p>
         </div>

@@ -1,36 +1,40 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import Wordmark from "@/components/brand/Wordmark";
+import SocialIcon from "@/components/brand/SocialIcons";
+import { api } from "@/integrations/api/client";
 import { toast } from "@/hooks/use-toast";
 
 const socialLinks = [
-  { label: "Instagram", href: "https://www.instagram.com/afrivoguemagazine", icon: "IG" },
-  { label: "TikTok", href: "https://tiktok.com/@afrivogue", icon: "TT" },
-  { label: "X", href: "https://x.com/afrivogueonline", icon: "X" },
-  { label: "Pinterest", href: "https://pinterest.com/afrivogue", icon: "PT" },
-  { label: "YouTube", href: "https://youtube.com/@afrivogue", icon: "YT" },
+  { label: "Instagram", href: "https://www.instagram.com/afrivoguemagazine" },
+  { label: "TikTok", href: "https://tiktok.com/@afrivogue" },
+  { label: "X", href: "https://x.com/afrivogueonline" },
+  { label: "Pinterest", href: "https://pinterest.com/afrivogue" },
+  { label: "YouTube", href: "https://youtube.com/@afrivogue" },
 ];
 
 const exploreLinks = [
-  { label: "Trends", href: "/trends" },
+  { label: "Stories", href: "/trends" },
   { label: "Editorials", href: "/editorials" },
   { label: "Forecast", href: "/forecast" },
   { label: "Moodboard", href: "/moodboard" },
+  { label: "Style Concierge", href: "/concierge" },
+  { label: "AfriTrivia", href: "/trivia" },
 ];
 
 
 const categoryLinks = [
-  { label: "Fashion", href: "/?category=Fashion" },
-  { label: "Beauty", href: "/?category=Beauty" },
-  { label: "Luxury", href: "/?category=Luxury" },
-  { label: "Culture", href: "/?category=Culture" },
-  { label: "Art & Design", href: "/?category=Art+%26+Design" },
-  { label: "Entertainment", href: "/?category=Entertainment" },
+  { label: "Fashion", href: "/trends?category=Fashion" },
+  { label: "Beauty", href: "/trends?category=Beauty" },
+  { label: "Luxury", href: "/trends?category=Luxury" },
+  { label: "Culture", href: "/trends?category=Culture" },
+  { label: "Art & Design", href: "/trends?category=Art+%26+Design" },
+  { label: "Entertainment", href: "/trends?category=Entertainment" },
 ];
 
 const communityLinks = [
   { label: "Join Afrivogue", href: "/auth" },
-  { label: "Membership", href: "/membership" },
+  { label: "The Collective", href: "/membership" },
   { label: "Submit an Article", href: "/submit" },
   { label: "About Us", href: "/about" },
   { label: "Contact", href: "/contact" },
@@ -45,7 +49,7 @@ const Footer = () => {
     if (!email) return;
     setLoading(true);
 
-    const { error } = await supabase
+    const { error } = await api
       .from("newsletter_subscribers")
       .insert({ email, source: "footer" });
 
@@ -67,7 +71,7 @@ const Footer = () => {
   };
 
   const ColumnTitle = ({ children }: { children: React.ReactNode }) => (
-    <h4 className="mb-4 font-display text-xs font-bold uppercase tracking-[0.2em] text-gold">
+    <h4 className="mb-4 font-display text-xl italic text-gold">
       {children}
     </h4>
   );
@@ -81,16 +85,16 @@ const Footer = () => {
   );
 
   return (
-    <footer className="border-t border-border bg-card">
-      <div className="mx-auto max-w-7xl px-6 py-16 md:px-16 lg:px-24">
+    <footer className="mt-8 rounded-t-[2.5rem] border-t border-border/60 bg-card px-4 md:px-8 lg:px-12">
+      <div className="mx-auto max-w-[1440px] py-16">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-6">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link to="/" className="font-display text-2xl font-bold text-foreground">
-              AFRI<span className="text-gold">VOGUE</span>
+            <Link to="/" aria-label="Afrivogue home">
+              <Wordmark className="text-3xl" />
             </Link>
             <p className="mt-4 font-body text-sm leading-relaxed text-muted-foreground">
-              Curating culture, style, and tomorrow through a global Afrocentric lens.
+              Fashion, culture and lifestyle through an African lens. Made for the continent, the diaspora and everyone who loves them.
             </p>
             <div className="mt-6 flex items-center gap-3">
               {socialLinks.map((s) => (
@@ -100,9 +104,10 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   title={s.label}
-                  className="flex h-9 w-9 items-center justify-center rounded-sm border border-border font-body text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-all hover:border-gold hover:text-gold"
+                  aria-label={`Afrivogue on ${s.label}`}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/60 text-foreground/70 transition-all hover:-translate-y-0.5 hover:border-gold hover:bg-gold hover:text-primary-foreground"
                 >
-                  {s.icon}
+                  <SocialIcon name={s.label} />
                 </a>
               ))}
             </div>
@@ -136,7 +141,7 @@ const Footer = () => {
           <div className="sm:col-span-2 lg:col-span-1">
             <ColumnTitle>Newsletter</ColumnTitle>
             <p className="font-body text-sm text-muted-foreground">
-              Trend reports & cultural forecasts — delivered weekly.
+              One letter every Sunday: the stories, looks and signals worth your time.
             </p>
             <form onSubmit={handleSubscribe} className="mt-4 flex flex-col gap-2">
               <input
@@ -145,12 +150,12 @@ const Footer = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
                 required
-                className="w-full rounded-sm border border-border bg-background px-3 py-2 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-ring"
+                className="w-full rounded-full border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="rounded-sm bg-primary px-4 py-2 font-body text-xs font-bold uppercase tracking-wider text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="rounded-full bg-primary px-4 py-2.5 font-body text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02] disabled:opacity-50"
               >
                 {loading ? "…" : "Subscribe"}
               </button>

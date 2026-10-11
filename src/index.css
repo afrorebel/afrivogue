@@ -6,51 +6,65 @@
 
 @layer base {
   :root {
-    --background: 30 10% 6%;
-    --foreground: 38 30% 90%;
+    --background: 240 7% 4%;
+    --foreground: 40 33% 95%;
 
-    --card: 30 8% 10%;
-    --card-foreground: 38 30% 90%;
+    --card: 240 6% 8%;
+    --card-foreground: 40 33% 95%;
 
-    --popover: 30 8% 10%;
-    --popover-foreground: 38 30% 90%;
+    --popover: 240 6% 8%;
+    --popover-foreground: 40 33% 95%;
 
-    --primary: 38 65% 55%;
-    --primary-foreground: 30 10% 6%;
+    --primary: 42 85% 60%;
+    --primary-foreground: 240 7% 5%;
 
-    --secondary: 16 50% 45%;
-    --secondary-foreground: 38 30% 95%;
+    --secondary: 14 62% 52%;
+    --secondary-foreground: 36 33% 97%;
 
-    --muted: 30 6% 16%;
-    --muted-foreground: 30 10% 55%;
+    --muted: 240 5% 13%;
+    --muted-foreground: 40 10% 70%;
 
-    --accent: 16 50% 45%;
-    --accent-foreground: 38 30% 95%;
+    /* accent = hover/selection surface used by shared UI components */
+    --accent: 240 5% 14%;
+    --accent-foreground: 40 33% 95%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 8% 18%;
-    --input: 30 8% 18%;
-    --ring: 38 65% 55%;
+    --border: 240 5% 16%;
+    --input: 240 5% 19%;
+    --ring: 42 85% 60%;
 
-    --radius: 0.25rem;
+    --radius: 1rem;
 
-    --sidebar-background: 30 8% 8%;
+    --sidebar-background: 240 6% 7%;
     --sidebar-foreground: 38 30% 90%;
     --sidebar-primary: 38 65% 55%;
     --sidebar-primary-foreground: 30 10% 6%;
-    --sidebar-accent: 30 6% 16%;
+    --sidebar-accent: 240 5% 14%;
     --sidebar-accent-foreground: 38 30% 90%;
-    --sidebar-border: 30 8% 18%;
+    --sidebar-border: 240 5% 16%;
     --sidebar-ring: 38 65% 55%;
 
     /* Custom tokens */
-    --gold: 38 65% 55%;
-    --terracotta: 16 50% 45%;
-    --warm-white: 38 30% 90%;
-    --deep-charcoal: 30 10% 6%;
-    --surface: 30 8% 12%;
+    --gold: 42 85% 60%;
+    --terracotta: 14 62% 52%;
+    --warm-white: 40 33% 95%;
+    --deep-charcoal: 240 7% 4%;
+    --surface: 240 6% 11%;
+
+    color-scheme: dark;
+
+    /* Category colours — one hue per section, used for chips and accents */
+    --cat-fashion: 10 88% 63%;
+    --cat-beauty: 336 82% 70%;
+    --cat-luxury: 42 85% 60%;
+    --cat-culture: 158 62% 48%;
+    --cat-art: 226 86% 70%;
+    --cat-business: 186 70% 48%;
+    --cat-entertainment: 290 70% 68%;
+    --cat-lifestyle: 30 95% 60%;
+    --cat-accessories: 262 72% 72%;
 
     --font-display: 'Playfair Display', Georgia, serif;
     --font-body: 'DM Sans', system-ui, sans-serif;
@@ -65,10 +79,11 @@
   }
 
   .light {
-    --background: 40 30% 97%;
-    --foreground: 30 10% 12%;
+    color-scheme: light;
+    --background: 36 40% 97%;
+    --foreground: 24 16% 10%;
 
-    --card: 40 20% 94%;
+    --card: 0 0% 100%;
     --card-foreground: 30 10% 12%;
 
     --popover: 40 20% 94%;
@@ -83,8 +98,8 @@
     --muted: 40 15% 90%;
     --muted-foreground: 30 10% 40%;
 
-    --accent: 16 40% 50%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 36 24% 91%;
+    --accent-foreground: 24 16% 10%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -93,11 +108,21 @@
     --input: 40 15% 85%;
     --ring: 38 65% 45%;
 
-    --gold: 38 65% 45%;
-    --terracotta: 16 50% 45%;
-    --warm-white: 38 30% 90%;
-    --deep-charcoal: 30 10% 6%;
-    --surface: 40 20% 92%;
+    --gold: 38 70% 42%;
+    --terracotta: 14 62% 48%;
+    --warm-white: 36 33% 93%;
+    --deep-charcoal: 24 16% 6%;
+    --surface: 36 30% 92%;
+
+    --cat-fashion: 12 72% 50%;
+    --cat-beauty: 340 62% 52%;
+    --cat-luxury: 38 70% 42%;
+    --cat-culture: 158 52% 34%;
+    --cat-art: 226 62% 52%;
+    --cat-business: 188 62% 34%;
+    --cat-entertainment: 292 46% 48%;
+    --cat-lifestyle: 26 82% 48%;
+    --cat-accessories: 262 44% 54%;
 
     --sidebar-background: 40 20% 95%;
     --sidebar-foreground: 30 10% 12%;
@@ -173,5 +198,30 @@
 
   .gradient-gold {
     background: linear-gradient(135deg, hsl(var(--gold)), hsl(var(--terracotta)));
+  }
+
+  /* Soft lift used by image cards */
+  .shadow-soft {
+    box-shadow: 0 1px 2px hsl(24 30% 2% / 0.18), 0 12px 32px -12px hsl(24 30% 2% / 0.35);
+  }
+  .shadow-lift {
+    box-shadow: 0 2px 4px hsl(240 20% 2% / 0.25), 0 24px 48px -16px hsl(240 20% 2% / 0.55), 0 0 0 1px hsl(var(--gold) / 0.08);
+  }
+
+  /* Warm sunset wash for feature panels (newsletter, membership) */
+  .bg-sunset {
+    background:
+      radial-gradient(120% 140% at 0% 0%, hsl(var(--gold) / 0.35), transparent 55%),
+      radial-gradient(120% 140% at 100% 100%, hsl(var(--cat-beauty) / 0.28), transparent 55%),
+      radial-gradient(90% 120% at 100% 0%, hsl(var(--terracotta) / 0.3), transparent 60%),
+      hsl(var(--card));
+  }
+
+  /* Hide scrollbars on horizontal rails while keeping them scrollable */
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 }

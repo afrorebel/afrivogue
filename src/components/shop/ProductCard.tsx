@@ -1,13 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Heart, ShoppingBag, ExternalLink, Clock, Crown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { categoryColor } from "@/lib/categoryColors";
 
 interface Product {
   id: string;
@@ -34,7 +33,7 @@ interface Props {
 const CountdownTimer = ({ endDate }: { endDate: string }) => {
   const [timeLeft, setTimeLeft] = useState("");
 
-  useState(() => {
+  useEffect(() => {
     const update = () => {
       const diff = new Date(endDate).getTime() - Date.now();
       if (diff <= 0) { setTimeLeft("Ended"); return; }
@@ -46,12 +45,12 @@ const CountdownTimer = ({ endDate }: { endDate: string }) => {
     update();
     const id = setInterval(update, 1000);
     return () => clearInterval(id);
-  });
+  }, [endDate]);
 
   return (
-    <div className="flex items-center gap-1 rounded-sm bg-destructive px-2 py-1 text-destructive-foreground">
+    <div className="flex items-center gap-1 rounded-full bg-destructive px-2.5 py-1 text-destructive-foreground shadow-sm">
       <Clock className="h-3 w-3" />
-      <span className="font-body text-[10px] font-bold uppercase tracking-wider">{timeLeft}</span>
+      <span className="font-body text-[8px] font-bold uppercase tracking-[0.2em]">{timeLeft}</span>
     </div>
   );
 };
@@ -71,7 +70,7 @@ const ProductCard = ({ product, isWishlisted, onWishlistToggle }: Props) => {
     e.preventDefault();
     e.stopPropagation();
     if (!user) { toast({ title: "Sign in to add to cart", variant: "destructive" }); return; }
-    if (premiumRequired) { toast({ title: "Members only", description: "Custom pieces are exclusive to Collective members.", variant: "destructive" }); return; }
+    if (premiumRequired) { toast({ title: "An Insider exclusive", description: "Join the Collective free to unlock custom pieces." }); return; }
     await addToCart(product.id);
     toast({ title: `${product.name} added to cart` });
   };
@@ -81,73 +80,100 @@ const ProductCard = ({ product, isWishlisted, onWishlistToggle }: Props) => {
     e.stopPropagation();
     if (!user) { toast({ title: "Sign in to save items", variant: "destructive" }); return; }
     if (isWishlisted) {
-      await supabase.from("wishlists").delete().eq("user_id", user.id).eq("product_id", product.id);
+      await api.from("wishlists").delete().eq("user_id", user.id).eq("product_id", product.id);
     } else {
-      await supabase.from("wishlists").insert({ user_id: user.id, product_id: product.id });
+      await api.from("wishlists").insert({ user_id: user.id, product_id: product.id });
     }
     onWishlistToggle?.();
   };
 
   const img = product.images?.[0] || "/placeholder.svg";
+  const badge = "rounded-full px-2.5 py-1 font-body text-[9px] font-bold uppercase tracking-[0.14em] shadow-sm";
+  const linkProps =
+    isAffiliate && product.affiliate_url
+      ? { href: product.affiliate_url, target: "_blank", rel: "noopener noreferrer sponsored" }
+      : null;
+
+  const body = (
+    <>
+      <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-surface shadow-soft transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-lift">
+        <img
+          src={img}
+          alt={product.name}
+          loading="lazy"
+          onError={(e) => {
+            if (!e.currentTarget.src.endsWith("/placeholder.svg")) e.currentTarget.src = "/placeholder.svg";
+          }}
+          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+        />
+
+        {/* Badges */}
+        <div className="absolute left-3 top-3 flex flex-col items-start gap-1">
+          {isCustom && (
+            <span className={`${badge} flex items-center gap-1 bg-gold text-primary-foreground`}>
+              <Crown className="h-3 w-3" /> Insider
+            </span>
+          )}
+          {product.featured && !isCustom && <span className={`${badge} bg-gold text-primary-foreground`}>Featured</span>}
+          {isFlashActive && <CountdownTimer endDate={product.flash_sale_end!} />}
+          {isAffiliate && (
+            <span className={`${badge} flex items-center gap-1 bg-white/90 text-neutral-900 backdrop-blur-sm`}>
+              <ExternalLink className="h-3 w-3" /> Partner
+            </span>
+          )}
+          {outOfStock && <span className={`${badge} bg-destructive text-destructive-foreground`}>Sold Out</span>}
+          {showCompare && (
+            <span className={`${badge} bg-destructive text-destructive-foreground`}>
+              {Math.round((1 - effectivePrice / product.compare_at_price!) * 100)}% Off
+            </span>
+          )}
+        </div>
+
+        {/* Quick actions — always visible on touch screens, revealed on hover on desktop */}
+        <div className="absolute right-3 top-3 flex flex-col gap-2 transition-opacity md:opacity-0 md:group-hover:opacity-100">
+          <button
+            type="button"
+            aria-label={isWishlisted ? "Remove from wishlist" : "Save to wishlist"}
+            onClick={handleWishlist}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-neutral-900 shadow-soft backdrop-blur-sm transition-transform hover:scale-110"
+          >
+            <Heart className={`h-4 w-4 ${isWishlisted ? "fill-destructive text-destructive" : ""}`} />
+          </button>
+          {!isAffiliate && !outOfStock && !premiumRequired && (
+            <button
+              type="button"
+              aria-label="Add to cart"
+              onClick={handleAddToCart}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-neutral-900 shadow-soft backdrop-blur-sm transition-transform hover:scale-110"
+            >
+              <ShoppingBag className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      <p className="mt-3.5 px-1 font-body text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: categoryColor(product.category) }}>{product.category}</p>
+      <h3 className="mt-1.5 px-1 font-display text-lg leading-snug text-foreground transition-colors line-clamp-2 group-hover:text-gold">
+        {product.name}
+      </h3>
+      <div className="mt-1.5 flex items-center gap-2.5 px-1">
+        <span className="font-body text-sm font-semibold text-foreground">${effectivePrice.toFixed(2)}</span>
+        {(showCompare || isFlashActive) && (
+          <span className="font-body text-xs text-muted-foreground line-through">
+            ${(product.compare_at_price || product.price).toFixed(2)}
+          </span>
+        )}
+      </div>
+    </>
+  );
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="group relative overflow-hidden rounded-lg border border-border bg-card"
-    >
-      <Link to={isAffiliate && product.affiliate_url ? product.affiliate_url : `/shop/${product.id}`} target={isAffiliate ? "_blank" : undefined}>
-        <div className="relative aspect-[3/4] overflow-hidden">
-          <img src={img} alt={product.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-
-          {/* Badges */}
-          <div className="absolute left-3 top-3 flex flex-col gap-1">
-            {isCustom && (
-              <Badge className="bg-gold text-primary-foreground font-body text-[10px]">
-                <Crown className="mr-1 h-3 w-3" /> Members Only
-              </Badge>
-            )}
-            {product.featured && !isCustom && <Badge className="bg-gold text-primary-foreground font-body text-[10px]">Featured</Badge>}
-            {isFlashActive && <CountdownTimer endDate={product.flash_sale_end!} />}
-            {isAffiliate && (
-              <Badge variant="secondary" className="font-body text-[10px]">
-                <ExternalLink className="mr-1 h-3 w-3" /> Affiliate
-              </Badge>
-            )}
-            {outOfStock && <Badge variant="destructive" className="font-body text-[10px]">Out of stock</Badge>}
-            {showCompare && (
-              <Badge className="bg-destructive text-destructive-foreground font-body text-[10px]">
-                {Math.round((1 - effectivePrice / product.compare_at_price!) * 100)}% OFF
-              </Badge>
-            )}
-          </div>
-
-          {/* Quick actions */}
-          <div className="absolute right-3 top-3 flex flex-col gap-2 opacity-0 transition-opacity group-hover:opacity-100">
-            <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full" onClick={handleWishlist}>
-              <Heart className={`h-4 w-4 ${isWishlisted ? "fill-destructive text-destructive" : ""}`} />
-            </Button>
-            {!isAffiliate && !outOfStock && !premiumRequired && (
-              <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full" onClick={handleAddToCart}>
-                <ShoppingBag className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        </div>
-
-        <div className="p-4">
-          <p className="font-body text-[10px] uppercase tracking-[0.15em] text-muted-foreground">{product.category}</p>
-          <h3 className="mt-1 font-display text-sm font-semibold text-foreground line-clamp-2">{product.name}</h3>
-          <div className="mt-2 flex items-center gap-2">
-            <span className="font-display text-lg font-bold text-gold">${effectivePrice.toFixed(2)}</span>
-            {(showCompare || isFlashActive) && (
-              <span className="font-body text-xs text-muted-foreground line-through">
-                ${(product.compare_at_price || product.price).toFixed(2)}
-              </span>
-            )}
-          </div>
-        </div>
-      </Link>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="group relative min-w-0">
+      {linkProps ? (
+        <a {...linkProps} className="block">{body}</a>
+      ) : (
+        <Link to={`/shop/${product.id}`} className="block">{body}</Link>
+      )}
     </motion.div>
   );
 };

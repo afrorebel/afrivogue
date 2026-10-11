@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -26,7 +26,7 @@ const AdminRoles = () => {
   const { data: profiles = [] } = useQuery({
     queryKey: ["admin-profiles-roles"],
     queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("id, display_name, avatar_url").order("created_at", { ascending: false });
+      const { data } = await api.from("profiles").select("id, display_name, avatar_url").order("created_at", { ascending: false });
       return data || [];
     },
   });
@@ -34,7 +34,7 @@ const AdminRoles = () => {
   const { data: allRoles = [] } = useQuery({
     queryKey: ["admin-all-roles"],
     queryFn: async () => {
-      const { data } = await supabase.from("user_roles").select("*");
+      const { data } = await api.from("user_roles").select("*");
       return data || [];
     },
   });
@@ -43,7 +43,7 @@ const AdminRoles = () => {
 
   const assignRole = useMutation({
     mutationFn: async ({ userId, role }: { userId: string; role: AppRole }) => {
-      const { error } = await supabase.from("user_roles").insert({ user_id: userId, role });
+      const { error } = await api.from("user_roles").insert({ user_id: userId, role });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -55,7 +55,7 @@ const AdminRoles = () => {
 
   const removeRole = useMutation({
     mutationFn: async ({ userId, role }: { userId: string; role: AppRole }) => {
-      const { error } = await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", role);
+      const { error } = await api.from("user_roles").delete().eq("user_id", userId).eq("role", role);
       if (error) throw error;
     },
     onSuccess: () => {

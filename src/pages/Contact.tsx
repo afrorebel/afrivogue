@@ -1,13 +1,15 @@
 import PageMasthead from "@/components/editorial/PageMasthead";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Mail, Send, MapPin, ExternalLink } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import Footer from "@/components/Footer";
 
 const socials = [
   { label: "TikTok", href: "https://www.tiktok.com/@afrivogue", icon: "tiktok" },
@@ -31,23 +33,11 @@ const Contact = () => {
     }
     setLoading(true);
     try {
-      // Store contact message as a newsletter subscriber with source "contact"
-      const { error } = await supabase.from("newsletter_subscribers").insert({
-        email: form.email.trim(),
-        source: `contact: ${form.subject || "General"} — ${form.name}`,
+      const { error } = await api.functions.invoke("contact", {
+        body: { name: form.name.trim(), email: form.email.trim(), subject: form.subject, message: form.message.trim() },
       });
-      if (error && error.code !== "23505") throw error;
-      // Send confirmation email
-      const confirmId = crypto.randomUUID();
-      await supabase.functions.invoke("send-transactional-email", {
-        body: {
-          templateName: "contact-confirmation",
-          recipientEmail: form.email.trim(),
-          idempotencyKey: `contact-confirm-${confirmId}`,
-          templateData: { name: form.name.trim(), subject: form.subject || undefined },
-        },
-      });
-      toast({ title: "Message sent!", description: "We'll get back to you soon." });
+      if (error) throw error;
+      toast({ title: "Message sent", description: "A real person will read it. Look out for our reply in your inbox." });
       setForm({ name: "", email: "", subject: "", message: "" });
     } catch (err: any) {
       toast({ title: "Error sending message", description: err.message, variant: "destructive" });
@@ -65,10 +55,10 @@ const Contact = () => {
 
       {/* Masthead */}
       <PageMasthead
-        eyebrow="Get In Touch"
+        eyebrow="Say hello"
         title="Contact"
         accent="Us"
-        intro="Story tips, partnership inquiries or a simple hello — we read everything."
+        intro="Story tips, collaborations, press or simply a kind word. A real person reads every message."
       />
 
 
@@ -193,27 +183,20 @@ const Contact = () => {
               <p className="mt-2 font-body text-sm leading-relaxed text-muted-foreground">
                 For brand collaborations, media inquiries, or advertising opportunities, check out our media kit or reach out via email.
               </p>
-              <a
-                href="/media-kit"
+              <Link
+                to="/media-kit"
                 className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-primary bg-primary/5 px-4 py-2 font-body text-xs font-medium text-primary transition-colors hover:bg-primary/10"
               >
                 <ExternalLink className="h-3 w-3" />
                 View Media Kit
-              </a>
+              </Link>
             </div>
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border bg-card/50 px-6 py-10 text-center">
-        <p className="font-display text-lg font-bold tracking-tight">
-          AFRI<span className="text-primary">VOGUE</span>
-        </p>
-        <p className="mt-1 font-body text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Afrivogue. All rights reserved.
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import PageMasthead from "@/components/editorial/PageMasthead";
 import { useState, useMemo, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getCategoryImage } from "@/lib/categoryImages";
 
 const MOODBOARD_CATEGORIES = ["Fashion", "Beauty", "Art", "Design", "Street Style", "Culture"] as const;
 type MoodboardCategory = (typeof MOODBOARD_CATEGORIES)[number];
@@ -45,7 +46,7 @@ const GlobalMoodboard = () => {
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["moodboard-items"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("moodboard_items")
         .select("*")
         .eq("approved", true)
@@ -59,7 +60,7 @@ const GlobalMoodboard = () => {
     queryKey: ["saved-moodboard", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("saved_moodboard_items")
         .select("moodboard_item_id")
         .eq("user_id", user!.id);
@@ -76,7 +77,7 @@ const GlobalMoodboard = () => {
     queryKey: ["moodboard-related-trends", relatedTrendIds],
     enabled: relatedTrendIds.length > 0,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("trends")
         .select("id, headline, category, featured_image_url, cultural_significance")
         .in("id", relatedTrendIds)
@@ -91,9 +92,9 @@ const GlobalMoodboard = () => {
       if (!user) throw new Error("Login required");
       const isSaved = savedIds.includes(itemId);
       if (isSaved) {
-        await supabase.from("saved_moodboard_items").delete().eq("user_id", user.id).eq("moodboard_item_id", itemId);
+        await api.from("saved_moodboard_items").delete().eq("user_id", user.id).eq("moodboard_item_id", itemId);
       } else {
-        await supabase.from("saved_moodboard_items").insert({ user_id: user.id, moodboard_item_id: itemId });
+        await api.from("saved_moodboard_items").insert({ user_id: user.id, moodboard_item_id: itemId });
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["saved-moodboard"] }),
@@ -107,9 +108,9 @@ const GlobalMoodboard = () => {
       const file = files[0];
       const ext = file.name.split(".").pop();
       const path = `moodboard/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error } = await supabase.storage.from("trend-images").upload(path, file);
+      const { error } = await api.storage.from("trend-images").upload(path, file);
       if (error) throw error;
-      const { data: urlData } = supabase.storage.from("trend-images").getPublicUrl(path);
+      const { data: urlData } = api.storage.from("trend-images").getPublicUrl(path);
       setSubmitForm((p) => ({ ...p, image_url: urlData.publicUrl }));
       toast({ title: "Image uploaded" });
     } catch (err: any) {
@@ -123,7 +124,7 @@ const GlobalMoodboard = () => {
   const submitItem = useMutation({
     mutationFn: async () => {
       if (!user) throw new Error("Login required");
-      const { error } = await supabase.from("moodboard_items").insert({
+      const { error } = await api.from("moodboard_items").insert({
         image_url: submitForm.image_url,
         caption: submitForm.caption,
         category: submitForm.category,
@@ -147,7 +148,7 @@ const GlobalMoodboard = () => {
   }, [items, activeCategory]);
 
   const pill = (active: boolean) =>
-    `cursor-pointer rounded-sm border px-3 py-1.5 font-body text-xs font-medium uppercase tracking-wider transition-all duration-200 ${
+    `cursor-pointer rounded-full border px-3 py-1.5 font-body text-xs font-medium uppercase tracking-wider transition-all duration-200 ${
       active ? "border-gold bg-gold text-primary-foreground" : "border-border bg-transparent text-muted-foreground hover:border-gold/40 hover:text-foreground"
     }`;
 
@@ -156,10 +157,10 @@ const GlobalMoodboard = () => {
       <Navbar />
 
       <PageMasthead
-        eyebrow="Visual Inspiration"
+        eyebrow="Community curated"
         title="Global"
         accent="Moodboard"
-        intro="A curated gallery of visual ideas shaping global fashion and culture."
+        intro="A living wall of looks, textures and moments our community cannot stop thinking about. Add yours."
       />
 
 
@@ -293,7 +294,17 @@ const GlobalMoodboard = () => {
                   className="group relative break-inside-avoid rounded-lg overflow-hidden cursor-pointer"
                   onClick={() => setLightboxItem(item)}
                 >
-                  <img src={item.image_url} alt={item.caption} className="w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                  <img
+                    src={item.image_url}
+                    alt={item.caption}
+                    className="w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                    onError={(e) => {
+                      // Hotlinked images can be blocked by their source — fall back to category art.
+                      const fallback = getCategoryImage(item.category);
+                      if (!e.currentTarget.src.endsWith(fallback)) e.currentTarget.src = fallback;
+                    }}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
                     <p className="font-body text-sm text-white/90 line-clamp-2">{item.caption}</p>
                     <div className="flex items-center gap-2 mt-1">
@@ -382,7 +393,16 @@ const GlobalMoodboard = () => {
               <Link key={trend.id} to={`/trend/${trend.id}`} className="group block rounded-lg overflow-hidden border border-border/50 hover:border-gold/30 transition-colors">
                 {trend.featured_image_url && (
                   <div className="aspect-video overflow-hidden">
-                    <img src={trend.featured_image_url} alt={trend.headline} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <img
+                      src={trend.featured_image_url}
+                      alt={trend.headline}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                      onError={(e) => {
+                        const fallback = getCategoryImage(trend.category);
+                        if (!e.currentTarget.src.endsWith(fallback)) e.currentTarget.src = fallback;
+                      }}
+                    />
                   </div>
                 )}
                 <div className="p-4">

@@ -1,0 +1,1342 @@
+{
+ "article_submissions": {
+  "columns": {
+   "admin_notes": {
+    "kind": "string",
+    "nullable": true
+   },
+   "category": {
+    "kind": "string",
+    "nullable": false
+   },
+   "content": {
+    "kind": "string",
+    "nullable": false
+   },
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "images": {
+    "default": [],
+    "kind": "json",
+    "nullable": true
+   },
+   "meta_description": {
+    "kind": "string",
+    "nullable": true
+   },
+   "points_awarded": {
+    "default": 0,
+    "kind": "number",
+    "nullable": true
+   },
+   "status": {
+    "default": "pending",
+    "kind": "string",
+    "nullable": false
+   },
+   "tags": {
+    "default": [],
+    "kind": "json",
+    "nullable": true
+   },
+   "title": {
+    "kind": "string",
+    "nullable": false
+   },
+   "updated_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "bundle_items": {
+  "columns": {
+   "bundle_id": {
+    "kind": "string",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "product_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": [
+   [
+    "bundle_id",
+    "product_id"
+   ]
+  ]
+ },
+ "cart_items": {
+  "columns": {
+   "color": {
+    "kind": "string",
+    "nullable": true
+   },
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "product_id": {
+    "kind": "string",
+    "nullable": false
+   },
+   "quantity": {
+    "default": 1,
+    "kind": "number",
+    "nullable": false
+   },
+   "reminder_sent_at": {
+    "kind": "datetime",
+    "nullable": true
+   },
+   "size": {
+    "kind": "string",
+    "nullable": true
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "categories": {
+  "columns": {
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "name": {
+    "kind": "string",
+    "nullable": false
+   },
+   "parent_id": {
+    "kind": "string",
+    "nullable": true
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "comments": {
+  "columns": {
+   "content": {
+    "kind": "string",
+    "nullable": false
+   },
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "trend_id": {
+    "kind": "string",
+    "nullable": false
+   },
+   "updated_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "contact_messages": {
+  "columns": {
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "email": {
+    "kind": "string",
+    "nullable": false
+   },
+   "handled": {
+    "default": false,
+    "kind": "boolean",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "message": {
+    "kind": "string",
+    "nullable": false
+   },
+   "name": {
+    "kind": "string",
+    "nullable": false
+   },
+   "subject": {
+    "kind": "string",
+    "nullable": true
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "crm_email_log": {
+  "columns": {
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "email": {
+    "kind": "string",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "metadata": {
+    "default": {},
+    "kind": "json",
+    "nullable": true
+   },
+   "status": {
+    "default": "sent",
+    "kind": "string",
+    "nullable": false
+   },
+   "template_name": {
+    "kind": "string",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "cross_sell_rules": {
+  "columns": {
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "priority": {
+    "default": 0,
+    "kind": "number",
+    "nullable": false
+   },
+   "recommended_product_id": {
+    "kind": "string",
+    "nullable": false
+   },
+   "source_product_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": [
+   [
+    "source_product_id",
+    "recommended_product_id"
+   ]
+  ]
+ },
+ "customer_segments": {
+  "columns": {
+   "color": {
+    "default": "#D4A853",
+    "kind": "string",
+    "nullable": false
+   },
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "criteria": {
+    "default": {},
+    "kind": "json",
+    "nullable": false
+   },
+   "description": {
+    "default": "",
+    "kind": "string",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "name": {
+    "kind": "string",
+    "nullable": false
+   },
+   "updated_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "discount_codes": {
+  "columns": {
+   "active": {
+    "default": true,
+    "kind": "boolean",
+    "nullable": false
+   },
+   "code": {
+    "kind": "string",
+    "nullable": false
+   },
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "discount_type": {
+    "default": "percentage",
+    "kind": "string",
+    "nullable": false
+   },
+   "discount_value": {
+    "default": 0,
+    "kind": "number",
+    "nullable": false
+   },
+   "expires_at": {
+    "kind": "datetime",
+    "nullable": true
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "max_uses": {
+    "kind": "number",
+    "nullable": true
+   },
+   "min_order": {
+    "default": 0,
+    "kind": "number",
+    "nullable": true
+   },
+   "times_used": {
+    "default": 0,
+    "kind": "number",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "favorite_authors": {
+  "columns": {
+   "author_id": {
+    "kind": "string",
+    "nullable": false
+   },
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": [
+   [
+    "user_id",
+    "author_id"
+   ]
+  ]
+ },
+ "forecasts": {
+  "columns": {
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "domain": {
+    "kind": "string",
+    "nullable": false
+   },
+   "evidence": {
+    "kind": "string",
+    "nullable": false
+   },
+   "horizon": {
+    "kind": "string",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "implications": {
+    "kind": "string",
+    "nullable": false
+   },
+   "projection": {
+    "kind": "string",
+    "nullable": false
+   },
+   "published": {
+    "default": false,
+    "kind": "boolean",
+    "nullable": false
+   },
+   "published_date": {
+    "kind": "date",
+    "nullable": false
+   },
+   "region": {
+    "kind": "string",
+    "nullable": false
+   },
+   "signal_strength": {
+    "kind": "string",
+    "nullable": false
+   },
+   "title": {
+    "kind": "string",
+    "nullable": false
+   },
+   "updated_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "moodboard_items": {
+  "columns": {
+   "approved": {
+    "default": false,
+    "kind": "boolean",
+    "nullable": false
+   },
+   "caption": {
+    "default": "",
+    "kind": "string",
+    "nullable": false
+   },
+   "category": {
+    "kind": "string",
+    "nullable": false
+   },
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "image_url": {
+    "kind": "string",
+    "nullable": false
+   },
+   "needs_review": {
+    "default": false,
+    "kind": "boolean",
+    "nullable": false
+   },
+   "related_trend_id": {
+    "kind": "string",
+    "nullable": true
+   },
+   "source_url": {
+    "kind": "string",
+    "nullable": true
+   },
+   "submitted_by": {
+    "kind": "string",
+    "nullable": true
+   },
+   "updated_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "newsletter_subscribers": {
+  "columns": {
+   "email": {
+    "kind": "string",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "source": {
+    "default": "popup",
+    "kind": "string",
+    "nullable": true
+   },
+   "subscribed_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "orders": {
+  "columns": {
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "items": {
+    "default": [],
+    "kind": "json",
+    "nullable": false
+   },
+   "shipping_address": {
+    "kind": "json",
+    "nullable": true
+   },
+   "status": {
+    "default": "pending",
+    "kind": "string",
+    "nullable": false
+   },
+   "stripe_session_id": {
+    "kind": "string",
+    "nullable": true
+   },
+   "total": {
+    "default": 0,
+    "kind": "number",
+    "nullable": false
+   },
+   "updated_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "points_history": {
+  "columns": {
+   "amount": {
+    "kind": "number",
+    "nullable": false
+   },
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "reason": {
+    "kind": "string",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "product_bundles": {
+  "columns": {
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "description": {
+    "default": "",
+    "kind": "string",
+    "nullable": false
+   },
+   "discount_percentage": {
+    "default": 10,
+    "kind": "number",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "name": {
+    "kind": "string",
+    "nullable": false
+   },
+   "published": {
+    "default": false,
+    "kind": "boolean",
+    "nullable": false
+   },
+   "updated_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "product_reviews": {
+  "columns": {
+   "content": {
+    "kind": "string",
+    "nullable": false
+   },
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "product_id": {
+    "kind": "string",
+    "nullable": false
+   },
+   "rating": {
+    "kind": "number",
+    "nullable": false
+   },
+   "title": {
+    "kind": "string",
+    "nullable": true
+   },
+   "updated_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "products": {
+  "columns": {
+   "affiliate_url": {
+    "kind": "string",
+    "nullable": true
+   },
+   "category": {
+    "default": "Fashion",
+    "kind": "string",
+    "nullable": false
+   },
+   "colors": {
+    "default": [],
+    "kind": "json",
+    "nullable": true
+   },
+   "compare_at_price": {
+    "kind": "number",
+    "nullable": true
+   },
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "description": {
+    "default": "",
+    "kind": "string",
+    "nullable": false
+   },
+   "featured": {
+    "default": false,
+    "kind": "boolean",
+    "nullable": false
+   },
+   "flash_sale": {
+    "default": false,
+    "kind": "boolean",
+    "nullable": false
+   },
+   "flash_sale_end": {
+    "kind": "datetime",
+    "nullable": true
+   },
+   "flash_sale_price": {
+    "kind": "number",
+    "nullable": true
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "images": {
+    "default": [],
+    "kind": "json",
+    "nullable": false
+   },
+   "name": {
+    "kind": "string",
+    "nullable": false
+   },
+   "price": {
+    "default": 0,
+    "kind": "number",
+    "nullable": false
+   },
+   "product_type": {
+    "default": "custom",
+    "kind": "string",
+    "nullable": false
+   },
+   "published": {
+    "default": false,
+    "kind": "boolean",
+    "nullable": false
+   },
+   "sizes": {
+    "default": [],
+    "kind": "json",
+    "nullable": true
+   },
+   "stock": {
+    "default": 0,
+    "kind": "number",
+    "nullable": false
+   },
+   "tags": {
+    "default": [],
+    "kind": "json",
+    "nullable": true
+   },
+   "updated_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "profiles": {
+  "columns": {
+   "avatar_url": {
+    "kind": "string",
+    "nullable": true
+   },
+   "bio": {
+    "kind": "string",
+    "nullable": true
+   },
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "display_name": {
+    "kind": "string",
+    "nullable": true
+   },
+   "id": {
+    "kind": "string",
+    "nullable": false
+   },
+   "updated_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "reading_history": {
+  "columns": {
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "read_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "trend_id": {
+    "kind": "string",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "referrals": {
+  "columns": {
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "referred_id": {
+    "kind": "string",
+    "nullable": false
+   },
+   "referrer_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "saved_articles": {
+  "columns": {
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "saved_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "trend_id": {
+    "kind": "string",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": [
+   [
+    "user_id",
+    "trend_id"
+   ]
+  ]
+ },
+ "saved_moodboard_items": {
+  "columns": {
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "moodboard_item_id": {
+    "kind": "string",
+    "nullable": false
+   },
+   "saved_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": [
+   [
+    "user_id",
+    "moodboard_item_id"
+   ]
+  ]
+ },
+ "segment_members": {
+  "columns": {
+   "added_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "segment_id": {
+    "kind": "string",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": [
+   [
+    "segment_id",
+    "user_id"
+   ]
+  ]
+ },
+ "site_settings": {
+  "columns": {
+   "key": {
+    "kind": "string",
+    "nullable": false
+   },
+   "updated_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "value": {
+    "kind": "json",
+    "nullable": false
+   }
+  },
+  "primaryKey": "key",
+  "uniques": []
+ },
+ "trends": {
+  "columns": {
+   "category": {
+    "kind": "string",
+    "nullable": false
+   },
+   "content_tier": {
+    "kind": "string",
+    "nullable": false
+   },
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "cultural_significance": {
+    "kind": "string",
+    "nullable": false
+   },
+   "editorial_content": {
+    "kind": "json",
+    "nullable": true
+   },
+   "featured_image_url": {
+    "kind": "string",
+    "nullable": true
+   },
+   "geo_relevance": {
+    "kind": "string",
+    "nullable": false
+   },
+   "headline": {
+    "kind": "string",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "image_hint": {
+    "kind": "string",
+    "nullable": true
+   },
+   "images": {
+    "default": [],
+    "kind": "json",
+    "nullable": true
+   },
+   "members_only": {
+    "default": false,
+    "kind": "boolean",
+    "nullable": false
+   },
+   "needs_review": {
+    "default": true,
+    "kind": "boolean",
+    "nullable": false
+   },
+   "original_source_content": {
+    "kind": "string",
+    "nullable": true
+   },
+   "published": {
+    "default": false,
+    "kind": "boolean",
+    "nullable": false
+   },
+   "source_name": {
+    "kind": "string",
+    "nullable": true
+   },
+   "source_url": {
+    "kind": "string",
+    "nullable": true
+   },
+   "updated_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "urgency": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "trivia_questions": {
+  "columns": {
+   "category": {
+    "kind": "string",
+    "nullable": false
+   },
+   "correct_answer": {
+    "kind": "string",
+    "nullable": false
+   },
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "difficulty": {
+    "default": "medium",
+    "kind": "string",
+    "nullable": false
+   },
+   "explanation": {
+    "default": "",
+    "kind": "string",
+    "nullable": false
+   },
+   "fun_fact": {
+    "kind": "string",
+    "nullable": true
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "needs_review": {
+    "default": false,
+    "kind": "boolean",
+    "nullable": false
+   },
+   "options": {
+    "default": [],
+    "kind": "json",
+    "nullable": false
+   },
+   "published": {
+    "default": true,
+    "kind": "boolean",
+    "nullable": false
+   },
+   "question": {
+    "kind": "string",
+    "nullable": false
+   },
+   "source_trend_id": {
+    "kind": "string",
+    "nullable": true
+   },
+   "updated_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "trivia_scores": {
+  "columns": {
+   "category": {
+    "default": "All",
+    "kind": "string",
+    "nullable": true
+   },
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "score": {
+    "default": 0,
+    "kind": "number",
+    "nullable": false
+   },
+   "total_questions": {
+    "default": 0,
+    "kind": "number",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ },
+ "user_points": {
+  "columns": {
+   "points": {
+    "default": 0,
+    "kind": "number",
+    "nullable": false
+   },
+   "total_earned": {
+    "default": 0,
+    "kind": "number",
+    "nullable": false
+   },
+   "total_withdrawn": {
+    "default": 0,
+    "kind": "number",
+    "nullable": false
+   },
+   "updated_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "user_id",
+  "uniques": []
+ },
+ "user_preferences": {
+  "columns": {
+   "categories": {
+    "default": [],
+    "kind": "json",
+    "nullable": false
+   },
+   "updated_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "user_id",
+  "uniques": []
+ },
+ "user_roles": {
+  "columns": {
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "role": {
+    "kind": "string",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": [
+   [
+    "user_id",
+    "role"
+   ]
+  ]
+ },
+ "wishlists": {
+  "columns": {
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "notify_back_in_stock": {
+    "default": false,
+    "kind": "boolean",
+    "nullable": false
+   },
+   "product_id": {
+    "kind": "string",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": [
+   [
+    "user_id",
+    "product_id"
+   ]
+  ]
+ },
+ "withdrawals": {
+  "columns": {
+   "created_at": {
+    "default": "now",
+    "kind": "datetime",
+    "nullable": false
+   },
+   "dollar_amount": {
+    "kind": "number",
+    "nullable": false
+   },
+   "id": {
+    "default": "uuid",
+    "kind": "string",
+    "nullable": false
+   },
+   "points_amount": {
+    "kind": "number",
+    "nullable": false
+   },
+   "processed_at": {
+    "kind": "datetime",
+    "nullable": true
+   },
+   "status": {
+    "default": "pending",
+    "kind": "string",
+    "nullable": false
+   },
+   "user_id": {
+    "kind": "string",
+    "nullable": false
+   }
+  },
+  "primaryKey": "id",
+  "uniques": []
+ }
+}

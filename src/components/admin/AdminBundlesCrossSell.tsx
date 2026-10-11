@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +28,7 @@ const AdminBundlesCrossSell = () => {
   const { data: products = [] } = useQuery({
     queryKey: ["admin-all-products"],
     queryFn: async () => {
-      const { data } = await supabase.from("products").select("id, name, price, images").order("name");
+      const { data } = await api.from("products").select("id, name, price, images").order("name");
       return (data || []).map((p: any) => ({ ...p, images: (p.images as string[]) || [] }));
     },
   });
@@ -36,10 +36,10 @@ const AdminBundlesCrossSell = () => {
   const { data: bundles = [] } = useQuery({
     queryKey: ["admin-bundles"],
     queryFn: async () => {
-      const { data: allBundles } = await supabase.from("product_bundles").select("*").order("created_at", { ascending: false });
+      const { data: allBundles } = await api.from("product_bundles").select("*").order("created_at", { ascending: false });
       if (!allBundles?.length) return [];
       const ids = allBundles.map((b: any) => b.id);
-      const { data: items } = await supabase.from("bundle_items").select("*, product:products(name)").in("bundle_id", ids);
+      const { data: items } = await api.from("bundle_items").select("*, product:products(name)").in("bundle_id", ids);
       const map: Record<string, any[]> = {};
       (items || []).forEach((i: any) => {
         if (!map[i.bundle_id]) map[i.bundle_id] = [];
@@ -52,7 +52,7 @@ const AdminBundlesCrossSell = () => {
   const { data: crossSellRules = [] } = useQuery({
     queryKey: ["admin-cross-sell"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await api
         .from("cross_sell_rules")
         .select("*, source:products!cross_sell_rules_source_product_id_fkey(name), recommended:products!cross_sell_rules_recommended_product_id_fkey(name)")
         .order("created_at", { ascending: false });
@@ -65,14 +65,14 @@ const AdminBundlesCrossSell = () => {
       toast({ title: "Need a name and at least 2 products", variant: "destructive" });
       return;
     }
-    const { data: bundle, error } = await supabase
+    const { data: bundle, error } = await api
       .from("product_bundles")
       .insert({ name: bundleName, description: bundleDesc, discount_percentage: parseFloat(bundleDiscount) || 10, published: true })
       .select()
       .single();
     if (error) { toast({ title: error.message, variant: "destructive" }); return; }
     const items = selectedProducts.map((pid) => ({ bundle_id: bundle.id, product_id: pid }));
-    await supabase.from("bundle_items").insert(items);
+    await api.from("bundle_items").insert(items);
     qc.invalidateQueries({ queryKey: ["admin-bundles"] });
     setBundleOpen(false);
     setBundleName(""); setBundleDesc(""); setBundleDiscount("10"); setSelectedProducts([]);
@@ -80,13 +80,13 @@ const AdminBundlesCrossSell = () => {
   };
 
   const deleteBundle = async (id: string) => {
-    await supabase.from("product_bundles").delete().eq("id", id);
+    await api.from("product_bundles").delete().eq("id", id);
     qc.invalidateQueries({ queryKey: ["admin-bundles"] });
     toast({ title: "Bundle deleted" });
   };
 
   const toggleBundlePublished = async (id: string, published: boolean) => {
-    await supabase.from("product_bundles").update({ published: !published }).eq("id", id);
+    await api.from("product_bundles").update({ published: !published }).eq("id", id);
     qc.invalidateQueries({ queryKey: ["admin-bundles"] });
   };
 
@@ -95,7 +95,7 @@ const AdminBundlesCrossSell = () => {
       toast({ title: "Select two different products", variant: "destructive" });
       return;
     }
-    const { error } = await supabase.from("cross_sell_rules").insert({
+    const { error } = await api.from("cross_sell_rules").insert({
       source_product_id: sourceProduct,
       recommended_product_id: recProduct,
     });
@@ -107,7 +107,7 @@ const AdminBundlesCrossSell = () => {
   };
 
   const deleteCrossSell = async (id: string) => {
-    await supabase.from("cross_sell_rules").delete().eq("id", id);
+    await api.from("cross_sell_rules").delete().eq("id", id);
     qc.invalidateQueries({ queryKey: ["admin-cross-sell"] });
     toast({ title: "Rule deleted" });
   };

@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import PageMasthead from "@/components/editorial/PageMasthead";
 import { motion } from "framer-motion";
 import { Crown, BookOpen, Star, Users } from "lucide-react";
 
@@ -36,7 +38,7 @@ const MembershipPage = () => {
   const { data: membership = DEFAULT_MEMBERSHIP } = useQuery({
     queryKey: ["membership-settings"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await api
         .from("site_settings")
         .select("value")
         .eq("key", "membership")
@@ -59,7 +61,7 @@ const MembershipPage = () => {
     e.preventDefault();
     if (!joinEmail) return;
     setJoinLoading(true);
-    const { error } = await supabase
+    const { error } = await api
       .from("newsletter_subscribers")
       .insert({ email: joinEmail, source: "founding-member" });
     setJoinLoading(false);
@@ -76,7 +78,7 @@ const MembershipPage = () => {
       return;
     }
     try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
+      const { data, error } = await api.functions.invoke("create-checkout", {
         body: { plan },
       });
       if (error) throw error;
@@ -91,26 +93,25 @@ const MembershipPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="mx-auto max-w-5xl px-6 pb-20 pt-28">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-          <h1 className="font-display text-4xl font-bold text-foreground md:text-5xl">
-            Join the <span className="text-gold">Afrivogue Collective</span>
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl font-body text-lg text-muted-foreground">
-            Get full access to Afrivogue's platform — premium editorials, cultural forecasts, community features, and exclusive content from a global Afrocentric lens.
-          </p>
-          <p className="mx-auto mt-3 max-w-xl font-body text-sm text-gold/80">
-            We're in our founding phase. Early members are helping shape what Afrivogue becomes — your voice matters from day one.
-          </p>
-        </motion.div>
+      <PageMasthead
+        eyebrow="The Collective · Free to join"
+        title="Join the"
+        accent="Collective"
+        intro="Go deeper into the culture. Premium editorials, early forecasts, paid publishing and a community that truly gets it."
+        meta="Founding Phase"
+      />
+      <main className="mx-auto max-w-5xl px-6 pb-24 pt-4">
+        <p className="mx-auto max-w-xl text-center font-body text-[10px] uppercase leading-relaxed tracking-[0.25em] text-gold/80">
+          Founding members join free while we build, and keep their founding perks for good. Your voice shapes AfriVogue from day one.
+        </p>
 
         {/* Features */}
-        <div className="mt-16 grid gap-8 md:grid-cols-4">
+        <div className="mt-16 grid grid-cols-2 gap-8 md:grid-cols-4">
           {[
-            { icon: Crown, title: "Premium Content", desc: "Access exclusive editorials and long-form features" },
-            { icon: Star, title: "Earn Points", desc: "Get rewarded for reading, sharing, and contributing" },
-            { icon: BookOpen, title: "Publish Articles", desc: "Submit your own editorials and earn from approved pieces" },
-            { icon: Users, title: "Community", desc: "Connect with fashion and culture enthusiasts worldwide" },
+            { icon: Crown, title: "Premium editorials", desc: "Every long read and member-only feature, beautifully told" },
+            { icon: Star, title: "Earn as you engage", desc: "Collect points for reading, sharing and contributing" },
+            { icon: BookOpen, title: "Get published, get paid", desc: "Pitch your story. Approved pieces are paid and credited" },
+            { icon: Users, title: "Find your people", desc: "Creatives and culture lovers across the world" },
           ].map((f, i) => (
             <motion.div
               key={f.title}
@@ -119,8 +120,8 @@ const MembershipPage = () => {
               transition={{ delay: i * 0.1 }}
               className="text-center"
             >
-              <f.icon className="mx-auto mb-3 h-8 w-8 text-gold" />
-              <h3 className="font-display text-sm font-bold text-foreground">{f.title}</h3>
+              <f.icon className="mx-auto mb-4 h-6 w-6 text-gold" />
+              <h3 className="font-display text-lg italic text-foreground">{f.title}</h3>
               <p className="mt-1 font-body text-xs text-muted-foreground">{f.desc}</p>
             </motion.div>
           ))}
@@ -131,20 +132,20 @@ const MembershipPage = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-16 mx-auto max-w-lg rounded-lg border-2 border-gold p-10 text-center"
+            className="mt-16 mx-auto max-w-lg rounded-3xl border border-gold/40 bg-sunset p-8 text-center shadow-soft md:p-10"
           >
             <Crown className="mx-auto mb-4 h-12 w-12 text-gold" />
-            <h3 className="font-display text-2xl font-bold text-foreground">Become a Founding Member</h3>
+            <h3 className="font-display text-3xl italic text-foreground">Become a founding member</h3>
             <p className="mt-3 font-body text-sm text-muted-foreground">
-              Join the Afrivogue Collective as a founding member. Get full access to our platform, community, and exclusive content — completely free during our founding phase.
+              Everything members get, free while we build. Join now and your founding status, and the perks that come with it, stay yours when paid membership opens.
             </p>
             <ul className="mt-6 space-y-3 font-body text-sm text-muted-foreground text-left max-w-xs mx-auto">
-              <li>✦ All premium editorials</li>
-              <li>✦ Save & bookmark articles</li>
-              <li>✦ Earn engagement points</li>
-              <li>✦ Personal dashboard</li>
-              <li>✦ Submit your own articles</li>
-              <li>✦ Community access</li>
+              <li>✦ Every premium editorial and long read</li>
+              <li>✦ Early access to cultural forecasts</li>
+              <li>✦ Save stories to your personal library</li>
+              <li>✦ Earn points as you read and share</li>
+              <li>✦ Pitch and publish your own stories</li>
+              <li>✦ Member-only conversations and drops</li>
             </ul>
 
             {user ? (
@@ -152,10 +153,10 @@ const MembershipPage = () => {
                 Go to Dashboard
               </Button>
             ) : joinSuccess ? (
-              <div className="mt-8 rounded-md border border-gold/30 bg-gold/10 p-5">
-                <p className="font-display text-lg font-bold text-gold">Welcome, Founding Member ✦</p>
+              <div className="mt-8 rounded-2xl border border-gold/30 bg-gold/10 p-5">
+                <p className="font-display text-2xl italic text-gold">Welcome to the Collective.</p>
                 <p className="mt-2 font-body text-sm text-muted-foreground">
-                  You're officially part of the Afrivogue Collective. Check your inbox for next steps.
+                  You are officially a founding member. Check your inbox for your welcome letter and next steps.
                 </p>
                 <Button asChild className="mt-4 bg-gold text-primary-foreground hover:bg-gold/90">
                   <Link to="/auth">Create Your Account</Link>
@@ -169,10 +170,10 @@ const MembershipPage = () => {
                   onChange={(e) => setJoinEmail(e.target.value)}
                   placeholder="your@email.com"
                   required
-                  className="w-full rounded-sm border border-border bg-background px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                  className="w-full rounded-full border border-border bg-background px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
                 />
                 <Button type="submit" disabled={joinLoading} className="w-full bg-gold text-primary-foreground hover:bg-gold/90">
-                  {joinLoading ? "Joining…" : "Join as Founding Member"}
+                  {joinLoading ? "Saving your spot…" : "Claim my founding spot"}
                 </Button>
               </form>
             )}
@@ -205,7 +206,7 @@ const MembershipPage = () => {
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="relative rounded-lg border-2 border-gold p-8"
+              className="relative rounded-3xl border border-gold/40 bg-sunset p-8 shadow-soft"
             >
               <Badge className="absolute -top-3 right-4 bg-gold text-primary-foreground">Editor's Choice</Badge>
               <h3 className="font-display text-xl font-bold text-foreground">{membership.yearly_label}</h3>
@@ -233,6 +234,7 @@ const MembershipPage = () => {
           </p>
         )}
       </main>
+      <Footer />
     </div>
   );
 };

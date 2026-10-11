@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { toast } from "@/hooks/use-toast";
 
 const NewsletterPopup = () => {
@@ -78,7 +78,7 @@ const NewsletterPopup = () => {
     if (!email) return;
     setLoading(true);
 
-    const { error } = await supabase
+    const { error } = await api
       .from("newsletter_subscribers")
       .insert({ email, source: "popup" });
 
@@ -118,7 +118,7 @@ const NewsletterPopup = () => {
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-md overflow-hidden rounded-lg border border-border bg-card"
+            className="relative w-full max-w-md overflow-hidden rounded-3xl border border-border bg-card shadow-lift"
           >
             <div className="h-1 w-full gradient-gold" />
 
@@ -131,13 +131,13 @@ const NewsletterPopup = () => {
 
             <div className="px-8 pb-8 pt-10 text-center">
               <p className="mb-2 font-body text-[10px] font-bold uppercase tracking-[0.3em] text-gold">
-                Exclusive Access
+                The AfriVogue Letter
               </p>
-              <h3 className="font-display text-2xl font-bold text-foreground">
-                Stay Ahead of the Curve
+              <h3 className="font-display text-3xl italic text-foreground">
+                Hear it here first
               </h3>
               <p className="mt-3 font-body text-sm text-muted-foreground">
-                Join the Afrivogue insider list for curated trend reports, cultural forecasts, and editorial exclusives — delivered weekly.
+                One letter every Sunday with the stories, looks and signals shaping African style, before everyone else catches on.
               </p>
 
               <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-3">
@@ -147,12 +147,12 @@ const NewsletterPopup = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
                   required
-                  className="w-full rounded-sm border border-border bg-background px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                  className="w-full rounded-full border border-border bg-background px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
                 />
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-sm bg-gold px-4 py-3 font-body text-sm font-bold uppercase tracking-wider text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+                  className="w-full rounded-full bg-gold px-4 py-3 font-body text-sm font-bold uppercase tracking-wider text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
                   {loading ? "Subscribing…" : "Get Insider Access"}
                 </button>

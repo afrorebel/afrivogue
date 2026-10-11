@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,6 +10,7 @@ import { LogOut, User, BookOpen, Heart, Star, Award, DollarSign, Settings, PenSq
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import ReferralWidget from "@/components/ReferralWidget";
+import Wordmark from "@/components/brand/Wordmark";
 
 const POINTS_TO_DOLLAR = 0.01; // 1 point = $0.01
 const MIN_WITHDRAWAL = 50; // $50 minimum
@@ -41,13 +42,13 @@ const Dashboard = () => {
     if (!user) return;
 
     const [profileRes, pointsRes, savedRes, historyRes, prefsRes, withdrawRes, favAuthorsRes] = await Promise.all([
-      supabase.from("profiles").select("*").eq("id", user.id).single(),
-      supabase.from("user_points").select("*").eq("user_id", user.id).single(),
-      supabase.from("saved_articles").select("*, trends(headline, category, featured_image_url)").eq("user_id", user.id).order("saved_at", { ascending: false }).limit(20),
-      supabase.from("reading_history").select("*, trends(headline, category, featured_image_url)").eq("user_id", user.id).order("read_at", { ascending: false }).limit(20),
-      supabase.from("user_preferences").select("*").eq("user_id", user.id).single(),
-      supabase.from("withdrawals").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
-      supabase.from("favorite_authors").select("author_id").eq("user_id", user.id),
+      api.from("profiles").select("*").eq("id", user.id).single(),
+      api.from("user_points").select("*").eq("user_id", user.id).single(),
+      api.from("saved_articles").select("*, trends(headline, category, featured_image_url)").eq("user_id", user.id).order("saved_at", { ascending: false }).limit(20),
+      api.from("reading_history").select("*, trends(headline, category, featured_image_url)").eq("user_id", user.id).order("read_at", { ascending: false }).limit(20),
+      api.from("user_preferences").select("*").eq("user_id", user.id).single(),
+      api.from("withdrawals").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
+      api.from("favorite_authors").select("author_id").eq("user_id", user.id),
     ]);
 
     if (profileRes.data) setProfile(profileRes.data);
@@ -60,7 +61,7 @@ const Dashboard = () => {
     // Fetch favorite author profiles
     if (favAuthorsRes.data && favAuthorsRes.data.length > 0) {
       const authorIds = favAuthorsRes.data.map((f) => f.author_id);
-      const { data: authorProfiles } = await supabase
+      const { data: authorProfiles } = await api
         .from("profiles")
         .select("*")
         .in("id", authorIds);
@@ -72,7 +73,7 @@ const Dashboard = () => {
 
   const checkSubscription = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke("check-subscription");
+      const { data, error } = await api.functions.invoke("check-subscription");
       if (!error && data) {
         setSubscribed(data.subscribed);
         setSubEnd(data.subscription_end);
@@ -84,7 +85,7 @@ const Dashboard = () => {
 
   const handleCheckout = async (plan: "monthly" | "yearly") => {
     try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
+      const { data, error } = await api.functions.invoke("create-checkout", {
         body: { plan },
       });
       if (error) throw error;
@@ -99,7 +100,7 @@ const Dashboard = () => {
       toast({ title: "Insufficient balance", description: `You need at least $${MIN_WITHDRAWAL} to withdraw.`, variant: "destructive" });
       return;
     }
-    const { error } = await supabase.from("withdrawals").insert({
+    const { error } = await api.from("withdrawals").insert({
       user_id: user!.id,
       points_amount: points.points,
       dollar_amount: points.points * POINTS_TO_DOLLAR,
@@ -131,7 +132,7 @@ const Dashboard = () => {
       ? preferences.filter((c) => c !== cat)
       : [...preferences, cat];
     setPreferences(updated);
-    await supabase.from("user_preferences").upsert({
+    await api.from("user_preferences").upsert({
       user_id: user.id,
       categories: updated,
     });
@@ -143,7 +144,7 @@ const Dashboard = () => {
       <header className="border-b border-border px-6 py-4 md:px-12">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <Link to="/" className="font-display text-xl font-bold text-foreground">
-            AFRI<span className="text-gold">VOGUE</span>
+            <Wordmark />
           </Link>
           <div className="flex items-center gap-4">
             <Link to="/trivia" className="font-body text-xs text-gold hover:text-gold/80 flex items-center gap-1">
@@ -194,7 +195,7 @@ const Dashboard = () => {
 
         <Tabs defaultValue="membership" className="space-y-6">
           <TabsList className="flex-wrap">
-            <TabsTrigger value="membership">Membership</TabsTrigger>
+            <TabsTrigger value="membership">The Collective</TabsTrigger>
             <TabsTrigger value="saved">Saved Articles</TabsTrigger>
             <TabsTrigger value="history">Reading History</TabsTrigger>
             <TabsTrigger value="points">Points & Earnings</TabsTrigger>
@@ -422,7 +423,7 @@ const Dashboard = () => {
               </div>
               <Button
                 onClick={async () => {
-                  const { error } = await supabase.from("profiles").update({
+                  const { error } = await api.from("profiles").update({
                     display_name: profile?.display_name,
                     bio: profile?.bio,
                   }).eq("id", user.id);

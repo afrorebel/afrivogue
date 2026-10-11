@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -20,7 +20,7 @@ const AuthorProfile = () => {
   const { data: profile, isLoading } = useQuery({
     queryKey: ["author-profile", authorId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("profiles")
         .select("*")
         .eq("id", authorId!)
@@ -34,7 +34,7 @@ const AuthorProfile = () => {
   const { data: articles } = useQuery({
     queryKey: ["author-articles", authorId],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await api
         .from("article_submissions")
         .select("id, title, category, created_at")
         .eq("user_id", authorId!)
@@ -48,7 +48,7 @@ const AuthorProfile = () => {
   const { data: favoriteCount } = useQuery({
     queryKey: ["author-fav-count", authorId],
     queryFn: async () => {
-      const { count } = await supabase
+      const { count } = await api
         .from("favorite_authors")
         .select("id", { count: "exact", head: true })
         .eq("author_id", authorId!);
@@ -61,7 +61,7 @@ const AuthorProfile = () => {
     queryKey: ["author-is-fav", authorId, user?.id],
     queryFn: async () => {
       if (!user) return false;
-      const { data } = await supabase
+      const { data } = await api
         .from("favorite_authors")
         .select("id")
         .eq("user_id", user.id)
@@ -76,13 +76,13 @@ const AuthorProfile = () => {
     mutationFn: async () => {
       if (!user) throw new Error("Sign in to favorite authors");
       if (isFavorited) {
-        await supabase
+        await api
           .from("favorite_authors")
           .delete()
           .eq("user_id", user.id)
           .eq("author_id", authorId!);
       } else {
-        await supabase
+        await api
           .from("favorite_authors")
           .insert({ user_id: user.id, author_id: authorId! });
       }
@@ -105,7 +105,7 @@ const AuthorProfile = () => {
   const { data: preferences } = useQuery({
     queryKey: ["author-preferences", authorId],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await api
         .from("user_preferences")
         .select("categories")
         .eq("user_id", authorId!)

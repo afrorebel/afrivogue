@@ -1,7 +1,7 @@
 import PageMasthead from "@/components/editorial/PageMasthead";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -33,9 +33,9 @@ const Contributors = () => {
     queryFn: async () => {
       // Get users with publishing roles OR approved articles
       const [{ data: rolesData }, { data: submissions }, { data: favorites }] = await Promise.all([
-        supabase.from("user_roles").select("user_id, role").in("role", ["contributor", "publisher", "editor"]),
-        supabase.from("article_submissions").select("user_id").in("status", ["approved", "published"]),
-        supabase.from("favorite_authors").select("author_id"),
+        api.from("user_roles").select("user_id, role").in("role", ["contributor", "publisher", "editor"]),
+        api.from("article_submissions").select("user_id").in("status", ["approved", "published"]),
+        api.from("favorite_authors").select("author_id"),
       ]);
 
       // Collect unique user IDs
@@ -65,7 +65,7 @@ const Contributors = () => {
       });
 
       // Fetch profiles
-      const { data: profiles } = await supabase
+      const { data: profiles } = await api
         .from("profiles")
         .select("*")
         .in("id", Array.from(userIds));
@@ -97,10 +97,10 @@ const Contributors = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <PageMasthead
-        eyebrow="The Contributors"
+        eyebrow="The contributors"
         title="Our"
         accent="Voices"
-        intro="The cultural commentators, writers and creators shaping the Afrivogue narrative."
+        intro="The writers, stylists and culture-watchers behind AfriVogue. Have a story only you can tell? Join them."
       />
       <main className="mx-auto max-w-7xl px-6 pb-20 md:px-12 lg:px-16">
 

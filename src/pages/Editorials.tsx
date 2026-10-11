@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import EditorialTile from "@/components/EditorialTile";
+import EditorialTile, { MASONRY_ASPECTS } from "@/components/EditorialTile";
+import Pager from "@/components/editorial/Pager";
 import PageMasthead from "@/components/editorial/PageMasthead";
 import MembershipCTA from "@/components/editorial/MembershipCTA";
 import FeaturedProducts from "@/components/shop/FeaturedProducts";
@@ -47,22 +47,21 @@ const Editorials = () => {
       <Navbar />
 
       <PageMasthead
-        eyebrow="Afrivogue Editorials"
+        eyebrow="Long reads"
         title="The"
         accent="Editorials"
-        intro="Long-form features and premium essays on the cultural forces reshaping African and diaspora fashion, beauty and luxury."
+        intro="Deep, beautifully told features on the people and ideas reshaping style. Pour something good and stay a while."
       />
 
-      <main className="px-6 md:px-12 lg:px-16">
-        <div className="mx-auto max-w-7xl">
+      <main className="px-4 md:px-8 lg:px-12">
+        <div className="mx-auto max-w-[1440px]">
           {isLoading ? (
-            <div className="grid gap-x-12 gap-y-20 md:grid-cols-2 lg:grid-cols-3">
+            <div className="columns-2 gap-4 md:columns-3 md:gap-6 xl:columns-4">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="space-y-4">
-                  <Skeleton className="aspect-[4/5] w-full" />
-                  <Skeleton className="h-3 w-24" />
-                  <Skeleton className="h-6 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
+                <div key={i} className="mb-6 break-inside-avoid space-y-3">
+                  <Skeleton className={`w-full rounded-2xl ${MASONRY_ASPECTS[i % MASONRY_ASPECTS.length]}`} />
+                  <Skeleton className="h-5 w-4/5 rounded-full" />
+                  <Skeleton className="h-3 w-1/2 rounded-full" />
                 </div>
               ))}
             </div>
@@ -71,40 +70,19 @@ const Editorials = () => {
               <p className="font-display text-2xl italic text-muted-foreground">No editorials published yet.</p>
               <Link
                 to="/"
-                className="mt-6 border-b border-border pb-1 font-body text-[10px] uppercase tracking-[0.3em] text-foreground transition-colors hover:border-gold hover:text-gold"
+                className="mt-6 rounded-full border border-border px-5 py-2.5 font-body text-sm font-medium text-foreground transition-colors hover:border-gold hover:text-gold"
               >
                 Back to the Feed
               </Link>
             </div>
           ) : (
             <>
-              <div className="grid gap-x-12 gap-y-20 md:grid-cols-2 lg:grid-cols-3">
+              <div className="columns-2 gap-4 md:columns-3 md:gap-6 xl:columns-4">
                 {paged.map((editorial, i) => (
-                  <EditorialTile key={editorial.id} trend={editorial as any} index={i} size="mood" />
+                  <EditorialTile key={editorial.id} trend={editorial as any} index={i} aspect={MASONRY_ASPECTS[i % MASONRY_ASPECTS.length]} />
                 ))}
               </div>
-
-              {totalPages > 1 && (
-                <div className="mt-24 flex items-center justify-between border-t border-border/60 pt-6">
-                  <button
-                    disabled={safePage <= 1}
-                    onClick={() => setPage(safePage - 1)}
-                    className="inline-flex items-center gap-2 font-body text-[10px] uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold disabled:pointer-events-none disabled:opacity-30"
-                  >
-                    <ChevronLeft className="h-3 w-3" /> Previous
-                  </button>
-                  <span className="font-body text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                    {safePage} / {totalPages}
-                  </span>
-                  <button
-                    disabled={safePage >= totalPages}
-                    onClick={() => setPage(safePage + 1)}
-                    className="inline-flex items-center gap-2 font-body text-[10px] uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold disabled:pointer-events-none disabled:opacity-30"
-                  >
-                    Next <ChevronRight className="h-3 w-3" />
-                  </button>
-                </div>
-              )}
+              <Pager page={safePage} totalPages={totalPages} onChange={(n) => { setPage(n); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
             </>
           )}
         </div>

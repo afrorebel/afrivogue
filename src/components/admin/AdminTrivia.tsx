@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,7 @@ const AdminTrivia = () => {
   const { data: questions = [], isLoading } = useQuery({
     queryKey: ["admin-trivia"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("trivia_questions")
         .select("*")
         .order("created_at", { ascending: false })
@@ -31,7 +31,7 @@ const AdminTrivia = () => {
 
   const togglePublish = useMutation({
     mutationFn: async ({ id, published }: { id: string; published: boolean }) => {
-      const { error } = await supabase
+      const { error } = await api
         .from("trivia_questions")
         .update({ published: !published })
         .eq("id", id);
@@ -45,7 +45,7 @@ const AdminTrivia = () => {
 
   const deleteQuestion = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("trivia_questions").delete().eq("id", id);
+      const { error } = await api.from("trivia_questions").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -56,7 +56,7 @@ const AdminTrivia = () => {
 
   const triggerPipeline = async () => {
     toast({ title: "Running trivia pipeline…" });
-    const { error } = await supabase.functions.invoke("ingest-trivia");
+    const { error } = await api.functions.invoke("ingest-trivia");
     if (error) {
       toast({ title: "Pipeline failed", description: error.message, variant: "destructive" });
     } else {

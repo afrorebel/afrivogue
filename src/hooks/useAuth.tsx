@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext, ReactNode, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import type { User, Session } from "@supabase/supabase-js";
+import { api } from "@/integrations/api/client";
+import type { User, Session } from "@/integrations/api/client";
 
 interface AuthContextType {
   user: User | null;
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [subscriptionLoading, setSubscriptionLoading] = useState(false);
 
   const checkAdmin = async (userId: string) => {
-    const { data } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+    const { data } = await api.rpc("has_role", { _user_id: userId, _role: "admin" });
     setIsAdmin(!!data);
   };
 
@@ -33,14 +33,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       setSubscriptionLoading(true);
       // Check Stripe subscription
-      const { data, error } = await supabase.functions.invoke("check-subscription");
+      const { data, error } = await api.functions.invoke("check-subscription");
       if (!error && data?.subscribed) {
         setSubscribed(true);
         return;
       }
       // Check manual premium grant
       if (userId) {
-        const { data: setting } = await supabase
+        const { data: setting } = await api
           .from("site_settings")
           .select("value")
           .eq("key", "manual_premium_users")
@@ -64,39 +64,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [checkSubscription]);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // Admin status is known before `loading` clears, so admin pages never bounce a real admin.
+    const apply = async (session: Session | null) => {
+      setLoading(true);
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        setTimeout(() => checkAdmin(session.user.id), 0);
-        setTimeout(() => checkSubscription(session.user.id), 0);
+        await checkAdmin(session.user.id);
+        checkSubscription(session.user.id);
       } else {
         setIsAdmin(false);
         setSubscribed(false);
       }
       setLoading(false);
-    });
+    };
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        checkAdmin(session.user.id);
-        checkSubscription(session.user.id);
-      }
-      setLoading(false);
+    const { data: { subscription } } = api.auth.onAuthStateChange((_event, session) => {
+      apply(session);
     });
+    api.auth.getSession().then(({ data: { session } }) => apply(session));
 
     return () => subscription.unsubscribe();
   }, [checkSubscription]);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await api.auth.signInWithPassword({ email, password });
     return { error: error as Error | null };
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    await api.auth.signOut();
   };
 
   return (

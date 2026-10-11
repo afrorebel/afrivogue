@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, CartesianGrid } from "recharts";
 import { TrendingUp, Eye, FileText, Users, ShoppingBag, MessageSquare } from "lucide-react";
@@ -21,15 +21,15 @@ const AdminAnalytics = () => {
         moodboardRes,
         newsletterRes,
       ] = await Promise.all([
-        supabase.from("trends").select("category, content_tier, created_at, published"),
-        supabase.from("trends").select("category, created_at").eq("published", true).gte("created_at", new Date(Date.now() - 30 * 86400000).toISOString()),
-        supabase.from("article_submissions").select("status, created_at, category"),
-        supabase.from("profiles").select("created_at"),
-        supabase.from("orders").select("total, status, created_at"),
-        supabase.from("comments").select("created_at"),
-        supabase.from("trivia_scores").select("score, total_questions, created_at"),
-        supabase.from("moodboard_items").select("approved, needs_review, created_at"),
-        supabase.from("newsletter_subscribers").select("subscribed_at"),
+        api.from("trends").select("category, content_tier, created_at, published"),
+        api.from("trends").select("category, created_at").eq("published", true).gte("created_at", new Date(Date.now() - 30 * 86400000).toISOString()),
+        api.from("article_submissions").select("status, created_at, category"),
+        api.from("profiles").select("created_at"),
+        api.from("orders").select("total, status, created_at"),
+        api.from("comments").select("created_at"),
+        api.from("trivia_scores").select("score, total_questions, created_at"),
+        api.from("moodboard_items").select("approved, needs_review, created_at"),
+        api.from("newsletter_subscribers").select("subscribed_at"),
       ]);
 
       return {

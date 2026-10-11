@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,7 @@ const CartDrawer = () => {
   const [checkingOut, setCheckingOut] = useState(false);
 
   const applyDiscount = async () => {
-    const { data } = await supabase
+    const { data } = await api
       .from("discount_codes")
       .select("*")
       .eq("code", discountCode.toUpperCase())
@@ -42,7 +42,7 @@ const CartDrawer = () => {
     if (customItems.length === 0) { toast({ title: "No purchasable items in cart" }); return; }
     setCheckingOut(true);
     try {
-      const { data, error } = await supabase.functions.invoke("create-shop-checkout", {
+      const { data, error } = await api.functions.invoke("create-shop-checkout", {
         body: {
           items: customItems.map((i) => ({
             product_id: i.product_id,
@@ -64,7 +64,7 @@ const CartDrawer = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full text-muted-foreground hover:text-foreground">
           <ShoppingBag className="h-5 w-5" />
           {count > 0 && (
             <Badge className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gold p-0 text-[10px] text-primary-foreground">

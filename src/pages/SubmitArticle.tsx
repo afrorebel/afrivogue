@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +21,7 @@ const SubmitArticle = () => {
   const { data: categories = [] } = useQuery({
     queryKey: ["categories-list"],
     queryFn: async () => {
-      const { data } = await supabase.from("categories").select("name").is("parent_id", null).order("name");
+      const { data } = await api.from("categories").select("name").is("parent_id", null).order("name");
       return data?.map((c: any) => c.name) || [];
     },
   });
@@ -64,10 +64,10 @@ const SubmitArticle = () => {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="flex min-h-[60vh] flex-col items-center justify-center px-6">
-          <h1 className="font-display text-2xl font-bold text-foreground">Members Only</h1>
-          <p className="mt-2 font-body text-sm text-muted-foreground">Article submissions are available to Afrivogue Collective members.</p>
+          <h1 className="font-display text-4xl italic text-foreground">Pitch your story</h1>
+          <p className="mt-3 max-w-md text-center font-body text-base text-muted-foreground">Join the AfriVogue Collective (it is free) to pitch stories and get paid for the ones we publish.</p>
           <Link to="/membership">
-            <Button className="mt-4 bg-gold text-primary-foreground hover:bg-gold/90">Join the Collective</Button>
+            <Button className="mt-6 bg-gold text-primary-foreground hover:bg-gold/90">Join free</Button>
           </Link>
         </div>
       </div>
@@ -83,7 +83,7 @@ const SubmitArticle = () => {
     setSubmitting(true);
     try {
       const tags = form.tags.split(",").map((t) => t.trim()).filter(Boolean);
-      const { error } = await supabase.from("article_submissions").insert({
+      const { error } = await api.from("article_submissions").insert({
         user_id: user.id,
         title: form.title.trim(),
         content: form.content.trim(),

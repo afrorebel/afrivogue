@@ -1,73 +1,61 @@
-# Welcome to your Lovable project
+# AfriVogue
 
-## Project info
+Fashion, culture and lifestyle through an African lens. One Node.js app and one MySQL database on Hostinger: a React + Vite site, an Express API, accounts, the admin, a Stripe shop and Insider membership, email through a Hostinger mailbox, and a Claude-powered content engine.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+To put it live, follow **[DEPLOY-HOSTINGER.md](DEPLOY-HOSTINGER.md)**.
 
-## How can I edit this code?
+## Layout
 
-There are several ways of editing your application.
+| Path | What lives there |
+|---|---|
+| `src/` | The website (React, Tailwind, shadcn/ui) |
+| `src/integrations/api/` | The site's connection to the server: `api.from("trends").select("*").eq(...)`, `api.auth`, `api.storage`, `api.functions` |
+| `server/src/` | The server: accounts (`auth.ts`), the permission-checked data API (`data/`), uploads, email (`mail/`), Stripe (`shop.ts`), the Claude content engine and Style Concierge (`content/`) |
+| `server/src/db/schema.sql` | Every table. Applied on each start (all `IF NOT EXISTS`); add new tables at the end and describe them in `registry.json` |
+| `server/src/data/policies.ts` | Who may read and write each table |
+| `server/seed/` | The existing content, loaded into an empty database on first start |
 
-**Use Lovable**
+## Run it locally
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+You need Node 20+ and a MySQL 8 or MariaDB 10.6+ database.
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+npm install
+cp .env.example .env     # fill in DB_* at least
+npm run dev:server       # API on http://localhost:3000 (rebuilds and restarts on change)
+npm run dev              # site on http://localhost:8080, proxying /api to the server
 ```
 
-**Edit a file directly in GitHub**
+Checks:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```sh
+npm run typecheck
+npm test                 # site unit tests
+npm run test:server      # API tests against a real database (TEST_DB_* env vars, defaults in server/vitest.config.ts)
+```
 
-**Use GitHub Codespaces**
+Build the Hostinger upload:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```sh
+npm run package:hostinger   # → release/afrivogue-hostinger.zip
+```
 
-## What technologies are used for this project?
+## Content engine (Claude)
 
-This project is built with:
+All writing runs through the Anthropic API (`claude-opus-5-5`) in one shared AfriVogue voice (`server/src/content/voice.ts`).
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+| Job | What it does |
+|---|---|
+| `ingest-trends` | Searches the web (Firecrawl), rewrites the best finds as AfriVogue stories |
+| `ingest-forecasts` | Turns fresh sources into cultural forecasts |
+| `ingest-moodboard` | Claude looks at candidate images, picks the strongest three per category, writes captions |
+| `ingest-trivia` | Writes new AfriTrivia questions: short, accurate, and fun for anyone |
+| `enrich-content` | `{"mode":"editorial"}` researches and writes 1,400 to 2,200 word editorials; `{"mode":"story"}` re-voices older stories |
 
-## How can I deploy this project?
+Admins run them from the dashboard; Hostinger cron runs them on a schedule via `/api/cron?key=CRON_SECRET&job=…`. They spend API credit, so nobody else can trigger them. Jobs run in the background and the admin page waits for the result.
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+**Style Concierge** (`/concierge`, `server/src/content/concierge.ts`): tell it the occasion and it builds a complete look, linked to our stories and shop. Guests get 1 look a day, the free Collective 5, Insiders 40 (adjustable with `CONCIERGE_DAILY_*`).
 
-## Can I connect a custom domain to my Lovable project?
+## Email
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Sent over SMTP from a Hostinger mailbox with nodemailer (`server/src/mail/`), the same setup as foundright.ng. Templates: welcome (with email confirmation), password reset, contact confirmation, order receipt, plus contact and new-order alerts to `CONTACT_INBOX`. Admins can restyle the member-facing templates in Admin → Emails.

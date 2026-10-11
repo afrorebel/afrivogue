@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Package, Tag, ShoppingCart, Zap } from "lucide-react";
-import type { Json } from "@/integrations/supabase/types";
+import type { Json } from "@/integrations/api/types";
 import ImageUpload from "@/components/shop/ImageUpload";
 
 const CATEGORIES = ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Accessories"];
@@ -71,7 +71,7 @@ const AdminShop = () => {
   const { data: products = [] } = useQuery({
     queryKey: ["admin-products"],
     queryFn: async () => {
-      const { data } = await supabase.from("products").select("*").order("created_at", { ascending: false });
+      const { data } = await api.from("products").select("*").order("created_at", { ascending: false });
       return data || [];
     },
   });
@@ -79,7 +79,7 @@ const AdminShop = () => {
   const { data: orders = [] } = useQuery({
     queryKey: ["admin-orders"],
     queryFn: async () => {
-      const { data } = await supabase.from("orders").select("*").order("created_at", { ascending: false });
+      const { data } = await api.from("orders").select("*").order("created_at", { ascending: false });
       return data || [];
     },
   });
@@ -87,7 +87,7 @@ const AdminShop = () => {
   const { data: discounts = [] } = useQuery({
     queryKey: ["admin-discounts"],
     queryFn: async () => {
-      const { data } = await supabase.from("discount_codes").select("*").order("created_at", { ascending: false });
+      const { data } = await api.from("discount_codes").select("*").order("created_at", { ascending: false });
       return data || [];
     },
   });
@@ -114,10 +114,10 @@ const AdminShop = () => {
         flash_sale_price: productForm.flash_sale_price ? parseFloat(productForm.flash_sale_price) : null,
       };
       if (editingProduct) {
-        const { error } = await supabase.from("products").update(payload).eq("id", editingProduct);
+        const { error } = await api.from("products").update(payload).eq("id", editingProduct);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("products").insert(payload);
+        const { error } = await api.from("products").insert(payload);
         if (error) throw error;
       }
     },
@@ -132,7 +132,7 @@ const AdminShop = () => {
   });
 
   const deleteProd = async (id: string) => {
-    await supabase.from("products").delete().eq("id", id);
+    await api.from("products").delete().eq("id", id);
     qc.invalidateQueries({ queryKey: ["admin-products"] });
     toast({ title: "Product deleted" });
   };
@@ -148,7 +148,7 @@ const AdminShop = () => {
         active: discountForm.active,
         expires_at: discountForm.expires_at || null,
       };
-      const { error } = await supabase.from("discount_codes").insert(payload);
+      const { error } = await api.from("discount_codes").insert(payload);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -161,7 +161,7 @@ const AdminShop = () => {
   });
 
   const updateOrderStatus = async (id: string, status: string) => {
-    await supabase.from("orders").update({ status }).eq("id", id);
+    await api.from("orders").update({ status }).eq("id", id);
     qc.invalidateQueries({ queryKey: ["admin-orders"] });
     toast({ title: `Order marked as ${status}` });
   };

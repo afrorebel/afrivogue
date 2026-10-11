@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { Save, Plus, Trash2, Mail, BarChart3, MessageSquare, Megaphone } from "lucide-react";
-import type { Json } from "@/integrations/supabase/types";
+import type { Json } from "@/integrations/api/types";
 
 interface Integration {
   id: string;
@@ -63,7 +63,7 @@ const AdminMarketingIntegrations = () => {
   const { data: saved, isLoading } = useQuery({
     queryKey: ["admin-marketing-integrations"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("site_settings")
         .select("value")
         .eq("key", "marketing_integrations")
@@ -79,14 +79,14 @@ const AdminMarketingIntegrations = () => {
 
   const saveMut = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("site_settings")
         .update({ value: settings as unknown as Json })
         .eq("key", "marketing_integrations")
         .select();
       if (error) throw error;
       if (!data || data.length === 0) {
-        const { error: insertError } = await supabase
+        const { error: insertError } = await api
           .from("site_settings")
           .insert({ key: "marketing_integrations", value: settings as unknown as Json });
         if (insertError) throw insertError;
