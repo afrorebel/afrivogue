@@ -6,7 +6,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SectionRule from "@/components/editorial/SectionRule";
 import MembershipCTA from "@/components/editorial/MembershipCTA";
-import PageMasthead from "@/components/editorial/PageMasthead";
 
 const values = [
   {

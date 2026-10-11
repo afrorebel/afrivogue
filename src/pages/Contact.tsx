@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { Mail, Send, MapPin, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
-import PageMasthead from "@/components/editorial/PageMasthead";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";

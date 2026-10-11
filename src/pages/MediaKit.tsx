@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
-import PageMasthead from "@/components/editorial/PageMasthead";
 import Footer from "@/components/Footer";
 import { Mail, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";

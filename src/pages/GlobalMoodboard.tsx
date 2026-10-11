@@ -4,7 +4,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
-import PageMasthead from "@/components/editorial/PageMasthead";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Plus, X, ExternalLink, Upload, Send, Loader2, Link as LinkIconLucide } from "lucide-react";
 import { Button } from "@/components/ui/button";
