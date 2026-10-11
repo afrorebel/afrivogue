@@ -44,6 +44,7 @@ const AdminTrends = () => {
   const [form, setForm] = useState(emptyTrend);
   const [reviewFilter, setReviewFilter] = useState<ReviewFilter>("all");
   const [isIngesting, setIsIngesting] = useState(false);
+  const [enriching, setEnriching] = useState<null | "editorial" | "story">(null);
   const [newCat, setNewCat] = useState("");
 
   const { data: categories = [] } = useQuery({
@@ -125,6 +126,25 @@ const AdminTrends = () => {
     }
   };
 
+  // Claude writes long-form editorials for features, or re-voices older short stories.
+  const runEnrichment = async (mode: "editorial" | "story") => {
+    setEnriching(mode);
+    try {
+      const { data, error } = await supabase.functions.invoke("enrich-content", { body: { mode } });
+      if (error) throw error;
+      const failed = data?.failed?.length ? `, ${data.failed.length} failed` : "";
+      toast({
+        title: mode === "editorial" ? "Editorials written" : "Stories re-voiced",
+        description: data?.processed ? `${data.processed} updated${failed}` : data?.message || "Nothing left to update",
+      });
+      qc.invalidateQueries({ queryKey: ["admin-trends"] });
+    } catch (e: any) {
+      toast({ title: "Content engine error", description: e.message, variant: "destructive" });
+    } finally {
+      setEnriching(null);
+    }
+  };
+
   const openEdit = (t: Trend) => {
     setEditing(t);
     setForm({
@@ -186,6 +206,14 @@ const AdminTrends = () => {
           <Button size="sm" variant="outline" onClick={triggerIngestion} disabled={isIngesting}>
             <RefreshCw className={`mr-1 h-4 w-4 ${isIngesting ? "animate-spin" : ""}`} />
             {isIngesting ? "Ingesting…" : "Run Pipeline"}
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => runEnrichment("editorial")} disabled={enriching !== null}>
+            <RefreshCw className={`mr-1 h-4 w-4 ${enriching === "editorial" ? "animate-spin" : ""}`} />
+            {enriching === "editorial" ? "Writing editorial…" : "Write Long-Form Editorial"}
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => runEnrichment("story")} disabled={enriching !== null}>
+            <RefreshCw className={`mr-1 h-4 w-4 ${enriching === "story" ? "animate-spin" : ""}`} />
+            {enriching === "story" ? "Re-voicing…" : "Re-voice Older Stories"}
           </Button>
 
           <Dialog open={open} onOpenChange={(v) => { if (!v) closeDialog(); else setOpen(true); }}>

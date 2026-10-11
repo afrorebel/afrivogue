@@ -15,6 +15,8 @@ import Comments from "@/components/Comments";
 import { Skeleton } from "@/components/ui/skeleton";
 import { linkifyText } from "@/lib/linkify";
 import type { Json } from "@/integrations/supabase/types";
+import DOMPurify from "dompurify";
+import { Clock, Sparkles } from "lucide-react";
 
 const urgencyStyles: Record<string, string> = {
   Breaking: "urgency-breaking",
@@ -33,6 +35,24 @@ function extractPullQuote(text: string): string {
   const candidates = sentences.filter((s) => s.length > 30 && s.length < 160);
   return candidates.length > 0 ? candidates[candidates.length - 1] : sentences[0];
 }
+
+interface EditorialContent {
+  body?: string;
+  dek?: string;
+  key_takeaways?: string[];
+  why_it_matters?: string;
+  sources?: { title: string; url: string }[];
+  reading_minutes?: number;
+}
+
+// Editorial HTML can come from the admin editor or the AI pipeline; strip anything executable.
+DOMPurify.addHook("afterSanitizeAttributes", (node) => {
+  if (node.tagName === "A" && node.getAttribute("target") === "_blank") {
+    node.setAttribute("rel", "noopener noreferrer");
+  }
+});
+const sanitizeEditorialHtml = (html: string) =>
+  DOMPurify.sanitize(html, { ADD_ATTR: ["target"], FORBID_TAGS: ["style", "form", "input", "iframe"] });
 
 const TrendDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -96,9 +116,12 @@ const TrendDetail = () => {
     );
   }
 
-  // Check if editorial_content has rich HTML body
-  const editorialContent = trend.editorial_content as { body?: string } | null;
-  const hasRichContent = editorialContent?.body && editorialContent.body.includes("<");
+  // Long-form editorials (from the editor or the Claude pipeline) store HTML plus extras.
+  const editorialContent = trend.editorial_content as EditorialContent | null;
+  const hasRichContent = !!editorialContent?.body && editorialContent.body.includes("<");
+  const safeBody = hasRichContent ? sanitizeEditorialHtml(editorialContent!.body!) : "";
+  const takeaways = editorialContent?.key_takeaways?.filter(Boolean) ?? [];
+  const sources = editorialContent?.sources?.filter((src) => /^https?:\/\//.test(src.url)) ?? [];
 
   const pullQuote = extractPullQuote(trend.cultural_significance);
   const paragraphs = trend.cultural_significance.includes("\n\n")
@@ -128,7 +151,7 @@ const TrendDetail = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
         </div>
-        <div className="relative mx-auto max-w-4xl px-6 pb-16 pt-24 md:px-16 lg:pt-32">
+        <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-24 md:px-8 lg:pt-32">
           <Link
             to="/"
             className="mb-8 inline-block font-body text-xs font-medium uppercase tracking-[0.2em] text-gold transition-colors hover:text-terracotta"
@@ -151,14 +174,24 @@ const TrendDetail = () => {
             </span>
           </div>
 
-          <h1 className="font-display text-3xl font-bold leading-tight text-foreground md:text-5xl lg:text-6xl">
+          <h1 className="font-display text-4xl italic leading-[1.05] text-foreground md:text-6xl">
             {trend.headline}
           </h1>
+          {editorialContent?.dek && (
+            <p className="mt-5 max-w-3xl font-display text-xl leading-relaxed text-foreground/80 md:text-2xl">
+              {editorialContent.dek}
+            </p>
+          )}
 
           <div className="mt-6 flex items-center gap-4">
             <time className="font-body text-sm text-muted-foreground">
               {new Date(trend.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
             </time>
+            {editorialContent?.reading_minutes && (
+              <span className="flex items-center gap-1.5 font-body text-sm text-muted-foreground">
+                <Clock className="h-3.5 w-3.5" /> {editorialContent.reading_minutes} min read
+              </span>
+            )}
             <span className="h-px flex-1 bg-border" />
             <ShareButtons title={trend.headline} />
             <Link
@@ -173,28 +206,68 @@ const TrendDetail = () => {
 
       {/* Article body */}
       {(trend.members_only || paywalledCategories.includes(trend.category)) && !subscribed && !isAdmin ? (
-        <div className="mx-auto max-w-4xl px-6 py-16 md:px-16">
+        <div className="mx-auto max-w-3xl px-4 py-16 md:px-8">
           <Paywall previewContent={trend.cultural_significance} />
         </div>
       ) : (
-      <article className="mx-auto max-w-4xl px-6 py-16 md:px-16">
-        <div className="grid gap-12 lg:grid-cols-[1fr_280px]">
+      <article className="mx-auto max-w-6xl px-4 py-12 md:px-8 md:py-16">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_300px]">
           <div className="space-y-10">
             {hasRichContent ? (
-              /* Render rich HTML from the editor */
+              /* Long-form editorial */
               <>
+                {takeaways.length > 0 && (
+                  <aside className="rounded-3xl border border-gold/25 bg-sunset p-6 md:p-8">
+                    <p className="mb-4 flex items-center gap-2 font-body text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
+                      <Sparkles className="h-3.5 w-3.5" /> Key takeaways
+                    </p>
+                    <ul className="space-y-3">
+                      {takeaways.map((t) => (
+                        <li key={t} className="flex gap-3 font-body text-base leading-relaxed text-foreground">
+                          <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+                          {t}
+                        </li>
+                      ))}
+                    </ul>
+                  </aside>
+                )}
+
                 <div
-                  className="prose prose-lg dark:prose-invert max-w-none
-                    prose-headings:font-display prose-headings:text-foreground
-                    prose-p:font-body prose-p:text-base prose-p:leading-[1.9] prose-p:text-muted-foreground
+                  className="prose prose-lg max-w-[46rem] prose-li:text-foreground/85 prose-li:marker:text-gold [&_blockquote_p]:!font-display [&_blockquote_p]:!text-2xl md:[&_blockquote_p]:!text-3xl [&_blockquote_p]:!italic [&_blockquote_p]:!leading-snug [&_blockquote_p]:!text-foreground
+                    prose-headings:font-display prose-headings:font-normal prose-headings:italic prose-headings:text-foreground
+                    prose-h2:mt-14 prose-h2:text-3xl md:prose-h2:text-4xl
+                    prose-p:font-body prose-p:text-[1.075rem] prose-p:leading-[1.9] prose-p:text-foreground/85
                     prose-a:text-gold prose-a:no-underline hover:prose-a:underline
-                    prose-blockquote:border-gold prose-blockquote:text-foreground/80 prose-blockquote:italic
-                    prose-img:rounded-lg prose-img:border prose-img:border-border
-                    prose-strong:text-foreground"
-                  dangerouslySetInnerHTML={{ __html: editorialContent!.body! }}
+                    prose-blockquote:my-10 prose-blockquote:border-l-4 prose-blockquote:border-gold prose-blockquote:pl-6
+                    prose-blockquote:font-display prose-blockquote:text-2xl prose-blockquote:not-italic prose-blockquote:leading-snug prose-blockquote:text-foreground
+                    prose-em:text-foreground prose-strong:text-foreground
+                    prose-img:rounded-2xl"
+                  dangerouslySetInnerHTML={{ __html: safeBody }}
                 />
 
+                {editorialContent?.why_it_matters && (
+                  <aside className="rounded-3xl border border-border bg-card p-6 shadow-soft md:p-8">
+                    <p className="mb-3 font-body text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">Why it matters</p>
+                    <p className="font-display text-xl leading-relaxed text-foreground">{editorialContent.why_it_matters}</p>
+                  </aside>
+                )}
+
                 {images.length > 0 && <ImageCarousel images={images} alt={trend.headline} />}
+
+                {sources.length > 0 && (
+                  <div className="rounded-2xl border border-border bg-card/50 p-5">
+                    <p className="mb-3 font-body text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Sources</p>
+                    <ul className="space-y-2">
+                      {sources.map((src) => (
+                        <li key={src.url} className="font-body text-sm">
+                          <a href={src.url} target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">
+                            {src.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </>
             ) : (
               /* Fallback: render plain text cultural_significance */
@@ -222,8 +295,8 @@ const TrendDetail = () => {
               </>
             )}
 
-            {/* Source attribution */}
-            {trend.source_name && (
+            {/* Source attribution (long-form editorials list their sources above) */}
+            {trend.source_name && sources.length === 0 && (
               <div className="rounded-2xl border border-border bg-card/50 px-5 py-4">
                 <p className="font-body text-xs text-muted-foreground">
                   <span className="font-bold uppercase tracking-wider text-gold/70">Source:</span>{" "}
@@ -238,7 +311,7 @@ const TrendDetail = () => {
               </div>
             )}
 
-            <LeadGenWidget variant="banner" category={trend.category} />
+            <LeadGenWidget variant="inline" category={trend.category} />
 
             {/* Cultural Context */}
             <div className="rounded-lg border border-border bg-card p-6">

@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { trends } from "@/lib/trendData";
 import { useAuth } from "@/hooks/useAuth";
@@ -57,7 +57,9 @@ const PremiumEditorial = () => {
   const trend = trends.find((t) => t.id === id);
   const content = editorialContent[id as keyof typeof editorialContent];
 
+  // Only the bundled showcase pieces live here; published stories render on the story page.
   if (!trend || !content) {
+    if (id) return <Navigate to={`/trend/${id}`} replace />;
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center px-6">
