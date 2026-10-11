@@ -1,4 +1,6 @@
+import { requireAdminOrCron, UnauthorizedError } from "../_shared/auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { generateJson } from "../_shared/claude.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -8,15 +10,61 @@ const corsHeaders = {
 
 const CATEGORIES = ["Fashion", "Culture", "Entertainment", "Lifestyle", "Beauty", "Art & Design", "Luxury", "Business"];
 
+interface TriviaQuestion {
+  question: string;
+  options: string[];
+  correct_answer: string;
+  explanation: string;
+  category: string;
+  difficulty: string;
+  fun_fact: string;
+}
+
+const TRIVIA_SYSTEM = `You write AfriTrivia, AfriVogue's culture quiz: fun, smart questions about fashion, beauty, music, film, art and lifestyle across Africa and its diaspora, for anyone who loves culture.
+
+RULES
+- Only ask about well-documented facts you are certain of. If you are not sure, choose a different question. Accuracy matters more than novelty.
+- Real people, brands, events and movements from Africa, the Americas, Europe and the Caribbean.
+- Exactly 4 options per question. correct_answer must match one option exactly. Make the wrong options plausible.
+- explanation: 1 to 2 sentences that teach something.
+- fun_fact: one surprising, memorable detail.
+- Difficulty mix per batch: 3 easy, 3 medium, 2 hard. Educational and entertaining, never obscure for its own sake.`;
+
+const TRIVIA_SCHEMA = {
+  type: "object",
+  properties: {
+    questions: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          question: { type: "string" },
+          options: { type: "array", items: { type: "string" } },
+          correct_answer: { type: "string" },
+          explanation: { type: "string" },
+          category: { type: "string", enum: CATEGORIES },
+          difficulty: { type: "string", enum: ["easy", "medium", "hard"] },
+          fun_fact: { type: "string" },
+        },
+        required: ["question", "options", "correct_answer", "explanation", "category", "difficulty", "fun_fact"],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ["questions"],
+  additionalProperties: false,
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    await requireAdminOrCron(req);
+
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const lovableKey = Deno.env.get("LOVABLE_API_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Get existing questions to avoid duplicates
@@ -41,80 +89,19 @@ Deno.serve(async (req) => {
 
     const category = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
 
-    const aiPrompt = `You are an expert quiz writer for AFRIVOGUE, a global fashion, culture, entertainment, and lifestyle platform with an Afro-global soul. Afrivogue celebrates the FULL spectrum of Black culture worldwide and is for everyone who appreciates culture, style, and innovation. Generate 8 unique, engaging trivia questions.
+    const { questions: newQuestions } = await generateJson<{ questions: TriviaQuestion[] }>({
+      system: TRIVIA_SYSTEM,
+      prompt: `Write 8 new AfriTrivia questions. Lean toward this category for at least half of them: ${category}.
 
-REQUIREMENTS:
-- Mix of historical and contemporary topics from ACROSS THE BLACK WORLD and global culture
-- Cover: African fashion, Black American celebrity culture, Hollywood, diaspora movements, Caribbean influence, Afrobeats, global entertainment, beauty, luxury, art, and lifestyle
-- Include questions about: African designers, Black American icons (Beyoncé, Rihanna, Virgil Abloh, etc.), Hollywood moments, cultural traditions, fashion weeks, music artists, film, beauty innovations, textile arts, cultural movements, diaspora influence, global lifestyle trends
-- Each question must have exactly 4 options with one correct answer
-- Provide a brief but insightful explanation for the correct answer
-- Add an optional fun fact that's surprising or memorable
-- Difficulty should vary: 3 easy, 3 medium, 2 hard
-- Category for each question: ${CATEGORIES.join(", ")}
-- Make questions educational and entertaining — not obscure trivia nobody would know
-- Reference real people, brands, events, movements from Africa, America, Europe, Caribbean, and beyond
-- Ensure global appeal — questions should be interesting to anyone regardless of race or location
+Use these recent AfriVogue stories for inspiration where they fit (do not quiz on details only these summaries mention):
+${trendContext || "General fashion, culture and entertainment"}
 
-CURRENT TRENDING TOPICS (use some for inspiration):
-${trendContext || "General fashion, culture, and entertainment trends"}
-
-Return a JSON array using this tool call.`;
-
-    const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${lovableKey}`,
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [{ role: "user", content: aiPrompt }],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "create_trivia_batch",
-              description: "Create a batch of trivia questions",
-              parameters: {
-                type: "object",
-                required: ["questions"],
-                properties: {
-                  questions: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      required: ["question", "options", "correct_answer", "explanation", "category", "difficulty"],
-                      properties: {
-                        question: { type: "string" },
-                        options: { type: "array", items: { type: "string" }, minItems: 4, maxItems: 4 },
-                        correct_answer: { type: "string" },
-                        explanation: { type: "string" },
-                        category: { type: "string", enum: CATEGORIES },
-                        difficulty: { type: "string", enum: ["easy", "medium", "hard"] },
-                        fun_fact: { type: "string" },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        ],
-        tool_choice: { type: "function", function: { name: "create_trivia_batch" } },
-        temperature: 0.9,
-      }),
+Avoid repeating any of these existing questions:
+${[...existingSet].slice(0, 60).map((q) => `- ${q}`).join("\n")}`,
+      schema: TRIVIA_SCHEMA,
+      effort: "medium",
     });
 
-    if (!aiRes.ok) {
-      throw new Error(`AI request failed: ${aiRes.status}`);
-    }
-
-    const aiData = await aiRes.json();
-    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) throw new Error("No tool call in AI response");
-
-    const { questions: newQuestions } = JSON.parse(toolCall.function.arguments);
     let ingested = 0;
 
     for (const q of newQuestions) {
@@ -141,8 +128,14 @@ Return a JSON array using this tool call.`;
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
+    if (err instanceof UnauthorizedError) {
+      return new Response(JSON.stringify({ error: err.message }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     console.error("Trivia ingestion error:", err);
-    return new Response(JSON.stringify({ error: err.message }), {
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

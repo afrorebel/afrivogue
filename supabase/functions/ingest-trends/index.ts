@@ -1,4 +1,7 @@
+import { requireAdminOrCron, UnauthorizedError } from "../_shared/auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { generateJson, mapLimited } from "../_shared/claude.ts";
+import { AFRIVOGUE_VOICE, CATEGORIES, GEOS, URGENCIES } from "../_shared/voice.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -67,17 +70,51 @@ function detectGeo(text: string): string {
   return "Africa";
 }
 
+interface StoryOutput {
+  headline: string;
+  cultural_significance: string;
+  category: string;
+  urgency: string;
+  geo_relevance: string;
+  content_tier: string;
+  image_hint: string;
+}
+
+const STORY_BRIEF = `TASK: Turn one source article into an AfriVogue story.
+
+STRUCTURE
+- Headline: magnetic, under 80 characters, reads like a magazine cover line, includes the key name or subject for search.
+- Body (cultural_significance): 300 to 500 words in 4 to 6 paragraphs separated by blank lines. Paragraph one sets the scene. The middle explains what happened, who made it and why it matters culturally. The last paragraph looks ahead.
+- content_tier: "Daily Brief" for a timely cultural signal; "Editorial Feature" when the subject has enough depth for a long-form follow-up; "Premium Long-Form" only for a major cultural essay subject.
+- image_hint: 2 to 3 words describing the ideal image.`;
+
+const STORY_SCHEMA = {
+  type: "object",
+  properties: {
+    headline: { type: "string", description: "Cover-line headline, under 80 characters" },
+    cultural_significance: { type: "string", description: "300-500 word story, paragraphs separated by blank lines, markdown links for citations" },
+    category: { type: "string", enum: CATEGORIES },
+    urgency: { type: "string", enum: URGENCIES },
+    geo_relevance: { type: "string", enum: GEOS },
+    content_tier: { type: "string", enum: ["Daily Brief", "Editorial Feature", "Premium Long-Form"] },
+    image_hint: { type: "string", description: "2-3 word image description" },
+  },
+  required: ["headline", "cultural_significance", "category", "urgency", "geo_relevance", "content_tier", "image_hint"],
+  additionalProperties: false,
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    await requireAdminOrCron(req);
+
     const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
     if (!FIRECRAWL_API_KEY) throw new Error("FIRECRAWL_API_KEY not configured");
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+    if (!Deno.env.get("ANTHROPIC_API_KEY")) throw new Error("ANTHROPIC_API_KEY not configured");
 
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -130,156 +167,66 @@ Deno.serve(async (req) => {
 
     let ingested = 0;
 
-    for (const result of results) {
-      // Skip if URL already exists
+    // Keep only fresh, substantial results before spending tokens on them.
+    const candidates = results.filter((result: any) => {
       if (result.url && existingUrls.has(result.url)) {
         console.log("Skipping duplicate URL:", result.url);
-        continue;
+        return false;
       }
-
       const sourceContent = result.markdown || result.description || "";
       if (sourceContent.length < 100) {
         console.log("Skipping thin content:", result.url);
-        continue;
+        return false;
       }
+      return true;
+    });
 
-      // Step 2: AI Rewrite with Lovable AI
-      const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: [
-            {
-              role: "system",
-              content: `You are the editorial voice of AFRIVOGUE — The Authority on Culture, Taste & Tomorrow. You write like the love child of Vogue's authority and The New Yorker's depth, filtered through a cinematic, Afro-global lens.
-
-AFRIVOGUE VOICE (NON-NEGOTIABLE):
-- You do NOT report. You DECLARE. You do NOT describe trends. You INTERPRET movements.
-- Every sentence should feel like it belongs in a fashion film voiceover or a museum catalogue essay.
-- Open with a cinematic, evocative statement that draws the reader into a world — not a news summary.
-- Write as though narrating the cultural moment to someone who shapes taste, not someone catching up on news.
-- Use metaphor, cultural allusion, and rhythmic prose. "This collection doesn't reference heritage — it weaponizes it."
-- Short declarative sentences for impact. Longer flowing ones for texture. Alternate deliberately.
-- End with a forward-looking provocation — what this means for the future of culture, taste, or identity.
-
-WHAT AFRIVOGUE IS NOT:
-- Not a news wire. Never open with "In a recent development…" or "According to sources…"
-- Not PR copy. Never use phrases like "excited to announce," "groundbreaking collaboration," or "iconic partnership."
-- Not academic. No jargon. No "intersectionality of diasporic identity." Write for intelligent readers, not professors.
-- Not gossipy. Celebrity stories are framed through cultural significance, never tabloid framing.
-
-AFRIVOGUE COVERS the FULL spectrum: African creatives, the diaspora, Black American culture, Hollywood, Caribbean movements, Afro-European innovation — and their gravitational pull on global fashion, beauty, entertainment, and lifestyle.
-
-CITATION & LINKING RULES (CRITICAL):
-- NEVER write raw URLs. Embed all references as markdown hyperlinks within natural sentences: [descriptive text](url)
-- The linked text should be a meaningful phrase, e.g. "as [Vogue documented](url)" or "according to [a Business of Fashion investigation](url)".
-- Every piece must include at least one embedded citation.
-- Include quotes from industry figures when available in the source.
-
-STRUCTURE:
-- Headlines: magnetic, SEO-optimized, under 80 characters. Should sound like a magazine cover line.
-- Body: 200-400 words. Well-spaced paragraphs separated by double newlines. Each paragraph = one idea, fully developed.
-- Assign content_tier: "Daily Brief" for cultural signals, "Editorial Feature" for analysis, "Premium Long-Form" for deep cultural essays.
-
-You MUST respond with a JSON object using this exact schema:
-{
-  "headline": "string (max 80 chars, SEO-optimized, magazine cover quality)",
-  "cultural_significance": "string (200-400 words, cinematic editorial prose with embedded markdown hyperlinks, double-newline separated paragraphs)",
-  "category": "one of: Fashion, Beauty, Luxury, Art & Design, Culture, Business, Entertainment, Lifestyle",
-  "urgency": "one of: Breaking, Emerging, Slow-Burn",
-  "geo_relevance": "one of: Africa, Diaspora, Global",
-  "content_tier": "one of: Daily Brief, Editorial Feature, Premium Long-Form",
-  "image_hint": "string (2-3 word image search hint)"
-}`,
-            },
-            {
-              role: "user",
-              content: `Rewrite this article in the AFRIVOGUE editorial voice. Source: "${result.title}" from ${result.url}\n\nContent:\n${sourceContent.slice(0, 3000)}`,
-            },
-          ],
-          tools: [
-            {
-              type: "function",
-              function: {
-                name: "create_trend",
-                description: "Create a trend article in the AFRIVOGUE editorial voice",
-                parameters: {
-                  type: "object",
-                  properties: {
-                    headline: { type: "string", description: "SEO-optimized headline, max 80 chars" },
-                    cultural_significance: { type: "string", description: "150-300 word editorial prose with citations" },
-                    category: { type: "string", enum: ["Fashion", "Beauty", "Luxury", "Art & Design", "Culture", "Business", "Entertainment", "Lifestyle"] },
-                    urgency: { type: "string", enum: ["Breaking", "Emerging", "Slow-Burn"] },
-                    geo_relevance: { type: "string", enum: ["Africa", "Diaspora", "Global"] },
-                    content_tier: { type: "string", enum: ["Daily Brief", "Editorial Feature", "Premium Long-Form"] },
-                    image_hint: { type: "string", description: "2-3 word image search hint" },
-                  },
-                  required: ["headline", "cultural_significance", "category", "urgency", "geo_relevance", "content_tier", "image_hint"],
-                  additionalProperties: false,
-                },
-              },
-            },
-          ],
-          tool_choice: { type: "function", function: { name: "create_trend" } },
-        }),
+    // Rewrite in parallel (bounded) so a full batch fits inside the function time limit.
+    const rewrites = await mapLimited(candidates, 3, async (result: any) => {
+      const sourceContent: string = result.markdown || result.description || "";
+      const story = await generateJson<StoryOutput>({
+        system: `${AFRIVOGUE_VOICE}\n\n${STORY_BRIEF}`,
+        prompt: `Write an AfriVogue story from this source.\n\nSource title: ${result.title}\nSource URL: ${result.url}\n\n<source_material>\n${sourceContent.slice(0, 12000)}\n</source_material>`,
+        schema: STORY_SCHEMA,
+        effort: "medium",
       });
+      return { result, sourceContent, story };
+    });
 
-      if (!aiResponse.ok) {
-        const errText = await aiResponse.text();
-        console.error("AI rewrite failed:", aiResponse.status, errText);
-        if (aiResponse.status === 429) {
-          console.log("Rate limited, stopping batch");
-          break;
-        }
+    for (const outcome of rewrites) {
+      if (outcome.status === "rejected") {
+        console.error("Rewrite failed:", outcome.reason instanceof Error ? outcome.reason.message : outcome.reason);
         continue;
       }
+      const { result, sourceContent, story } = outcome.value;
 
-      const aiData = await aiResponse.json();
-      let trendData: any;
-
-      try {
-        const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-        if (toolCall?.function?.arguments) {
-          trendData = JSON.parse(toolCall.function.arguments);
-        }
-      } catch (e) {
-        console.error("Failed to parse AI response:", e);
-        continue;
-      }
-
-      if (!trendData?.headline || !trendData?.cultural_significance) {
+      if (!story.headline || !story.cultural_significance) {
         console.error("Invalid AI output, skipping");
         continue;
       }
-
-      // Dedup check on headline
-      if (existingHeadlines.has(trendData.headline.toLowerCase())) {
-        console.log("Skipping duplicate headline:", trendData.headline);
+      if (existingHeadlines.has(story.headline.toLowerCase())) {
+        console.log("Skipping duplicate headline:", story.headline);
         continue;
       }
 
-      // Step 3: Save to database
-      const tier = trendData.content_tier || "Daily Brief";
+      const tier = story.content_tier || "Daily Brief";
       const isEditorial = tier === "Editorial Feature" || tier === "Premium Long-Form";
 
       const { error: insertError } = await supabase.from("trends").insert({
-        headline: trendData.headline,
-        cultural_significance: trendData.cultural_significance,
-        category: trendData.category || detectCategory(sourceContent),
-        urgency: trendData.urgency || detectUrgency(sourceContent),
-        geo_relevance: trendData.geo_relevance || detectGeo(sourceContent),
+        headline: story.headline,
+        cultural_significance: story.cultural_significance,
+        category: story.category || detectCategory(sourceContent),
+        urgency: story.urgency || detectUrgency(sourceContent),
+        geo_relevance: story.geo_relevance || detectGeo(sourceContent),
         content_tier: tier,
-        image_hint: trendData.image_hint || "",
+        image_hint: story.image_hint || "",
         source_url: result.url || "",
         source_name: result.title?.split(" - ").pop()?.trim() || new URL(result.url).hostname,
         featured_image_url: result.metadata?.ogImage || result.metadata?.image || null,
+        // Features are held for review and enriched into long-form by enrich-content.
         published: isEditorial ? false : true,
         needs_review: true,
-        original_source_content: sourceContent.slice(0, 5000),
+        original_source_content: sourceContent.slice(0, 12000),
       });
 
       if (insertError) {
@@ -287,10 +234,10 @@ You MUST respond with a JSON object using this exact schema:
         continue;
       }
 
-      existingHeadlines.add(trendData.headline.toLowerCase());
+      existingHeadlines.add(story.headline.toLowerCase());
       existingUrls.add(result.url);
       ingested++;
-      console.log("Ingested:", trendData.headline);
+      console.log("Ingested:", story.headline);
     }
 
     console.log(`Pipeline complete. Ingested ${ingested} new trends.`);
@@ -299,6 +246,12 @@ You MUST respond with a JSON object using this exact schema:
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     console.error("Pipeline error:", error);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),

@@ -13,6 +13,7 @@ import {
   forecastDomains,
   forecastHorizons,
   signalStrengths,
+  normalizeHorizon,
 } from "@/lib/forecastData";
 import type {
   CulturalForecast,
@@ -210,7 +211,7 @@ const CulturalForecast = () => {
         evidence: f.evidence,
         implications: f.implications,
         domain: f.domain as ForecastDomain,
-        horizon: f.horizon as ForecastHorizon,
+        horizon: normalizeHorizon(f.horizon),
         signalStrength: f.signal_strength as ForecastSignalStrength,
         region: f.region as "Africa" | "Diaspora" | "Global",
         publishedDate: new Date(f.published_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),

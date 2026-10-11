@@ -1,3 +1,5 @@
+import { requireAdminOrCron, UnauthorizedError } from "../_shared/auth.ts";
+import { generateJson } from "../_shared/claude.ts";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -77,18 +79,71 @@ function pickRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+const CURATOR_SYSTEM = `You are AfriVogue's visual curator: the person whose taste readers trust instantly, the way they trust a beautifully kept Pinterest board or a great magazine's photo desk.`;
+
+const CURATION_BRIEF = `Select the 3 strongest images for this moodboard category and write a caption for each.
+
+WHAT MAKES THE CUT
+- Contemporary and editorial: strong composition, considered styling, real craft.
+- African and diaspora creativity at its most confident, never stereotypical, tourist or poverty imagery.
+- Range: West, East, South and North Africa and the global diaspora; vary subjects across the three.
+- Rich colour, texture and light. Images you would pin, save and come back to.
+- Reject thumbnails, logos, screenshots, text-heavy graphics, watermarked stock and anything blurry.
+
+CAPTIONS
+- 1 to 2 sentences in AfriVogue's voice: sensory, culturally aware, specific to what is in the frame.
+- Name the designer, artist or place only if the context provides it. Never invent names.
+
+Return image_url values exactly as given in the candidate list.`;
+
+const CURATION_SCHEMA = {
+  type: "object",
+  properties: {
+    selections: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          image_url: { type: "string" },
+          caption: { type: "string" },
+        },
+        required: ["image_url", "caption"],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ["selections"],
+  additionalProperties: false,
+};
+
+/** Keeps candidates whose URL actually serves an image, so the visual pass has fewer failures. */
+async function filterLoadableImages<T extends { url: string }>(candidates: T[]): Promise<T[]> {
+  const loadable = await Promise.all(
+    candidates.map(async (c) => {
+      try {
+        const res = await fetch(c.url, { method: "HEAD", redirect: "follow", signal: AbortSignal.timeout(5000) });
+        return res.ok && /^image\/(jpeg|png|webp|gif)/.test(res.headers.get("content-type") || "");
+      } catch {
+        return false;
+      }
+    }),
+  );
+  return candidates.filter((_, i) => loadable[i]).slice(0, 10);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    await requireAdminOrCron(req);
+
     const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-    if (!FIRECRAWL_API_KEY || !LOVABLE_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    if (!FIRECRAWL_API_KEY || !Deno.env.get("ANTHROPIC_API_KEY") || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
       throw new Error("Missing required environment variables");
     }
 
@@ -188,87 +243,47 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      // Use AI to curate the best images
-      const aiPrompt = `You are Afrivogue's visual curator. Afrivogue is a contemporary, globally African-inspired luxury editorial platform celebrating African creativity, innovation, and cultural influence worldwide.
+      // Claude looks at the candidates (when they load) and picks the strongest three.
+      const shortlist = candidateImages.slice(0, 12);
+      const viewable = await filterLoadableImages(shortlist);
+      const curationText = `${CURATION_BRIEF}\n\nMoodboard category: "${category}".\n\nCandidates:\n${shortlist
+        .map((c, i) => `${i + 1}. URL: ${c.url}\n   Context: ${c.context}\n   Source: ${c.sourceUrl}`)
+        .join("\n\n")}`;
 
-Given these candidate images for the "${category}" moodboard category, select the TOP 3 most visually compelling and editorially relevant ones.
-
-Criteria:
-- CONTEMPORARY aesthetic — modern, forward-looking, globally relevant
-- African-inspired but not stereotypical — celebrates the global African diaspora's influence on world culture
-- High visual impact, editorial-grade quality, bold compositions
-- Reflects the intersection of African heritage with global contemporary culture
-- Diverse representation — West, East, South, North Africa and the global diaspora
-- Trendsetting and culturally significant, not generic stock or tourist imagery
-- Avoids low-resolution thumbnails, logos, or irrelevant images
-- Preference for images that feel luxurious, artful, and culturally resonant
-
-Candidates:
-${candidateImages
-  .slice(0, 15)
-  .map((c, i) => `${i + 1}. URL: ${c.url}\n   Context: ${c.context}\n   Source: ${c.sourceUrl}`)
-  .join("\n\n")}
-
-For each selected image, write an editorial caption in Afrivogue's voice — sophisticated, culturally aware, contemporary, and globally minded. The caption should connect the image to broader cultural movements and trends.`;
-
-      const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: [{ role: "user", content: aiPrompt }],
-          tools: [
-            {
-              type: "function",
-              function: {
-                name: "curate_moodboard_images",
-                description: "Submit curated moodboard images",
-                parameters: {
-                  type: "object",
-                  required: ["selections"],
-                  properties: {
-                    selections: {
-                      type: "array",
-                      items: {
-                        type: "object",
-                        required: ["image_url", "caption"],
-                        properties: {
-                          image_url: { type: "string", description: "The selected image URL" },
-                          caption: { type: "string", description: "Editorial caption for the image" },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          ],
-          tool_choice: { type: "function", function: { name: "curate_moodboard_images" } },
-        }),
-      });
-
-      if (!aiRes.ok) {
-        console.error(`AI curation failed for ${category}: ${aiRes.status}`);
-        continue;
-      }
-
-      const aiData = await aiRes.json();
-      const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-      if (!toolCall) {
-        console.log(`No AI tool call for ${category}`);
-        continue;
-      }
-
-      let selections: { image_url: string; caption: string }[];
+      let selections: { image_url: string; caption: string }[] = [];
       try {
-        selections = JSON.parse(toolCall.function.arguments).selections;
-      } catch {
-        console.error(`Failed to parse AI response for ${category}`);
-        continue;
+        const visualPrompt = [
+          ...viewable.flatMap((c) => [
+            { type: "text" as const, text: `Candidate URL: ${c.url}` },
+            { type: "image" as const, source: { type: "url" as const, url: c.url } },
+          ]),
+          { type: "text" as const, text: curationText },
+        ];
+        ({ selections } = await generateJson<{ selections: { image_url: string; caption: string }[] }>({
+          system: CURATOR_SYSTEM,
+          prompt: viewable.length > 0 ? visualPrompt : curationText,
+          schema: CURATION_SCHEMA,
+          effort: "medium",
+        }));
+      } catch (visualError) {
+        // A blocked or broken image URL fails the whole visual request; judge from text instead.
+        console.warn(`Visual curation failed for ${category}, retrying text-only:`, visualError instanceof Error ? visualError.message : visualError);
+        try {
+          ({ selections } = await generateJson<{ selections: { image_url: string; caption: string }[] }>({
+            system: CURATOR_SYSTEM,
+            prompt: curationText,
+            schema: CURATION_SCHEMA,
+            effort: "medium",
+          }));
+        } catch (textError) {
+          console.error(`AI curation failed for ${category}:`, textError instanceof Error ? textError.message : textError);
+          continue;
+        }
       }
+
+      // Only accept URLs we actually offered.
+      const offered = new Set(shortlist.map((c) => c.url));
+      selections = selections.filter((sel) => offered.has(sel.image_url));
 
       // Insert curated images
       for (const sel of selections) {
@@ -302,6 +317,12 @@ For each selected image, write an editorial caption in Afrivogue's voice — sop
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     console.error("Moodboard ingestion error:", error);
     return new Response(
       JSON.stringify({ success: false, error: error instanceof Error ? error.message : "Unknown error" }),

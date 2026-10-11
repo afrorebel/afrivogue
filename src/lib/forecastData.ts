@@ -150,6 +150,17 @@ export const forecastDomains: ForecastDomain[] = [
   "Commerce",
 ];
 
+/**
+ * Stored horizons have drifted ("1-2 Years", "6Months"); map them onto the display
+ * labels the filters use so every forecast is filterable.
+ */
+export function normalizeHorizon(value: string | null | undefined): ForecastHorizon {
+  const v = (value || "").replace(/\s+/g, "").replace(/[–—-]/g, "-").toLowerCase();
+  if (v.startsWith("6")) return "6 Months";
+  if (v.startsWith("3-5")) return "3–5 Years";
+  return "1–2 Years";
+}
+
 export const forecastHorizons: ForecastHorizon[] = [
   "6 Months",
   "1–2 Years",

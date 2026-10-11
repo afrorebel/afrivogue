@@ -1,4 +1,7 @@
+import { requireAdminOrCron, UnauthorizedError } from "../_shared/auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { generateJson, mapLimited } from "../_shared/claude.ts";
+import { AFRIVOGUE_VOICE, GEOS } from "../_shared/voice.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -42,17 +45,54 @@ function detectDomain(text: string): string {
   return "Culture";
 }
 
+interface ForecastOutput {
+  title: string;
+  projection: string;
+  evidence: string;
+  implications: string;
+  domain: string;
+  horizon: string;
+  signal_strength: string;
+  region: string;
+}
+
+const FORECAST_BRIEF = `TASK: You are AfriVogue's cultural futurist. Turn source material into a forward-looking forecast, not a news summary.
+
+- title: a bold, specific prediction under 80 characters ("Lagos tailoring will set the pace for quiet luxury by 2028").
+- projection: 200 to 350 words on the shift we expect, who drives it and how it will show up in what people wear, buy and watch.
+- evidence: 120 to 250 words grounded only in the source: its data points, names and attributed quotes, cited as markdown links. Never invent numbers.
+- implications: 120 to 250 words on what designers, brands, creatives and investors should do now.
+- horizon: how soon the shift becomes mainstream.
+- signal_strength: "Definitive" when backed by hard data or several sources, "High Confidence" for strong indicators, "Early Signal" when it is emerging or speculative. Be honest; most single-source forecasts are not Definitive.`;
+
+const FORECAST_SCHEMA = {
+  type: "object",
+  properties: {
+    title: { type: "string" },
+    projection: { type: "string" },
+    evidence: { type: "string" },
+    implications: { type: "string" },
+    domain: { type: "string", enum: DOMAINS },
+    horizon: { type: "string", enum: ["6 Months", "1–2 Years", "3–5 Years"] },
+    signal_strength: { type: "string", enum: ["Definitive", "High Confidence", "Early Signal"] },
+    region: { type: "string", enum: GEOS },
+  },
+  required: ["title", "projection", "evidence", "implications", "domain", "horizon", "signal_strength", "region"],
+  additionalProperties: false,
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    await requireAdminOrCron(req);
+
     const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
     if (!FIRECRAWL_API_KEY) throw new Error("FIRECRAWL_API_KEY not configured");
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+    if (!Deno.env.get("ANTHROPIC_API_KEY")) throw new Error("ANTHROPIC_API_KEY not configured");
 
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -102,113 +142,50 @@ Deno.serve(async (req) => {
 
     let ingested = 0;
 
-    for (const result of results) {
+    const candidates = results.filter((result: any) => {
       const sourceContent = result.markdown || result.description || "";
       if (sourceContent.length < 100) {
         console.log("Skipping thin content:", result.url);
-        continue;
+        return false;
       }
+      return true;
+    });
 
-      // Step 2: AI generates forecast from source material
-      const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: [
-            {
-              role: "system",
-              content: `You are a cultural futurist and strategic intelligence analyst for AFRIVOGUE — a global fashion, culture, entertainment, and lifestyle intelligence platform with an Afro-global soul. Afrivogue covers African creatives, the African diaspora, Black American culture, Hollywood, Caribbean movements, and their worldwide influence. Your role is to synthesize source material into forward-looking cultural forecasts that serve a GLOBAL audience.
-
-RULES:
-- Forecasts must be forward-looking projections, NOT news summaries.
-- Write with authority and analytical depth. No casual language or clichés.
-- Each forecast should predict a specific cultural, market, or aesthetic shift.
-- Evidence must cite the source material with specific data points or quotes.
-- Implications should address what stakeholders (designers, investors, brands, creatives) should do.
-- Title must be a bold, definitive prediction statement (max 80 chars).
-- Cover African, diaspora, Black American, Caribbean, and global narratives — celebrity culture and entertainment are valid forecast domains.
-- Assign appropriate time horizon based on the nature of the shift.
-- Signal strength: "Definitive" if backed by hard data/multiple sources, "High Confidence" if strong indicators exist, "Early Signal" if emerging/speculative.
-
-You MUST respond using the create_forecast function.`,
-            },
-            {
-              role: "user",
-              content: `Analyze this content and generate a cultural forecast for the Afro-global fashion/culture ecosystem.\n\nSource Title: "${result.title}"\nSource URL: ${result.url}\n\nIMPORTANT: You MUST embed the source URL (${result.url}) as a markdown link in both the evidence and implications sections. Reference it naturally, e.g. "According to [${result.title || 'source'}](${result.url}), ..." — do NOT leave citations as plain text.\n\nContent:\n${sourceContent.slice(0, 3000)}`,
-            },
-          ],
-          tools: [
-            {
-              type: "function",
-              function: {
-                name: "create_forecast",
-                description: "Create a cultural forecast based on analysis of source material",
-                parameters: {
-                  type: "object",
-                  properties: {
-                    title: { type: "string", description: "Bold prediction statement, max 80 chars" },
-                    projection: { type: "string", description: "200-400 word forward-looking analysis" },
-                    evidence: { type: "string", description: "150-300 words citing data points and sources" },
-                    implications: { type: "string", description: "150-300 words on strategic implications for stakeholders" },
-                    domain: { type: "string", enum: DOMAINS },
-                    horizon: { type: "string", enum: ["6Months", "1-2 Years", "3-5 Years"] },
-                    signal_strength: { type: "string", enum: ["Definitive", "High Confidence", "Early Signal"] },
-                    region: { type: "string", enum: ["Africa", "Diaspora", "Global"] },
-                  },
-                  required: ["title", "projection", "evidence", "implications", "domain", "horizon", "signal_strength", "region"],
-                  additionalProperties: false,
-                },
-              },
-            },
-          ],
-          tool_choice: { type: "function", function: { name: "create_forecast" } },
-        }),
+    const forecasts = await mapLimited(candidates, 3, async (result: any) => {
+      const sourceContent: string = result.markdown || result.description || "";
+      const forecast = await generateJson<ForecastOutput>({
+        system: `${AFRIVOGUE_VOICE}\n\n${FORECAST_BRIEF}`,
+        prompt: `Write one AfriVogue cultural forecast grounded in this source. Cite it as a markdown link to ${result.url} in both the evidence and the implications.\n\nSource title: ${result.title}\nSource URL: ${result.url}\n\n<source_material>\n${sourceContent.slice(0, 12000)}\n</source_material>`,
+        schema: FORECAST_SCHEMA,
+        effort: "medium",
       });
+      return { sourceContent, forecast };
+    });
 
-      if (!aiResponse.ok) {
-        const errText = await aiResponse.text();
-        console.error("AI failed:", aiResponse.status, errText);
-        if (aiResponse.status === 429) break;
+    for (const outcome of forecasts) {
+      if (outcome.status === "rejected") {
+        console.error("Forecast failed:", outcome.reason instanceof Error ? outcome.reason.message : outcome.reason);
         continue;
       }
-
-      const aiData = await aiResponse.json();
-      let forecastData: any;
-
-      try {
-        const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-        if (toolCall?.function?.arguments) {
-          forecastData = JSON.parse(toolCall.function.arguments);
-        }
-      } catch (e) {
-        console.error("Failed to parse AI response:", e);
-        continue;
-      }
-
-      if (!forecastData?.title || !forecastData?.projection) {
+      const { sourceContent, forecast } = outcome.value;
+      if (!forecast.title || !forecast.projection) {
         console.error("Invalid AI output, skipping");
         continue;
       }
-
-      if (existingTitles.has(forecastData.title.toLowerCase())) {
-        console.log("Skipping duplicate:", forecastData.title);
+      if (existingTitles.has(forecast.title.toLowerCase())) {
+        console.log("Skipping duplicate:", forecast.title);
         continue;
       }
 
-      // Step 3: Save
       const { error: insertError } = await supabase.from("forecasts").insert({
-        title: forecastData.title,
-        projection: forecastData.projection,
-        evidence: forecastData.evidence,
-        implications: forecastData.implications,
-        domain: forecastData.domain || detectDomain(sourceContent),
-        horizon: forecastData.horizon || "1-2 Years",
-        signal_strength: forecastData.signal_strength || "Early Signal",
-        region: forecastData.region || "Global",
+        title: forecast.title,
+        projection: forecast.projection,
+        evidence: forecast.evidence,
+        implications: forecast.implications,
+        domain: forecast.domain || detectDomain(sourceContent),
+        horizon: forecast.horizon || "1–2 Years",
+        signal_strength: forecast.signal_strength || "Early Signal",
+        region: forecast.region || "Global",
         published: true,
       });
 
@@ -217,9 +194,9 @@ You MUST respond using the create_forecast function.`,
         continue;
       }
 
-      existingTitles.add(forecastData.title.toLowerCase());
+      existingTitles.add(forecast.title.toLowerCase());
       ingested++;
-      console.log("Ingested forecast:", forecastData.title);
+      console.log("Ingested forecast:", forecast.title);
     }
 
     console.log(`Pipeline complete. Ingested ${ingested} new forecasts.`);
@@ -228,6 +205,12 @@ You MUST respond using the create_forecast function.`,
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     console.error("Pipeline error:", error);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
