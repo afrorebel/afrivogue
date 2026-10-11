@@ -1,73 +1,90 @@
-# Welcome to your Lovable project
+# AfriVogue
 
-## Project info
+Fashion, culture and lifestyle through an African lens. A React + Vite site backed by Supabase (database, auth, storage, edge functions), deployed to Hostinger, with a Claude-powered content engine.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Run it locally
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+npm ci
+npm run dev        # http://localhost:8080
+npm test           # unit tests
+npm run build      # production build in dist/
 ```
 
-**Edit a file directly in GitHub**
+The public Supabase URL and publishable key live in `.env` (both are safe to ship to browsers).
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Deploy (Hostinger)
 
-**Use GitHub Codespaces**
+Every push to `main` builds the site and uploads `dist/` to Hostinger over FTPS (`.github/workflows/deploy-hostinger.yml`).
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+One-time setup in **GitHub > Settings > Secrets and variables > Actions**:
 
-## What technologies are used for this project?
+| Secret | Where to find it |
+|---|---|
+| `HOSTINGER_FTP_SERVER` | hPanel > Files > FTP Accounts (e.g. `ftp.afrivogue.com`) |
+| `HOSTINGER_FTP_USERNAME` | same page |
+| `HOSTINGER_FTP_PASSWORD` | same page (reset it there if unknown) |
+| `HOSTINGER_FTP_DIR` | optional; defaults to `public_html/` |
 
-This project is built with:
+`public/.htaccess` sends every route to `index.html` (so `/editorials` works on refresh) and sets caching: fingerprinted files in `/assets` cache for a year, `index.html` always revalidates.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+You can also run the deploy by hand from **GitHub > Actions > Deploy to Hostinger > Run workflow**.
 
-## How can I deploy this project?
+## Content engine (Claude)
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+All AI writing runs in Supabase Edge Functions through the Anthropic API (`claude-opus-5-5`), in one shared AfriVogue voice (`supabase/functions/_shared/voice.ts`).
 
-## Can I connect a custom domain to my Lovable project?
+| Function | What it does |
+|---|---|
+| `ingest-trends` | Searches the web (Firecrawl), rewrites the best finds as AfriVogue stories |
+| `ingest-forecasts` | Turns fresh sources into cultural forecasts |
+| `ingest-moodboard` | Claude looks at candidate images, picks the strongest three per category, writes captions |
+| `ingest-trivia` | Writes new AfriTrivia questions |
+| `enrich-content` | `{"mode":"editorial"}` researches and writes 1,400 to 2,200 word long-form editorials for features; `{"mode":"story"}` re-voices older short stories |
 
-Yes, you can!
+Admins can run each one from the admin dashboard. These functions spend API credit, so they only run for signed-in admins, the service role, or a scheduled job that sends the `x-cron-secret` header.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Secrets (Supabase > Project Settings > Edge Functions > Secrets)
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+| Secret | Purpose |
+|---|---|
+| `ANTHROPIC_API_KEY` | Claude. Create one at console.anthropic.com. |
+| `FIRECRAWL_API_KEY` | Web search and scraping |
+| `CRON_SECRET` | Any long random string; scheduled jobs send it as `x-cron-secret` |
+
+### Schedule it (Supabase > SQL Editor)
+
+```sql
+-- Store the cron secret once (same value as the CRON_SECRET function secret).
+select vault.create_secret('<your CRON_SECRET>', 'cron_secret');
+
+-- Helper that calls a content function with the secret.
+create or replace function public.run_content_job(fn text, payload jsonb default '{}'::jsonb)
+returns void language sql security definer as $$
+  select net.http_post(
+    url := 'https://mafitpqnezbkjmtaqcjq.supabase.co/functions/v1/' || fn,
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'x-cron-secret', (select decrypted_secret from vault.decrypted_secrets where name = 'cron_secret')
+    ),
+    body := payload
+  );
+$$;
+
+select cron.schedule('afrivogue-stories',    '0 */6 * * *',  $$select public.run_content_job('ingest-trends')$$);
+select cron.schedule('afrivogue-editorials', '30 */3 * * *', $$select public.run_content_job('enrich-content', '{"mode":"editorial","limit":1}')$$);
+select cron.schedule('afrivogue-forecasts',  '0 9 * * *',    $$select public.run_content_job('ingest-forecasts')$$);
+select cron.schedule('afrivogue-moodboard',  '0 12 * * *',   $$select public.run_content_job('ingest-moodboard')$$);
+select cron.schedule('afrivogue-trivia',     '0 7 * * 1',    $$select public.run_content_job('ingest-trivia')$$);
+```
+
+Remove any older schedules that called these functions without the secret (`select * from cron.job;`, then `select cron.unschedule('<name>');`).
+
+### Deploying functions
+
+`.github/workflows/deploy-supabase-functions.yml` deploys `supabase/functions/**` on push once `SUPABASE_ACCESS_TOKEN` and `SUPABASE_PROJECT_REF` are set as GitHub secrets. Until then it skips itself. To deploy by hand: `supabase functions deploy --project-ref mafitpqnezbkjmtaqcjq`.
+
+## Still tied to Lovable
+
+- **Email.** Sign-up, password-reset and transactional emails go through Lovable's email service (`@lovable.dev/email-js`, `LOVABLE_API_KEY`). These keep working only while that account is active; the next step is moving them to a provider such as Resend.
+- **Database ownership.** If the Supabase project was created by Lovable Cloud, move it into a Supabase account you own so the data, auth and functions are fully yours.
