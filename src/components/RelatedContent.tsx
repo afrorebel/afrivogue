@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import TrendCard from "@/components/TrendCard";
 import { motion } from "framer-motion";
 
@@ -17,7 +17,7 @@ const RelatedContent = ({ currentId, category, geoRelevance }: RelatedContentPro
       let results: any[] = [];
 
       if (geoRelevance) {
-        const { data } = await supabase
+        const { data } = await api
           .from("trends")
           .select("*")
           .eq("published", true)
@@ -31,7 +31,7 @@ const RelatedContent = ({ currentId, category, geoRelevance }: RelatedContentPro
 
       // 2. Broaden to same category (any geo)
       if (results.length < 3) {
-        const { data } = await supabase
+        const { data } = await api
           .from("trends")
           .select("*")
           .eq("published", true)
@@ -46,7 +46,7 @@ const RelatedContent = ({ currentId, category, geoRelevance }: RelatedContentPro
 
       // 3. Same geo, any category
       if (results.length < 3 && geoRelevance) {
-        const { data } = await supabase
+        const { data } = await api
           .from("trends")
           .select("*")
           .eq("published", true)

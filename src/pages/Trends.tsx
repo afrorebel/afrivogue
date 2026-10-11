@@ -11,7 +11,7 @@ import FeaturedProducts from "@/components/shop/FeaturedProducts";
 import { useTrends } from "@/hooks/useTrends";
 import { trends as fallbackTrends } from "@/lib/trendData";
 import { Skeleton } from "@/components/ui/skeleton";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { categoryColor } from "@/lib/categoryColors";
 
 const PER_PAGE = 12;
@@ -29,7 +29,7 @@ const Trends = () => {
   const { data: categories = [] } = useQuery({
     queryKey: ["categories-list"],
     queryFn: async () => {
-      const { data } = await supabase.from("categories").select("name").is("parent_id", null).order("name");
+      const { data } = await api.from("categories").select("name").is("parent_id", null).order("name");
       return data?.map((c: any) => c.name) || [];
     },
   });
@@ -37,7 +37,7 @@ const Trends = () => {
   const { data: paywalledCategories = [] } = useQuery({
     queryKey: ["paywalled-categories"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await api
         .from("site_settings")
         .select("value")
         .eq("key", "paywalled_categories")

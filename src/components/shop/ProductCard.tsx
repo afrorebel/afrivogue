@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Heart, ShoppingBag, ExternalLink, Clock, Crown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { categoryColor } from "@/lib/categoryColors";
@@ -80,9 +80,9 @@ const ProductCard = ({ product, isWishlisted, onWishlistToggle }: Props) => {
     e.stopPropagation();
     if (!user) { toast({ title: "Sign in to save items", variant: "destructive" }); return; }
     if (isWishlisted) {
-      await supabase.from("wishlists").delete().eq("user_id", user.id).eq("product_id", product.id);
+      await api.from("wishlists").delete().eq("user_id", user.id).eq("product_id", product.id);
     } else {
-      await supabase.from("wishlists").insert({ user_id: user.id, product_id: product.id });
+      await api.from("wishlists").insert({ user_id: user.id, product_id: product.id });
     }
     onWishlistToggle?.();
   };

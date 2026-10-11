@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +16,7 @@ const AdminUsers = () => {
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["admin-profiles"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("profiles")
         .select("*")
         .order("created_at", { ascending: false });
@@ -28,7 +28,7 @@ const AdminUsers = () => {
   const { data: roles = [] } = useQuery({
     queryKey: ["admin-user-roles"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("user_roles").select("*");
+      const { data, error } = await api.from("user_roles").select("*");
       if (error) throw error;
       return data;
     },
@@ -37,7 +37,7 @@ const AdminUsers = () => {
   const { data: allPoints = [] } = useQuery({
     queryKey: ["admin-all-points"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("user_points").select("*");
+      const { data, error } = await api.from("user_points").select("*");
       if (error) throw error;
       return data;
     },
@@ -46,7 +46,7 @@ const AdminUsers = () => {
   const { data: manualPremiumUsers = [] } = useQuery({
     queryKey: ["manual-premium-users"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await api
         .from("site_settings")
         .select("value")
         .eq("key", "manual_premium_users")
@@ -60,7 +60,7 @@ const AdminUsers = () => {
       const updated = isPremium
         ? manualPremiumUsers.filter((id) => id !== userId)
         : [...manualPremiumUsers, userId];
-      const { error } = await supabase
+      const { error } = await api
         .from("site_settings")
         .upsert({ key: "manual_premium_users", value: updated as any });
       if (error) throw error;
@@ -75,10 +75,10 @@ const AdminUsers = () => {
   const toggleAdmin = useMutation({
     mutationFn: async ({ userId, isAdmin }: { userId: string; isAdmin: boolean }) => {
       if (isAdmin) {
-        const { error } = await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", "admin");
+        const { error } = await api.from("user_roles").delete().eq("user_id", userId).eq("role", "admin");
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("user_roles").insert({ user_id: userId, role: "admin" });
+        const { error } = await api.from("user_roles").insert({ user_id: userId, role: "admin" });
         if (error) throw error;
       }
     },
@@ -93,13 +93,13 @@ const AdminUsers = () => {
     mutationFn: async ({ userId, amount, reason }: { userId: string; amount: number; reason: string }) => {
       const current = allPoints.find((p) => p.user_id === userId);
       const newBalance = (current?.points ?? 0) + amount;
-      const { error: upsertError } = await supabase.from("user_points").upsert({
+      const { error: upsertError } = await api.from("user_points").upsert({
         user_id: userId,
         points: newBalance,
         total_earned: (current?.total_earned ?? 0) + (amount > 0 ? amount : 0),
       });
       if (upsertError) throw upsertError;
-      const { error: histError } = await supabase.from("points_history").insert({
+      const { error: histError } = await api.from("points_history").insert({
         user_id: userId,
         amount,
         reason,

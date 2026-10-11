@@ -1,1 +1,0 @@
-ALTER TABLE public.moodboard_items ADD COLUMN IF NOT EXISTS needs_review boolean NOT NULL DEFAULT false;

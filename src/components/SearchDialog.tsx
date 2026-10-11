@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import {
   CommandDialog,
   CommandInput,
@@ -46,13 +46,13 @@ const SearchDialog = () => {
     setSearching(true);
 
     const [trendsRes, forecastsRes] = await Promise.all([
-      supabase
+      api
         .from("trends")
         .select("id, headline")
         .eq("published", true)
         .ilike("headline", `%${q}%`)
         .limit(5),
-      supabase
+      api
         .from("forecasts")
         .select("id, title")
         .eq("published", true)

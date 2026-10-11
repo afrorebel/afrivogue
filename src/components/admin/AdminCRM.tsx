@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,7 +17,7 @@ const AdminCRM = () => {
     queryKey: ["admin-abandoned-carts"],
     queryFn: async () => {
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-      const { data } = await supabase
+      const { data } = await api
         .from("cart_items")
         .select("*, product:products(name, price, images)")
         .lt("created_at", oneHourAgo)
@@ -42,7 +42,7 @@ const AdminCRM = () => {
   const { data: reviews = [] } = useQuery({
     queryKey: ["admin-reviews"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await api
         .from("product_reviews")
         .select("*, product:products(name)")
         .order("created_at", { ascending: false });
@@ -54,7 +54,7 @@ const AdminCRM = () => {
   const { data: emailLog = [] } = useQuery({
     queryKey: ["admin-crm-log"],
     queryFn: async () => {
-      const { data } = await (supabase as any)
+      const { data } = await (api as any)
         .from("crm_email_log")
         .select("*")
         .order("created_at", { ascending: false })
@@ -68,9 +68,9 @@ const AdminCRM = () => {
     queryKey: ["admin-member-stats"],
     queryFn: async () => {
       const [profilesRes, ordersRes, premiumRes] = await Promise.all([
-        supabase.from("profiles").select("id", { count: "exact", head: true }),
-        supabase.from("orders").select("total").eq("status", "paid"),
-        supabase.from("site_settings").select("value").eq("key", "manual_premium_users").maybeSingle(),
+        api.from("profiles").select("id", { count: "exact", head: true }),
+        api.from("orders").select("total").eq("status", "paid"),
+        api.from("site_settings").select("value").eq("key", "manual_premium_users").maybeSingle(),
       ]);
       const totalRevenue = (ordersRes.data || []).reduce((a: number, o: any) => a + Number(o.total), 0);
       const premiumCount = ((premiumRes.data?.value as string[]) || []).length;
@@ -86,10 +86,10 @@ const AdminCRM = () => {
   const markCartReminded = async (userId: string, itemIds: string[]) => {
     const now = new Date().toISOString();
     for (const id of itemIds) {
-      await supabase.from("cart_items").update({ reminder_sent_at: now } as any).eq("id", id);
+      await api.from("cart_items").update({ reminder_sent_at: now } as any).eq("id", id);
     }
     // Log the CRM action
-    await (supabase as any).from("crm_email_log").insert({
+    await (api as any).from("crm_email_log").insert({
       user_id: userId,
       email: "cart-recovery",
       template_name: "abandoned-cart-reminder",
@@ -102,7 +102,7 @@ const AdminCRM = () => {
   };
 
   const deleteReview = async (id: string) => {
-    await supabase.from("product_reviews").delete().eq("id", id);
+    await api.from("product_reviews").delete().eq("id", id);
     qc.invalidateQueries({ queryKey: ["admin-reviews"] });
     toast({ title: "Review deleted" });
   };

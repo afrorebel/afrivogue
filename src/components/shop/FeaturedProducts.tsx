@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import SectionHeader from "@/components/editorial/SectionHeader";
 import ProductCard from "@/components/shop/ProductCard";
 
@@ -8,7 +8,7 @@ const FeaturedProducts = () => {
   const { data: products = [] } = useQuery({
     queryKey: ["featured-products-home"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await api
         .from("products")
         .select("*")
         .eq("published", true)

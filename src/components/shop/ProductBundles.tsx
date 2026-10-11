@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ const ProductBundles = ({ currentProductId }: { currentProductId?: string }) => 
     queryKey: ["product-bundles", currentProductId],
     queryFn: async () => {
       // Get published bundles
-      const { data: allBundles } = await supabase
+      const { data: allBundles } = await api
         .from("product_bundles")
         .select("*")
         .eq("published", true);
@@ -42,7 +42,7 @@ const ProductBundles = ({ currentProductId }: { currentProductId?: string }) => 
 
       // Get bundle items with products
       const bundleIds = allBundles.map((b: any) => b.id);
-      const { data: items } = await supabase
+      const { data: items } = await api
         .from("bundle_items")
         .select("*, product:products(*)")
         .in("bundle_id", bundleIds);

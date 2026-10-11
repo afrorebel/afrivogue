@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { Save, Mail, Eye, EyeOff, FileText, Send } from "lucide-react";
-import type { Json } from "@/integrations/supabase/types";
+import type { Json } from "@/integrations/api/types";
 import ImageUrlUpload from "./ImageUrlUpload";
 
 interface EmailTemplateOverride {
@@ -49,7 +49,7 @@ const AdminEmailTemplates = () => {
   const { data: overrides, isLoading } = useQuery({
     queryKey: ["admin-email-overrides"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("site_settings")
         .select("value")
         .eq("key", "email_template_overrides")
@@ -85,14 +85,14 @@ const AdminEmailTemplates = () => {
       for (const t of TEMPLATE_CONFIGS) {
         merged[t.key] = getOverride(t.key);
       }
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("site_settings")
         .update({ value: merged as unknown as Json })
         .eq("key", "email_template_overrides")
         .select();
       if (error) throw error;
       if (!data || data.length === 0) {
-        const { error: insertError } = await supabase
+        const { error: insertError } = await api
           .from("site_settings")
           .insert({ key: "email_template_overrides", value: merged as unknown as Json });
         if (insertError) throw insertError;
@@ -108,9 +108,9 @@ const AdminEmailTemplates = () => {
 
   const sendTestMut = useMutation({
     mutationFn: async (templateName: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await api.auth.getUser();
       if (!user?.email) throw new Error("No email found for current user");
-      const { error } = await supabase.functions.invoke("send-transactional-email", {
+      const { error } = await api.functions.invoke("send-transactional-email", {
         body: {
           templateName,
           recipientEmail: user.email,

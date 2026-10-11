@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { getCategoryImage } from "@/lib/categoryImages";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
@@ -14,7 +14,7 @@ import Paywall from "@/components/Paywall";
 import Comments from "@/components/Comments";
 import { Skeleton } from "@/components/ui/skeleton";
 import { linkifyText } from "@/lib/linkify";
-import type { Json } from "@/integrations/supabase/types";
+import type { Json } from "@/integrations/api/types";
 import DOMPurify from "dompurify";
 import { Clock, Sparkles } from "lucide-react";
 
@@ -61,7 +61,7 @@ const TrendDetail = () => {
   const { data: trend, isLoading } = useQuery({
     queryKey: ["trend-detail", id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("trends")
         .select("*")
         .eq("id", id!)
@@ -76,7 +76,7 @@ const TrendDetail = () => {
   const { data: paywalledCategories = [] } = useQuery({
     queryKey: ["paywalled-categories"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("site_settings")
         .select("value")
         .eq("key", "paywalled_categories")

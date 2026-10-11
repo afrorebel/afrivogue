@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +21,7 @@ const SubmitArticle = () => {
   const { data: categories = [] } = useQuery({
     queryKey: ["categories-list"],
     queryFn: async () => {
-      const { data } = await supabase.from("categories").select("name").is("parent_id", null).order("name");
+      const { data } = await api.from("categories").select("name").is("parent_id", null).order("name");
       return data?.map((c: any) => c.name) || [];
     },
   });
@@ -83,7 +83,7 @@ const SubmitArticle = () => {
     setSubmitting(true);
     try {
       const tags = form.tags.split(",").map((t) => t.trim()).filter(Boolean);
-      const { error } = await supabase.from("article_submissions").insert({
+      const { error } = await api.from("article_submissions").insert({
         user_id: user.id,
         title: form.title.trim(),
         content: form.content.trim(),

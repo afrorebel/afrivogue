@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import Navbar from "@/components/Navbar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { User, Gamepad2, Trophy, Crown } from "lucide-react";
@@ -13,7 +13,7 @@ const PublicProfile = () => {
   const { data: profile, isLoading } = useQuery({
     queryKey: ["public-profile", userId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("profiles")
         .select("*")
         .eq("id", userId!)
@@ -27,7 +27,7 @@ const PublicProfile = () => {
   const { data: preferences } = useQuery({
     queryKey: ["profile-preferences", userId],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await api
         .from("user_preferences")
         .select("categories")
         .eq("user_id", userId!)
@@ -40,7 +40,7 @@ const PublicProfile = () => {
   const { data: isPremium } = useQuery({
     queryKey: ["profile-premium", userId],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await api
         .from("site_settings")
         .select("value")
         .eq("key", "manual_premium_users")
@@ -53,7 +53,7 @@ const PublicProfile = () => {
   const { data: triviaScores } = useQuery({
     queryKey: ["profile-trivia", userId],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await api
         .from("trivia_scores")
         .select("score, total_questions, category, created_at")
         .eq("user_id", userId!)

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,7 @@ const CartDrawer = () => {
   const [checkingOut, setCheckingOut] = useState(false);
 
   const applyDiscount = async () => {
-    const { data } = await supabase
+    const { data } = await api
       .from("discount_codes")
       .select("*")
       .eq("code", discountCode.toUpperCase())
@@ -42,7 +42,7 @@ const CartDrawer = () => {
     if (customItems.length === 0) { toast({ title: "No purchasable items in cart" }); return; }
     setCheckingOut(true);
     try {
-      const { data, error } = await supabase.functions.invoke("create-shop-checkout", {
+      const { data, error } = await api.functions.invoke("create-shop-checkout", {
         body: {
           items: customItems.map((i) => ({
             product_id: i.product_id,

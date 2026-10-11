@@ -2,7 +2,7 @@ import PageMasthead from "@/components/editorial/PageMasthead";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Mail, ExternalLink } from "lucide-react";
@@ -70,7 +70,7 @@ const MediaKit = () => {
   const { data: kit } = useQuery({
     queryKey: ["media-kit"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await api
         .from("site_settings")
         .select("value")
         .eq("key", "media_kit")

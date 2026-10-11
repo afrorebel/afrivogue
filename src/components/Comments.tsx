@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,7 +22,7 @@ const Comments = ({ trendId }: CommentsProps) => {
   const { data: comments = [], isLoading } = useQuery({
     queryKey: ["comments", trendId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("comments")
         .select("*, profiles:user_id(display_name, avatar_url)")
         .eq("trend_id", trendId)
@@ -37,7 +37,7 @@ const Comments = ({ trendId }: CommentsProps) => {
       if (!user) throw new Error("Login required");
       const trimmed = content.trim();
       if (!trimmed || trimmed.length > 2000) throw new Error("Comment must be 1-2000 characters");
-      const { error } = await supabase.from("comments").insert({
+      const { error } = await api.from("comments").insert({
         trend_id: trendId,
         user_id: user.id,
         content: trimmed,
@@ -53,7 +53,7 @@ const Comments = ({ trendId }: CommentsProps) => {
 
   const deleteComment = useMutation({
     mutationFn: async (commentId: string) => {
-      const { error } = await supabase.from("comments").delete().eq("id", commentId);
+      const { error } = await api.from("comments").delete().eq("id", commentId);
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["comments", trendId] }),

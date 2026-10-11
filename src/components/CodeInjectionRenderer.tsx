@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 
 interface CodeInjectionSettings {
   head_code: string;
@@ -12,7 +12,7 @@ const CodeInjectionRenderer = () => {
   const { data: settings } = useQuery({
     queryKey: ["site-code-injection"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("site_settings")
         .select("value")
         .eq("key", "code_injection")

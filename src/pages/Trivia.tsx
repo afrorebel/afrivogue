@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Check, Flame, Lightbulb, RotateCcw, Share2, Sparkles, Trophy, X, Zap } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import TriviaLeaderboard from "@/components/trivia/TriviaLeaderboard";
@@ -143,7 +143,7 @@ const Trivia = () => {
   const { data: questions = [], isLoading } = useQuery({
     queryKey: ["trivia-questions"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("trivia_questions")
         .select("id, question, options, correct_answer, explanation, category, difficulty, fun_fact")
         .eq("published", true);
@@ -230,7 +230,7 @@ const Trivia = () => {
     setStats(updated);
     saveStats(updated);
     if (user) {
-      supabase
+      api
         .from("trivia_scores")
         .insert({ user_id: user.id, score: points, total_questions: round.length, category: dailyKey })
         .then(() => qc.invalidateQueries({ queryKey: ["trivia-leaderboard"] }));

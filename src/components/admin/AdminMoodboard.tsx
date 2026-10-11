@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { RefreshCw, Check, Trash2, X as XIcon, ExternalLink, User } from "lucide-react";
@@ -15,7 +15,7 @@ const AdminMoodboard = () => {
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["admin-moodboard"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("moodboard_items")
         .select("*")
         .order("created_at", { ascending: false })
@@ -31,7 +31,7 @@ const AdminMoodboard = () => {
     queryKey: ["admin-moodboard-profiles", submitterIds],
     enabled: submitterIds.length > 0,
     queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("id, display_name, avatar_url").in("id", submitterIds);
+      const { data } = await api.from("profiles").select("id, display_name, avatar_url").in("id", submitterIds);
       return data || [];
     },
   });
@@ -39,7 +39,7 @@ const AdminMoodboard = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("moodboard_items").delete().eq("id", id);
+      const { error } = await api.from("moodboard_items").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -50,7 +50,7 @@ const AdminMoodboard = () => {
 
   const reviewMutation = useMutation({
     mutationFn: async ({ id, approved }: { id: string; approved: boolean }) => {
-      const { error } = await supabase
+      const { error } = await api
         .from("moodboard_items")
         .update({ needs_review: false, approved })
         .eq("id", id);
@@ -65,7 +65,7 @@ const AdminMoodboard = () => {
   const triggerIngestion = async () => {
     setIsIngesting(true);
     try {
-      const { data, error } = await supabase.functions.invoke("ingest-moodboard");
+      const { data, error } = await api.functions.invoke("ingest-moodboard");
       if (error) throw error;
       toast({ title: "Pipeline Complete", description: `Ingested ${data?.ingested || 0} images` });
       queryClient.invalidateQueries({ queryKey: ["admin-moodboard"] });

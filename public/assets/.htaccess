@@ -1,5 +1,0 @@
-# Vite fingerprints everything in this folder (index-AbC123.js), so a file's
-# contents never change under the same name: let browsers keep them for a year.
-<IfModule mod_headers.c>
-  Header set Cache-Control "public, max-age=31536000, immutable"
-</IfModule>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,10 +37,10 @@ const AdminSegmentation = () => {
   const { data: segments = [] } = useQuery({
     queryKey: ["admin-segments"],
     queryFn: async () => {
-      const { data: segs } = await supabase.from("customer_segments").select("*").order("created_at", { ascending: false });
+      const { data: segs } = await api.from("customer_segments").select("*").order("created_at", { ascending: false });
       if (!segs?.length) return [];
       const ids = segs.map((s: any) => s.id);
-      const { data: members } = await supabase.from("segment_members").select("segment_id").in("segment_id", ids);
+      const { data: members } = await api.from("segment_members").select("segment_id").in("segment_id", ids);
       const counts: Record<string, number> = {};
       (members || []).forEach((m: any) => { counts[m.segment_id] = (counts[m.segment_id] || 0) + 1; });
       return segs.map((s: any) => ({ ...s, memberCount: counts[s.id] || 0 }));
@@ -50,7 +50,7 @@ const AdminSegmentation = () => {
   const saveSegment = async () => {
     if (!name || !criteriaType) { toast({ title: "Name and criteria required", variant: "destructive" }); return; }
     const criteria = { type: criteriaType, value: criteriaValue || null };
-    const { error } = await supabase.from("customer_segments").insert({ name, description: desc, criteria, color });
+    const { error } = await api.from("customer_segments").insert({ name, description: desc, criteria, color });
     if (error) { toast({ title: error.message, variant: "destructive" }); return; }
     qc.invalidateQueries({ queryKey: ["admin-segments"] });
     setOpen(false); setName(""); setDesc(""); setCriteriaType(""); setCriteriaValue("");
@@ -58,7 +58,7 @@ const AdminSegmentation = () => {
   };
 
   const deleteSegment = async (id: string) => {
-    await supabase.from("customer_segments").delete().eq("id", id);
+    await api.from("customer_segments").delete().eq("id", id);
     qc.invalidateQueries({ queryKey: ["admin-segments"] });
     toast({ title: "Segment deleted" });
   };
@@ -68,44 +68,44 @@ const AdminSegmentation = () => {
     let userIds: string[] = [];
 
     if (criteria.type === "has_ordered") {
-      const { data } = await supabase.from("orders").select("user_id");
+      const { data } = await api.from("orders").select("user_id");
       userIds = [...new Set((data || []).map((o: any) => o.user_id))];
     } else if (criteria.type === "premium_member") {
-      const { data } = await supabase.from("site_settings").select("value").eq("key", "manual_premium_users").maybeSingle();
+      const { data } = await api.from("site_settings").select("value").eq("key", "manual_premium_users").maybeSingle();
       userIds = (data?.value as string[]) || [];
     } else if (criteria.type === "high_spender") {
       const threshold = parseFloat(criteria.value) || 100;
-      const { data } = await supabase.from("orders").select("user_id, total").eq("status", "paid");
+      const { data } = await api.from("orders").select("user_id, total").eq("status", "paid");
       const totals: Record<string, number> = {};
       (data || []).forEach((o: any) => { totals[o.user_id] = (totals[o.user_id] || 0) + Number(o.total); });
       userIds = Object.entries(totals).filter(([, t]) => t >= threshold).map(([id]) => id);
     } else if (criteria.type === "cart_abandoner") {
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-      const { data } = await supabase.from("cart_items").select("user_id").lt("created_at", oneHourAgo);
+      const { data } = await api.from("cart_items").select("user_id").lt("created_at", oneHourAgo);
       userIds = [...new Set((data || []).map((c: any) => c.user_id))];
     } else if (criteria.type === "new_user") {
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-      const { data } = await supabase.from("profiles").select("id").gte("created_at", thirtyDaysAgo);
+      const { data } = await api.from("profiles").select("id").gte("created_at", thirtyDaysAgo);
       userIds = (data || []).map((p: any) => p.id);
     } else if (criteria.type === "inactive") {
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-      const { data: active } = await supabase.from("reading_history").select("user_id").gte("read_at", thirtyDaysAgo);
+      const { data: active } = await api.from("reading_history").select("user_id").gte("read_at", thirtyDaysAgo);
       const activeIds = new Set((active || []).map((r: any) => r.user_id));
-      const { data: all } = await supabase.from("profiles").select("id");
+      const { data: all } = await api.from("profiles").select("id");
       userIds = (all || []).filter((p: any) => !activeIds.has(p.id)).map((p: any) => p.id);
     } else if (criteria.type === "reviewer") {
-      const { data } = await supabase.from("product_reviews").select("user_id");
+      const { data } = await api.from("product_reviews").select("user_id");
       userIds = [...new Set((data || []).map((r: any) => r.user_id))];
     } else if (criteria.type === "wishlist_user") {
-      const { data } = await supabase.from("wishlists").select("user_id");
+      const { data } = await api.from("wishlists").select("user_id");
       userIds = [...new Set((data || []).map((w: any) => w.user_id))];
     }
 
     // Clear existing and insert new
-    await supabase.from("segment_members").delete().eq("segment_id", segment.id);
+    await api.from("segment_members").delete().eq("segment_id", segment.id);
     if (userIds.length > 0) {
       const rows = userIds.map((uid) => ({ segment_id: segment.id, user_id: uid }));
-      await supabase.from("segment_members").insert(rows);
+      await api.from("segment_members").insert(rows);
     }
     qc.invalidateQueries({ queryKey: ["admin-segments"] });
     toast({ title: `${userIds.length} users added to "${segment.name}"` });

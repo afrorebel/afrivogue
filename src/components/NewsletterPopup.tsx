@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { toast } from "@/hooks/use-toast";
 
 const NewsletterPopup = () => {
@@ -78,7 +78,7 @@ const NewsletterPopup = () => {
     if (!email) return;
     setLoading(true);
 
-    const { error } = await supabase
+    const { error } = await api
       .from("newsletter_subscribers")
       .insert({ email, source: "popup" });
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Plus, Pencil, Trash2, Zap, CheckCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import type { Tables, TablesInsert } from "@/integrations/supabase/types";
+import type { Tables, TablesInsert } from "@/integrations/api/types";
 
 type Forecast = Tables<"forecasts">;
 
@@ -37,7 +37,7 @@ const AdminForecasts = () => {
   const { data: forecasts = [], isLoading } = useQuery({
     queryKey: ["admin-forecasts"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("forecasts").select("*").order("created_at", { ascending: false });
+      const { data, error } = await api.from("forecasts").select("*").order("created_at", { ascending: false });
       if (error) throw error;
       return data as Forecast[];
     },
@@ -46,10 +46,10 @@ const AdminForecasts = () => {
   const upsert = useMutation({
     mutationFn: async (values: Partial<TablesInsert<"forecasts">>) => {
       if (editing) {
-        const { error } = await supabase.from("forecasts").update(values).eq("id", editing.id);
+        const { error } = await api.from("forecasts").update(values).eq("id", editing.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("forecasts").insert(values as TablesInsert<"forecasts">);
+        const { error } = await api.from("forecasts").insert(values as TablesInsert<"forecasts">);
         if (error) throw error;
       }
     },
@@ -63,7 +63,7 @@ const AdminForecasts = () => {
 
   const deleteMut = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("forecasts").delete().eq("id", id);
+      const { error } = await api.from("forecasts").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -75,7 +75,7 @@ const AdminForecasts = () => {
   const runPipeline = async () => {
     setPipelineRunning(true);
     try {
-      const { data, error } = await supabase.functions.invoke("ingest-forecasts");
+      const { data, error } = await api.functions.invoke("ingest-forecasts");
       if (error) throw error;
       toast({ title: "Pipeline complete", description: `Ingested ${data?.ingested || 0} new forecasts` });
       qc.invalidateQueries({ queryKey: ["admin-forecasts"] });

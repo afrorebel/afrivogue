@@ -1,90 +1,61 @@
 # AfriVogue
 
-Fashion, culture and lifestyle through an African lens. A React + Vite site backed by Supabase (database, auth, storage, edge functions), deployed to Hostinger, with a Claude-powered content engine.
+Fashion, culture and lifestyle through an African lens. One Node.js app and one MySQL database on Hostinger: a React + Vite site, an Express API, accounts, the admin, a Stripe shop and Insider membership, email through a Hostinger mailbox, and a Claude-powered content engine.
+
+To put it live, follow **[DEPLOY-HOSTINGER.md](DEPLOY-HOSTINGER.md)**.
+
+## Layout
+
+| Path | What lives there |
+|---|---|
+| `src/` | The website (React, Tailwind, shadcn/ui) |
+| `src/integrations/api/` | The site's connection to the server: `api.from("trends").select("*").eq(...)`, `api.auth`, `api.storage`, `api.functions` |
+| `server/src/` | The server: accounts (`auth.ts`), the permission-checked data API (`data/`), uploads, email (`mail/`), Stripe (`shop.ts`), the Claude content engine and Style Concierge (`content/`) |
+| `server/src/db/schema.sql` | Every table. Applied on each start (all `IF NOT EXISTS`); add new tables at the end and describe them in `registry.json` |
+| `server/src/data/policies.ts` | Who may read and write each table |
+| `server/seed/` | The existing content, loaded into an empty database on first start |
 
 ## Run it locally
 
+You need Node 20+ and a MySQL 8 or MariaDB 10.6+ database.
+
 ```sh
-npm ci
-npm run dev        # http://localhost:8080
-npm test           # unit tests
-npm run build      # production build in dist/
+npm install
+cp .env.example .env     # fill in DB_* at least
+npm run dev:server       # API on http://localhost:3000 (rebuilds and restarts on change)
+npm run dev              # site on http://localhost:8080, proxying /api to the server
 ```
 
-The public Supabase URL and publishable key live in `.env` (both are safe to ship to browsers).
+Checks:
 
-## Deploy (Hostinger)
+```sh
+npm run typecheck
+npm test                 # site unit tests
+npm run test:server      # API tests against a real database (TEST_DB_* env vars, defaults in server/vitest.config.ts)
+```
 
-Every push to `main` builds the site and uploads `dist/` to Hostinger over FTPS (`.github/workflows/deploy-hostinger.yml`).
+Build the Hostinger upload:
 
-One-time setup in **GitHub > Settings > Secrets and variables > Actions**:
-
-| Secret | Where to find it |
-|---|---|
-| `HOSTINGER_FTP_SERVER` | hPanel > Files > FTP Accounts (e.g. `ftp.afrivogue.com`) |
-| `HOSTINGER_FTP_USERNAME` | same page |
-| `HOSTINGER_FTP_PASSWORD` | same page (reset it there if unknown) |
-| `HOSTINGER_FTP_DIR` | optional; defaults to `public_html/` |
-
-`public/.htaccess` sends every route to `index.html` (so `/editorials` works on refresh) and sets caching: fingerprinted files in `/assets` cache for a year, `index.html` always revalidates.
-
-You can also run the deploy by hand from **GitHub > Actions > Deploy to Hostinger > Run workflow**.
+```sh
+npm run package:hostinger   # → release/afrivogue-hostinger.zip
+```
 
 ## Content engine (Claude)
 
-All AI writing runs in Supabase Edge Functions through the Anthropic API (`claude-opus-5-5`), in one shared AfriVogue voice (`supabase/functions/_shared/voice.ts`).
+All writing runs through the Anthropic API (`claude-opus-5-5`) in one shared AfriVogue voice (`server/src/content/voice.ts`).
 
-| Function | What it does |
+| Job | What it does |
 |---|---|
 | `ingest-trends` | Searches the web (Firecrawl), rewrites the best finds as AfriVogue stories |
 | `ingest-forecasts` | Turns fresh sources into cultural forecasts |
 | `ingest-moodboard` | Claude looks at candidate images, picks the strongest three per category, writes captions |
-| `ingest-trivia` | Writes new AfriTrivia questions |
-| `enrich-content` | `{"mode":"editorial"}` researches and writes 1,400 to 2,200 word long-form editorials for features; `{"mode":"story"}` re-voices older short stories |
+| `ingest-trivia` | Writes new AfriTrivia questions: short, accurate, and fun for anyone |
+| `enrich-content` | `{"mode":"editorial"}` researches and writes 1,400 to 2,200 word editorials; `{"mode":"story"}` re-voices older stories |
 
-Admins can run each one from the admin dashboard. These functions spend API credit, so they only run for signed-in admins, the service role, or a scheduled job that sends the `x-cron-secret` header.
+Admins run them from the dashboard; Hostinger cron runs them on a schedule via `/api/cron?key=CRON_SECRET&job=…`. They spend API credit, so nobody else can trigger them. Jobs run in the background and the admin page waits for the result.
 
-### Secrets (Supabase > Project Settings > Edge Functions > Secrets)
+**Style Concierge** (`/concierge`, `server/src/content/concierge.ts`): tell it the occasion and it builds a complete look, linked to our stories and shop. Guests get 1 look a day, the free Collective 5, Insiders 40 (adjustable with `CONCIERGE_DAILY_*`).
 
-| Secret | Purpose |
-|---|---|
-| `ANTHROPIC_API_KEY` | Claude. Create one at console.anthropic.com. |
-| `FIRECRAWL_API_KEY` | Web search and scraping |
-| `CRON_SECRET` | Any long random string; scheduled jobs send it as `x-cron-secret` |
+## Email
 
-### Schedule it (Supabase > SQL Editor)
-
-```sql
--- Store the cron secret once (same value as the CRON_SECRET function secret).
-select vault.create_secret('<your CRON_SECRET>', 'cron_secret');
-
--- Helper that calls a content function with the secret.
-create or replace function public.run_content_job(fn text, payload jsonb default '{}'::jsonb)
-returns void language sql security definer as $$
-  select net.http_post(
-    url := 'https://mafitpqnezbkjmtaqcjq.supabase.co/functions/v1/' || fn,
-    headers := jsonb_build_object(
-      'Content-Type', 'application/json',
-      'x-cron-secret', (select decrypted_secret from vault.decrypted_secrets where name = 'cron_secret')
-    ),
-    body := payload
-  );
-$$;
-
-select cron.schedule('afrivogue-stories',    '0 */6 * * *',  $$select public.run_content_job('ingest-trends')$$);
-select cron.schedule('afrivogue-editorials', '30 */3 * * *', $$select public.run_content_job('enrich-content', '{"mode":"editorial","limit":1}')$$);
-select cron.schedule('afrivogue-forecasts',  '0 9 * * *',    $$select public.run_content_job('ingest-forecasts')$$);
-select cron.schedule('afrivogue-moodboard',  '0 12 * * *',   $$select public.run_content_job('ingest-moodboard')$$);
-select cron.schedule('afrivogue-trivia',     '0 7 * * 1',    $$select public.run_content_job('ingest-trivia')$$);
-```
-
-Remove any older schedules that called these functions without the secret (`select * from cron.job;`, then `select cron.unschedule('<name>');`).
-
-### Deploying functions
-
-`.github/workflows/deploy-supabase-functions.yml` deploys `supabase/functions/**` on push once `SUPABASE_ACCESS_TOKEN` and `SUPABASE_PROJECT_REF` are set as GitHub secrets. Until then it skips itself. To deploy by hand: `supabase functions deploy --project-ref mafitpqnezbkjmtaqcjq`.
-
-## Still tied to Lovable
-
-- **Email.** Sign-up, password-reset and transactional emails go through Lovable's email service (`@lovable.dev/email-js`, `LOVABLE_API_KEY`). These keep working only while that account is active; the next step is moving them to a provider such as Resend.
-- **Database ownership.** If the Supabase project was created by Lovable Cloud, move it into a Supabase account you own so the data, auth and functions are fully yours.
+Sent over SMTP from a Hostinger mailbox with nodemailer (`server/src/mail/`), the same setup as foundright.ng. Templates: welcome (with email confirmation), password reset, contact confirmation, order receipt, plus contact and new-order alerts to `CONTACT_INBOX`. Admins can restyle the member-facing templates in Admin → Emails.

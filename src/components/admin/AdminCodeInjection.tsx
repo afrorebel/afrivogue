@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { Save, Code, AlertTriangle } from "lucide-react";
-import type { Json } from "@/integrations/supabase/types";
+import type { Json } from "@/integrations/api/types";
 
 interface CodeInjectionSettings {
   head_code: string;
@@ -28,7 +28,7 @@ const AdminCodeInjection = () => {
   const { data: saved, isLoading } = useQuery({
     queryKey: ["admin-code-injection"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("site_settings")
         .select("value")
         .eq("key", "code_injection")
@@ -44,14 +44,14 @@ const AdminCodeInjection = () => {
 
   const saveMut = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("site_settings")
         .update({ value: settings as unknown as Json })
         .eq("key", "code_injection")
         .select();
       if (error) throw error;
       if (!data || data.length === 0) {
-        const { error: insertError } = await supabase
+        const { error: insertError } = await api
           .from("site_settings")
           .insert({ key: "code_injection", value: settings as unknown as Json });
         if (insertError) throw insertError;

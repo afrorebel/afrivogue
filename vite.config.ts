@@ -10,6 +10,11 @@ export default defineConfig({
     hmr: {
       overlay: false,
     },
+    // In development the API runs separately (npm run dev:server on :3000).
+    proxy: {
+      "/api": "http://127.0.0.1:3000",
+      "/uploads": "http://127.0.0.1:3000",
+    },
   },
   plugins: [react()],
   resolve: {

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -44,7 +44,7 @@ const AdminEditorials = () => {
   const { data: categories = [] } = useQuery({
     queryKey: ["categories-list"],
     queryFn: async () => {
-      const { data } = await supabase.from("categories").select("name").is("parent_id", null).order("name");
+      const { data } = await api.from("categories").select("name").is("parent_id", null).order("name");
       return data?.map((c: any) => c.name) || [];
     },
   });
@@ -52,7 +52,7 @@ const AdminEditorials = () => {
   const { data: submissions = [], isLoading } = useQuery({
     queryKey: ["admin-submissions", filter],
     queryFn: async () => {
-      let q = supabase.from("article_submissions").select("*, profiles(display_name, avatar_url)").order("created_at", { ascending: false });
+      let q = api.from("article_submissions").select("*, profiles(display_name, avatar_url)").order("created_at", { ascending: false });
       if (filter !== "all") q = q.eq("status", filter);
       const { data } = await q;
       return data || [];
@@ -64,7 +64,7 @@ const AdminEditorials = () => {
       const updates: any = { status };
       if (notes) updates.admin_notes = notes;
       if (status === "approved") updates.points_awarded = 50;
-      const { error } = await supabase.from("article_submissions").update(updates).eq("id", id);
+      const { error } = await api.from("article_submissions").update(updates).eq("id", id);
       if (error) throw error;
 
       // Auto-upgrade user to publisher on first approval
@@ -72,14 +72,14 @@ const AdminEditorials = () => {
         const sub = submissions.find((s: any) => s.id === id);
         if (sub) {
           // Check if user already has publisher or higher role
-          const { data: existingRoles } = await supabase.from("user_roles").select("role").eq("user_id", sub.user_id);
+          const { data: existingRoles } = await api.from("user_roles").select("role").eq("user_id", sub.user_id);
           const roles = existingRoles?.map((r: any) => r.role) || [];
           if (!roles.includes("publisher") && !roles.includes("editor") && !roles.includes("admin")) {
             // Remove contributor role if exists, add publisher
             if (roles.includes("contributor")) {
-              await supabase.from("user_roles").delete().eq("user_id", sub.user_id).eq("role", "contributor");
+              await api.from("user_roles").delete().eq("user_id", sub.user_id).eq("role", "contributor");
             }
-            await supabase.from("user_roles").insert({ user_id: sub.user_id, role: "publisher" });
+            await api.from("user_roles").insert({ user_id: sub.user_id, role: "publisher" });
           }
         }
       }
@@ -88,7 +88,7 @@ const AdminEditorials = () => {
       if (status === "published") {
         const sub = submissions.find((s: any) => s.id === id);
         if (sub) {
-          const { error: tErr } = await supabase.from("trends").insert({
+          const { error: tErr } = await api.from("trends").insert({
             headline: sub.title,
             cultural_significance: sub.meta_description || sub.content.substring(0, 200),
             category: sub.category,
@@ -113,7 +113,7 @@ const AdminEditorials = () => {
 
   const deleteSub = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("article_submissions").delete().eq("id", id);
+      const { error } = await api.from("article_submissions").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -124,7 +124,7 @@ const AdminEditorials = () => {
 
   const createEditorial = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("trends").insert({
+      const { error } = await api.from("trends").insert({
         headline: form.headline,
         cultural_significance: form.meta_description || form.content.replace(/<[^>]*>/g, "").substring(0, 200),
         category: form.category,
@@ -156,7 +156,7 @@ const AdminEditorials = () => {
 
   const addCategory = async () => {
     if (!newCat.trim()) return;
-    const { error } = await supabase.from("categories").insert({ name: newCat.trim() });
+    const { error } = await api.from("categories").insert({ name: newCat.trim() });
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {

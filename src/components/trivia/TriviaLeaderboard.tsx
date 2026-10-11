@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Trophy, Medal } from "lucide-react";
 
 interface ScoreEntry {
@@ -22,7 +22,7 @@ const TriviaLeaderboard = ({ category, title = "Leaderboard" }: TriviaLeaderboar
     queryKey: ["trivia-leaderboard", category ?? "all"],
     queryFn: async () => {
       // Top scores, then their display names
-      let query = supabase
+      let query = api
         .from("trivia_scores")
         .select("user_id, score, total_questions, created_at")
         .order("score", { ascending: false })
@@ -34,7 +34,7 @@ const TriviaLeaderboard = ({ category, title = "Leaderboard" }: TriviaLeaderboar
 
       // Fetch profile names
       const userIds = [...new Set((data || []).map((s) => s.user_id))];
-      const { data: profiles } = await supabase
+      const { data: profiles } = await api
         .from("profiles")
         .select("id, display_name, avatar_url")
         .in("id", userIds);

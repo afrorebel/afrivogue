@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,7 +23,7 @@ const AdminCategories = () => {
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ["admin-categories"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("categories").select("*").order("name");
+      const { data, error } = await api.from("categories").select("*").order("name");
       if (error) throw error;
       return (data || []) as Category[];
     },
@@ -34,7 +34,7 @@ const AdminCategories = () => {
 
   const addMut = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("categories").insert({
+      const { error } = await api.from("categories").insert({
         name: newName.trim(),
         parent_id: newParent === "none" ? null : newParent,
       });
@@ -52,7 +52,7 @@ const AdminCategories = () => {
 
   const deleteMut = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("categories").delete().eq("id", id);
+      const { error } = await api.from("categories").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

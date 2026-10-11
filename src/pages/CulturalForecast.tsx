@@ -6,7 +6,7 @@ import Pager from "@/components/editorial/Pager";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageMasthead from "@/components/editorial/PageMasthead";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { linkifyText } from "@/lib/linkify";
 import {
   forecasts as staticForecasts,
@@ -198,7 +198,7 @@ const CulturalForecast = () => {
   const { data: dbForecasts } = useQuery({
     queryKey: ["forecasts-public"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("forecasts")
         .select("*")
         .eq("published", true)

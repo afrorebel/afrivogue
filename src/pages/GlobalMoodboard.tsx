@@ -1,7 +1,7 @@
 import PageMasthead from "@/components/editorial/PageMasthead";
 import { useState, useMemo, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { motion, AnimatePresence } from "framer-motion";
@@ -46,7 +46,7 @@ const GlobalMoodboard = () => {
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["moodboard-items"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("moodboard_items")
         .select("*")
         .eq("approved", true)
@@ -60,7 +60,7 @@ const GlobalMoodboard = () => {
     queryKey: ["saved-moodboard", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("saved_moodboard_items")
         .select("moodboard_item_id")
         .eq("user_id", user!.id);
@@ -77,7 +77,7 @@ const GlobalMoodboard = () => {
     queryKey: ["moodboard-related-trends", relatedTrendIds],
     enabled: relatedTrendIds.length > 0,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("trends")
         .select("id, headline, category, featured_image_url, cultural_significance")
         .in("id", relatedTrendIds)
@@ -92,9 +92,9 @@ const GlobalMoodboard = () => {
       if (!user) throw new Error("Login required");
       const isSaved = savedIds.includes(itemId);
       if (isSaved) {
-        await supabase.from("saved_moodboard_items").delete().eq("user_id", user.id).eq("moodboard_item_id", itemId);
+        await api.from("saved_moodboard_items").delete().eq("user_id", user.id).eq("moodboard_item_id", itemId);
       } else {
-        await supabase.from("saved_moodboard_items").insert({ user_id: user.id, moodboard_item_id: itemId });
+        await api.from("saved_moodboard_items").insert({ user_id: user.id, moodboard_item_id: itemId });
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["saved-moodboard"] }),
@@ -108,9 +108,9 @@ const GlobalMoodboard = () => {
       const file = files[0];
       const ext = file.name.split(".").pop();
       const path = `moodboard/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error } = await supabase.storage.from("trend-images").upload(path, file);
+      const { error } = await api.storage.from("trend-images").upload(path, file);
       if (error) throw error;
-      const { data: urlData } = supabase.storage.from("trend-images").getPublicUrl(path);
+      const { data: urlData } = api.storage.from("trend-images").getPublicUrl(path);
       setSubmitForm((p) => ({ ...p, image_url: urlData.publicUrl }));
       toast({ title: "Image uploaded" });
     } catch (err: any) {
@@ -124,7 +124,7 @@ const GlobalMoodboard = () => {
   const submitItem = useMutation({
     mutationFn: async () => {
       if (!user) throw new Error("Login required");
-      const { error } = await supabase.from("moodboard_items").insert({
+      const { error } = await api.from("moodboard_items").insert({
         image_url: submitForm.image_url,
         caption: submitForm.caption,
         category: submitForm.category,

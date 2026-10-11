@@ -1,7 +1,7 @@
 import PageMasthead from "@/components/editorial/PageMasthead";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -30,7 +30,7 @@ const Shop = () => {
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["shop-products"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("products").select("*").eq("published", true);
+      const { data, error } = await api.from("products").select("*").eq("published", true);
       if (error) throw error;
       return (data || []).map((p: any) => ({ ...p, images: (p.images as string[]) || [] }));
     },
@@ -40,7 +40,7 @@ const Shop = () => {
     queryKey: ["wishlist-ids", user?.id],
     queryFn: async () => {
       if (!user) return [];
-      const { data } = await supabase.from("wishlists").select("product_id").eq("user_id", user.id);
+      const { data } = await api.from("wishlists").select("product_id").eq("user_id", user.id);
       return (data || []).map((w: any) => w.product_id);
     },
     enabled: !!user,

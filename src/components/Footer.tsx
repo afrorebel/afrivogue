@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Wordmark from "@/components/brand/Wordmark";
 import SocialIcon from "@/components/brand/SocialIcons";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { toast } from "@/hooks/use-toast";
 
 const socialLinks = [
@@ -18,6 +18,8 @@ const exploreLinks = [
   { label: "Editorials", href: "/editorials" },
   { label: "Forecast", href: "/forecast" },
   { label: "Moodboard", href: "/moodboard" },
+  { label: "Style Concierge", href: "/concierge" },
+  { label: "AfriTrivia", href: "/trivia" },
 ];
 
 
@@ -47,7 +49,7 @@ const Footer = () => {
     if (!email) return;
     setLoading(true);
 
-    const { error } = await supabase
+    const { error } = await api
       .from("newsletter_subscribers")
       .insert({ email, source: "footer" });
 

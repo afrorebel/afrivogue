@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import ProductCard from "./ProductCard";
 import { Sparkles } from "lucide-react";
 
@@ -8,7 +8,7 @@ const CrossSellProducts = ({ productId, category }: { productId: string; categor
     queryKey: ["cross-sell", productId],
     queryFn: async () => {
       // First try explicit cross-sell rules
-      const { data: rules } = await supabase
+      const { data: rules } = await api
         .from("cross_sell_rules")
         .select("recommended_product_id")
         .eq("source_product_id", productId)
@@ -17,7 +17,7 @@ const CrossSellProducts = ({ productId, category }: { productId: string; categor
 
       if (rules && rules.length > 0) {
         const ids = rules.map((r: any) => r.recommended_product_id);
-        const { data: products } = await supabase
+        const { data: products } = await api
           .from("products")
           .select("*")
           .eq("published", true)
@@ -26,7 +26,7 @@ const CrossSellProducts = ({ productId, category }: { productId: string; categor
       }
 
       // Fallback: same category products
-      const { data: products } = await supabase
+      const { data: products } = await api
         .from("products")
         .select("*")
         .eq("published", true)

@@ -20,12 +20,13 @@ const primaryLinks = [
   { label: "Editorials", href: "/editorials" },
   { label: "Moodboard", href: "/moodboard" },
   { label: "Forecast", href: "/forecast" },
+  { label: "Concierge", href: "/concierge" },
   { label: "Shop", href: "/shop" },
-  { label: "About", href: "/about" },
 ];
 
 /** Tucked under "More" on desktop. */
 const moreLinks = [
+  { label: "About", href: "/about" },
   { label: "AfriTrivia", href: "/trivia" },
   { label: "Voices", href: "/contributors" },
   { label: "The Collective", href: "/membership" },

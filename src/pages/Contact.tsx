@@ -3,7 +3,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Mail, Send, MapPin, ExternalLink } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,23 +33,11 @@ const Contact = () => {
     }
     setLoading(true);
     try {
-      // Store contact message as a newsletter subscriber with source "contact"
-      const { error } = await supabase.from("newsletter_subscribers").insert({
-        email: form.email.trim(),
-        source: `contact: ${form.subject || "General"} — ${form.name}`,
+      const { error } = await api.functions.invoke("contact", {
+        body: { name: form.name.trim(), email: form.email.trim(), subject: form.subject, message: form.message.trim() },
       });
-      if (error && error.code !== "23505") throw error;
-      // Send confirmation email
-      const confirmId = crypto.randomUUID();
-      await supabase.functions.invoke("send-transactional-email", {
-        body: {
-          templateName: "contact-confirmation",
-          recipientEmail: form.email.trim(),
-          idempotencyKey: `contact-confirm-${confirmId}`,
-          templateData: { name: form.name.trim(), subject: form.subject || undefined },
-        },
-      });
-      toast({ title: "Message sent!", description: "We'll get back to you soon." });
+      if (error) throw error;
+      toast({ title: "Message sent", description: "A real person will read it. Look out for our reply in your inbox." });
       setForm({ name: "", email: "", subject: "", message: "" });
     } catch (err: any) {
       toast({ title: "Error sending message", description: err.message, variant: "destructive" });

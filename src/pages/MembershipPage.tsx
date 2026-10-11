@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
@@ -38,7 +38,7 @@ const MembershipPage = () => {
   const { data: membership = DEFAULT_MEMBERSHIP } = useQuery({
     queryKey: ["membership-settings"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await api
         .from("site_settings")
         .select("value")
         .eq("key", "membership")
@@ -61,7 +61,7 @@ const MembershipPage = () => {
     e.preventDefault();
     if (!joinEmail) return;
     setJoinLoading(true);
-    const { error } = await supabase
+    const { error } = await api
       .from("newsletter_subscribers")
       .insert({ email: joinEmail, source: "founding-member" });
     setJoinLoading(false);
@@ -78,7 +78,7 @@ const MembershipPage = () => {
       return;
     }
     try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
+      const { data, error } = await api.functions.invoke("create-checkout", {
         body: { plan },
       });
       if (error) throw error;

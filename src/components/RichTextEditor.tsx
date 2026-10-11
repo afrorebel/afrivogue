@@ -14,7 +14,7 @@ import {
   List, ListOrdered, Quote, Image as ImageIcon, Link as LinkIcon,
   AlignLeft, AlignCenter, AlignRight, Code, Minus, Instagram, Youtube, Upload
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 
 interface RichTextEditorProps {
   content: string;
@@ -66,9 +66,9 @@ const RichTextEditor = ({ content, onChange, placeholder = "Write your articleâ€
     for (const file of Array.from(files)) {
       const ext = file.name.split(".").pop();
       const path = `editor/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error } = await supabase.storage.from("trend-images").upload(path, file);
+      const { error } = await api.storage.from("trend-images").upload(path, file);
       if (error) continue;
-      const { data: urlData } = supabase.storage.from("trend-images").getPublicUrl(path);
+      const { data: urlData } = api.storage.from("trend-images").getPublicUrl(path);
       if (urlData?.publicUrl) {
         editor.chain().focus().setImage({ src: urlData.publicUrl }).run();
       }

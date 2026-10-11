@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, type PanInfo } from "framer-motion";
 import { trends } from "@/lib/trendData";
 import type { Trend } from "@/lib/trendData";
@@ -186,7 +186,7 @@ const StoryMode = () => {
     queryKey: ["story-mode-trend", id],
     enabled: !!id && !staticTrend,
     queryFn: async (): Promise<Trend | null> => {
-      const { data } = await supabase
+      const { data } = await api
         .from("trends")
         .select("id, headline, cultural_significance, geo_relevance, urgency, category, content_tier, created_at, image_hint")
         .eq("id", id!)

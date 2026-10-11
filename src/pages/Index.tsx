@@ -12,7 +12,7 @@ import Footer from "@/components/Footer";
 import { useTrends } from "@/hooks/useTrends";
 import { trends as fallbackTrends } from "@/lib/trendData";
 import { Skeleton } from "@/components/ui/skeleton";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import SectionHeader from "@/components/editorial/SectionHeader";
 import CategoryChip from "@/components/editorial/CategoryChip";
 import MembershipCTA from "@/components/editorial/MembershipCTA";
@@ -38,7 +38,7 @@ const Index = () => {
   const { data: paywalledCategories = [] } = useQuery({
     queryKey: ["paywalled-categories"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await api
         .from("site_settings")
         .select("value")
         .eq("key", "paywalled_categories")
@@ -51,7 +51,7 @@ const Index = () => {
   const { data: heroTrendId } = useQuery({
     queryKey: ["hero-trend-id"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await api
         .from("site_settings")
         .select("value")
         .eq("key", "hero_trend_id")
@@ -63,7 +63,7 @@ const Index = () => {
   const { data: categories = FALLBACK_CATEGORIES } = useQuery({
     queryKey: ["categories-list"],
     queryFn: async () => {
-      const { data } = await supabase.from("categories").select("name").is("parent_id", null).order("name");
+      const { data } = await api.from("categories").select("name").is("parent_id", null).order("name");
       const names = data?.map((c: { name: string }) => c.name) || [];
       return names.length ? names : FALLBACK_CATEGORIES;
     },
@@ -72,7 +72,7 @@ const Index = () => {
   const { data: moodboard = [] } = useQuery({
     queryKey: ["home-moodboard"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await api
         .from("moodboard_items")
         .select("id, image_url, caption, category")
         .eq("approved", true)
@@ -296,6 +296,27 @@ const Index = () => {
               </div>
             </section>
           )}
+
+          {/* ── Style Concierge ── */}
+          <section className="mt-16 md:mt-24">
+            <Link
+              to="/concierge"
+              className="group relative block overflow-hidden rounded-3xl bg-sunset p-7 text-white shadow-lift md:p-12"
+            >
+              <div className="relative max-w-2xl">
+                <p className="inline-flex rounded-full bg-white/15 px-3 py-1 font-body text-[11px] font-semibold uppercase tracking-[0.2em]">
+                  New · Style Concierge
+                </p>
+                <h2 className="mt-4 font-display text-4xl italic leading-[1.02] md:text-6xl">What are you dressing for?</h2>
+                <p className="mt-4 max-w-lg font-body text-base leading-relaxed text-white/85">
+                  A wedding in Ibadan, a gallery opening, a first date. Tell our stylist the occasion and get the full look, from fabric to finishing touch.
+                </p>
+                <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 font-body text-sm font-semibold text-black transition-transform group-hover:translate-x-1">
+                  Get styled <ArrowRight className="h-4 w-4" />
+                </span>
+              </div>
+            </Link>
+          </section>
 
           {/* ── Newsletter ── */}
           <section className="mt-16 md:mt-24">

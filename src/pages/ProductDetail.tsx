@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import Navbar from "@/components/Navbar";
@@ -27,7 +27,7 @@ const ProductDetail = () => {
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("products").select("*").eq("id", id).single();
+      const { data, error } = await api.from("products").select("*").eq("id", id).single();
       if (error) throw error;
       return { ...data, images: (data.images as string[]) || [], sizes: (data.sizes as string[]) || [], colors: (data.colors as string[]) || [], tags: (data.tags as string[]) || [] };
     },
@@ -40,7 +40,7 @@ const ProductDetail = () => {
     queryKey: ["wish-check", user?.id, id],
     queryFn: async () => {
       if (!user) return false;
-      const { count } = await supabase.from("wishlists").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("product_id", id!);
+      const { count } = await api.from("wishlists").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("product_id", id!);
       return (count || 0) > 0;
     },
     enabled: !!user && !!id,
@@ -66,9 +66,9 @@ const ProductDetail = () => {
   const toggleWish = async () => {
     if (!user) { toast({ title: "Sign in first", variant: "destructive" }); return; }
     if (isWishlisted) {
-      await supabase.from("wishlists").delete().eq("user_id", user.id).eq("product_id", product.id);
+      await api.from("wishlists").delete().eq("user_id", user.id).eq("product_id", product.id);
     } else {
-      await supabase.from("wishlists").insert({ user_id: user.id, product_id: product.id, notify_back_in_stock: outOfStock });
+      await api.from("wishlists").insert({ user_id: user.id, product_id: product.id, notify_back_in_stock: outOfStock });
     }
     refetchWish();
   };
@@ -204,7 +204,7 @@ const ProductDetail = () => {
             {outOfStock && (
               <Button variant="outline" className="w-full" onClick={() => {
                 if (!user) { toast({ title: "Sign in first", variant: "destructive" }); return; }
-                supabase.from("wishlists").upsert({ user_id: user.id, product_id: product.id, notify_back_in_stock: true });
+                api.from("wishlists").upsert({ user_id: user.id, product_id: product.id, notify_back_in_stock: true });
                 toast({ title: "We'll notify you when it's back!" });
               }}>
                 Notify me when back in stock

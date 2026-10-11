@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { Save, Lock, Image, Crown, DollarSign } from "lucide-react";
-import type { Json } from "@/integrations/supabase/types";
+import type { Json } from "@/integrations/api/types";
 
 interface FooterSettings {
   tagline: string;
@@ -56,7 +56,7 @@ const AdminSiteSettings = () => {
   const { data: settings, isLoading } = useQuery({
     queryKey: ["admin-site-settings"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("site_settings").select("*");
+      const { data, error } = await api.from("site_settings").select("*");
       if (error) throw error;
       const map: Record<string, Json> = {};
       data.forEach((row) => { map[row.key] = row.value; });
@@ -67,7 +67,7 @@ const AdminSiteSettings = () => {
   const { data: trends = [] } = useQuery({
     queryKey: ["admin-all-trends"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from("trends")
         .select("id, headline, category, content_tier, featured_image_url")
         .eq("published", true)
@@ -97,10 +97,10 @@ const AdminSiteSettings = () => {
 
   const saveMut = useMutation({
     mutationFn: async ({ key, value }: { key: string; value: Json }) => {
-      const { data, error } = await supabase.from("site_settings").update({ value }).eq("key", key).select();
+      const { data, error } = await api.from("site_settings").update({ value }).eq("key", key).select();
       if (error) throw error;
       if (!data || data.length === 0) {
-        const { error: insertError } = await supabase.from("site_settings").insert({ key, value });
+        const { error: insertError } = await api.from("site_settings").insert({ key, value });
         if (insertError) throw insertError;
       }
     },
