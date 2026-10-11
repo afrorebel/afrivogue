@@ -1,3 +1,4 @@
+import PageMasthead from "@/components/editorial/PageMasthead";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Globe, Users, Sparkles, Target } from "lucide-react";

@@ -1,3 +1,4 @@
+import PageMasthead from "@/components/editorial/PageMasthead";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
