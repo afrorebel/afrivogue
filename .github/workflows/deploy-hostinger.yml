@@ -19,6 +19,8 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      HAS_FTP: ${{ secrets.HOSTINGER_FTP_SERVER != '' && secrets.HOSTINGER_FTP_USERNAME != '' && secrets.HOSTINGER_FTP_PASSWORD != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -36,7 +38,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: FTP secrets missing
+        if: env.HAS_FTP != 'true'
+        run: echo "::warning::Add the HOSTINGER_FTP_* secrets to deploy. The build passed; nothing was uploaded."
+
       - name: Upload to Hostinger
+        if: env.HAS_FTP == 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.HOSTINGER_FTP_SERVER }}
