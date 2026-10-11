@@ -94,9 +94,6 @@ const FeaturedProducts = () => {
       </div>
     </section>
   );
-
-    </section>
-  );
 };
 
 export default FeaturedProducts;
