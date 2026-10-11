@@ -6,9 +6,11 @@ import { useAuth } from "@/hooks/useAuth";
 import SearchDialog from "@/components/SearchDialog";
 import ThemeToggle from "@/components/ThemeToggle";
 import CartDrawer from "@/components/shop/CartDrawer";
+import Wordmark from "@/components/brand/Wordmark";
 
 const navLinks = [
   { label: "Home", href: "/" },
+  { label: "Stories", href: "/trends" },
   { label: "Editorials", href: "/editorials" },
   { label: "Moodboard", href: "/moodboard" },
   { label: "Shop", href: "/shop" },
@@ -24,63 +26,73 @@ const Navbar = () => {
   const { user } = useAuth();
   const { pathname } = useLocation();
 
-  // On the homepage the large masthead already carries the wordmark,
-  // so the compact one only appears once it scrolls out of view.
-  const isHome = pathname === "/";
-
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 420);
+    const onScroll = () => setScrolled(window.scrollY > 12);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const showWordmark = !isHome || scrolled;
+  // Close the mobile menu whenever the route changes.
+  useEffect(() => setOpen(false), [pathname]);
+
+  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
     <>
-      <nav className="fixed top-0 z-50 flex w-full items-center justify-between border-b border-border/50 bg-background/80 px-6 py-4 backdrop-blur-md md:px-12 lg:px-16">
-        <Link
-          to="/"
-          aria-hidden={!showWordmark}
-          tabIndex={showWordmark ? 0 : -1}
-          className={`font-display text-xl italic tracking-tight text-foreground transition-opacity duration-500 ${
-            showWordmark ? "opacity-100" : "pointer-events-none opacity-0"
-          }`}
-        >
-          Afri<span className="text-gold">Vogue</span>
-        </Link>
+      <nav
+        className={`fixed top-0 z-50 w-full border-b px-4 transition-all duration-300 md:px-8 lg:px-12 ${
+          scrolled ? "border-border/60 bg-background/85 shadow-soft backdrop-blur-xl" : "border-transparent bg-background/60 backdrop-blur-md"
+        }`}
+      >
+        <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-6">
+          <Link to="/" aria-label="Afrivogue home" className="shrink-0">
+            <Wordmark className="text-2xl md:text-[1.7rem]" />
+          </Link>
 
+          <div className="hidden items-center gap-0.5 xl:flex">
+            {navLinks.map((l) => (
+              <Link
+                key={l.label}
+                to={l.href}
+                className={`rounded-full px-3.5 py-2 font-body text-[13px] font-medium transition-colors ${
+                  isActive(l.href)
+                    ? "bg-gold/15 text-gold"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                {l.label}
+              </Link>
+            ))}
+          </div>
 
-        <div className="hidden items-center gap-8 font-body text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground md:flex">
-          {navLinks.map((l) => (
-            <Link key={l.label} to={l.href} className="transition-colors hover:text-gold">
-              {l.label}
-            </Link>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-3">
-          <SearchDialog />
-          <CartDrawer />
-          <ThemeToggle />
-          <div className="h-2 w-2 rounded-full bg-gold animate-pulse" title="Live feed" />
-          {user ? (
-            <Link to="/dashboard" className="hidden items-center gap-1 font-body text-xs font-medium uppercase tracking-[0.2em] text-gold transition-colors hover:text-gold/80 md:flex">
-              <User className="h-4 w-4" /> Dashboard
-            </Link>
-          ) : (
-            <Link to="/auth" className="hidden font-body text-xs font-medium uppercase tracking-[0.2em] text-gold transition-colors hover:text-gold/80 md:flex">
-              Join
-            </Link>
-          )}
-          <button
-            onClick={() => setOpen(!open)}
-            className="flex items-center justify-center text-foreground md:hidden"
-            aria-label={open ? "Close menu" : "Open menu"}
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          <div className="flex items-center gap-1.5">
+            <SearchDialog />
+            <CartDrawer />
+            <ThemeToggle />
+            {user ? (
+              <Link
+                to="/dashboard"
+                className="ml-1 hidden items-center gap-1.5 rounded-full border border-gold/50 px-4 py-2 font-body text-xs font-semibold text-gold transition-colors hover:bg-gold/10 md:flex"
+              >
+                <User className="h-3.5 w-3.5" /> Dashboard
+              </Link>
+            ) : (
+              <Link
+                to="/auth"
+                className="ml-1 hidden rounded-full bg-gold px-5 py-2 font-body text-xs font-semibold text-primary-foreground transition-transform hover:scale-[1.03] md:flex"
+              >
+                Join
+              </Link>
+            )}
+            <button
+              onClick={() => setOpen(!open)}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted xl:hidden"
+              aria-label={open ? "Close menu" : "Open menu"}
+            >
+              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -91,53 +103,40 @@ const Navbar = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-40 bg-background/95 backdrop-blur-lg md:hidden"
+            className="fixed inset-0 z-40 overflow-y-auto bg-background/97 px-6 pb-10 pt-24 backdrop-blur-xl xl:hidden"
           >
-            <div className="flex h-full flex-col items-center justify-center gap-10">
+            <div className="mx-auto flex max-w-md flex-col gap-2">
               {navLinks.map((l, i) => (
                 <motion.div
                   key={l.label}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  transition={{ delay: i * 0.08 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ delay: i * 0.04 }}
                 >
                   <Link
                     to={l.href}
-                    onClick={() => setOpen(false)}
-                    className="font-display text-2xl font-bold uppercase tracking-[0.15em] text-foreground transition-colors hover:text-gold"
+                    className={`block rounded-2xl px-5 py-3 font-display text-2xl italic transition-colors ${
+                      isActive(l.href) ? "bg-gold/15 text-gold" : "text-foreground hover:bg-muted"
+                    }`}
                   >
                     {l.label}
                   </Link>
                 </motion.div>
               ))}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: navLinks.length * 0.08 }}
+                transition={{ delay: navLinks.length * 0.04 }}
+                className="mt-4"
               >
                 <Link
                   to={user ? "/dashboard" : "/auth"}
-                  onClick={() => setOpen(false)}
-                  className="font-display text-2xl font-bold uppercase tracking-[0.15em] text-gold transition-colors hover:text-gold/80"
+                  className="block rounded-full bg-gold px-6 py-3.5 text-center font-body text-sm font-semibold text-primary-foreground"
                 >
-                  {user ? "Dashboard" : "Join"}
+                  {user ? "Go to Dashboard" : "Join Afrivogue"}
                 </Link>
               </motion.div>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="mt-6 h-px w-16 bg-gold/30"
-              />
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="font-body text-[10px] uppercase tracking-[0.2em] text-muted-foreground"
-              >
-                Afrivogue Feed
-              </motion.p>
             </div>
           </motion.div>
         )}

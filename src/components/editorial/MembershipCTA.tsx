@@ -1,40 +1,41 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { ArrowRight, Crown } from "lucide-react";
 
-/** Editorial-style membership invitation band used across public pages. */
+/** Membership invitation panel used at the foot of public pages. */
 const MembershipCTA = () => (
-  <section className="px-6 py-24 md:px-12 lg:px-16">
+  <section className="mx-auto max-w-[1440px] py-16 md:py-24">
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="mx-auto max-w-7xl border-y border-gold/30 py-16"
+      className="relative overflow-hidden rounded-3xl border border-gold/25 bg-sunset px-6 py-12 shadow-soft md:px-14 md:py-16"
     >
-      <div className="grid grid-cols-1 items-end gap-8 md:grid-cols-12">
+      <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-12">
         <div className="md:col-span-7">
-          <p className="mb-5 font-body text-[9px] uppercase tracking-[0.4em] text-gold">Membership</p>
-          <h2 className="font-display text-4xl italic leading-[0.95] text-foreground md:text-6xl">
+          <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-gold/15 px-3.5 py-1.5 font-body text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
+            <Crown className="h-3.5 w-3.5" /> Membership
+          </p>
+          <h2 className="font-display text-4xl italic leading-[1.02] text-foreground md:text-6xl">
             Join the <span className="text-gold">Collective</span>
           </h2>
         </div>
         <div className="md:col-span-5">
-          <p className="mb-8 font-body text-xs uppercase leading-relaxed tracking-[0.18em] text-muted-foreground">
-            Unlock premium editorials, earn from your contributions, and stand with a global community of culture
-            shapers.
+          <p className="mb-7 font-body text-base leading-relaxed text-muted-foreground">
+            Unlock premium editorials, earn from your contributions, and stand with a global community of culture shapers.
           </p>
-          <div className="flex flex-wrap items-center gap-8">
+          <div className="flex flex-wrap items-center gap-3">
             <Link
               to="/membership"
-              className="group inline-flex items-center gap-4 border-b border-gold pb-1 font-body text-[10px] uppercase tracking-[0.4em] text-gold"
+              className="group inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 font-body text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02]"
             >
-              Become a Member
-              <span className="h-px w-8 bg-gold transition-all duration-500 group-hover:w-14" />
+              Become a member <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
               to="/about"
-              className="border-b border-border pb-1 font-body text-[10px] uppercase tracking-[0.4em] text-foreground transition-colors hover:border-gold hover:text-gold"
+              className="rounded-full border border-border bg-background/50 px-6 py-3 font-body text-sm font-medium text-foreground transition-colors hover:border-gold hover:text-gold"
             >
-              Learn More
+              Learn more
             </Link>
           </div>
         </div>

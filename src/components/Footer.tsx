@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import Wordmark from "@/components/brand/Wordmark";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -12,7 +13,7 @@ const socialLinks = [
 ];
 
 const exploreLinks = [
-  { label: "Trends", href: "/trends" },
+  { label: "Stories", href: "/trends" },
   { label: "Editorials", href: "/editorials" },
   { label: "Forecast", href: "/forecast" },
   { label: "Moodboard", href: "/moodboard" },
@@ -20,12 +21,12 @@ const exploreLinks = [
 
 
 const categoryLinks = [
-  { label: "Fashion", href: "/?category=Fashion" },
-  { label: "Beauty", href: "/?category=Beauty" },
-  { label: "Luxury", href: "/?category=Luxury" },
-  { label: "Culture", href: "/?category=Culture" },
-  { label: "Art & Design", href: "/?category=Art+%26+Design" },
-  { label: "Entertainment", href: "/?category=Entertainment" },
+  { label: "Fashion", href: "/trends?category=Fashion" },
+  { label: "Beauty", href: "/trends?category=Beauty" },
+  { label: "Luxury", href: "/trends?category=Luxury" },
+  { label: "Culture", href: "/trends?category=Culture" },
+  { label: "Art & Design", href: "/trends?category=Art+%26+Design" },
+  { label: "Entertainment", href: "/trends?category=Entertainment" },
 ];
 
 const communityLinks = [
@@ -67,7 +68,7 @@ const Footer = () => {
   };
 
   const ColumnTitle = ({ children }: { children: React.ReactNode }) => (
-    <h4 className="mb-4 font-display text-xs font-bold uppercase tracking-[0.2em] text-gold">
+    <h4 className="mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.22em] text-gold">
       {children}
     </h4>
   );
@@ -81,13 +82,13 @@ const Footer = () => {
   );
 
   return (
-    <footer className="border-t border-border bg-card px-6 md:px-12 lg:px-16">
-      <div className="mx-auto max-w-7xl py-16">
+    <footer className="mt-8 rounded-t-[2.5rem] border-t border-border/60 bg-card px-4 md:px-8 lg:px-12">
+      <div className="mx-auto max-w-[1440px] py-16">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-6">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link to="/" className="font-display text-2xl font-bold text-foreground">
-              AFRI<span className="text-gold">VOGUE</span>
+            <Link to="/" aria-label="Afrivogue home">
+              <Wordmark className="text-3xl" />
             </Link>
             <p className="mt-4 font-body text-sm leading-relaxed text-muted-foreground">
               Curating culture, style, and tomorrow through a global Afrocentric lens.
@@ -100,7 +101,7 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   title={s.label}
-                  className="flex h-9 w-9 items-center justify-center rounded-sm border border-border font-body text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-all hover:border-gold hover:text-gold"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/50 font-body text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-all hover:-translate-y-0.5 hover:border-gold hover:text-gold"
                 >
                   {s.icon}
                 </a>
@@ -145,12 +146,12 @@ const Footer = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
                 required
-                className="w-full border border-border bg-background px-3 py-2 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-ring"
+                className="w-full rounded-full border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20"
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-primary px-4 py-2 font-body text-xs font-bold uppercase tracking-wider text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="rounded-full bg-primary px-4 py-2.5 font-body text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02] disabled:opacity-50"
               >
                 {loading ? "…" : "Subscribe"}
               </button>

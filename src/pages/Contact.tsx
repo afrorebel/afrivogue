@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import Footer from "@/components/Footer";
 
 const socials = [
   { label: "TikTok", href: "https://www.tiktok.com/@afrivogue", icon: "tiktok" },
@@ -207,14 +208,7 @@ const Contact = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border bg-card/50 px-6 py-10 text-center">
-        <p className="font-display text-lg font-bold tracking-tight">
-          AFRI<span className="text-primary">VOGUE</span>
-        </p>
-        <p className="mt-1 font-body text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Afrivogue. All rights reserved.
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 };

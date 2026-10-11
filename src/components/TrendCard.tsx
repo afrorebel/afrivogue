@@ -66,16 +66,16 @@ const TrendCard = ({ trend, index, isPaywalled = false }: TrendCardProps) => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
         {showLock && (
-          <div className="absolute top-3 right-3 flex items-center gap-1 rounded-sm bg-gold/90 px-2 py-1 backdrop-blur-sm">
+          <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-gold/90 px-2 py-1 backdrop-blur-sm">
             <Lock className="h-3 w-3 text-background" />
             <span className="font-body text-[10px] font-bold uppercase tracking-wider text-background">Premium</span>
           </div>
         )}
         <div className="absolute bottom-3 left-3 flex flex-wrap items-center gap-2">
-          <span className={`rounded-sm px-2.5 py-1 font-body text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm ${urgencyStyles[trend.urgency] || ""}`}>
+          <span className={`rounded-full px-2.5 py-1 font-body text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm ${urgencyStyles[trend.urgency] || ""}`}>
             {trend.urgency}
           </span>
-          <span className={`rounded-sm px-2.5 py-1 font-body text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm ${geoStyles[geo] || ""}`}>
+          <span className={`rounded-full px-2.5 py-1 font-body text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm ${geoStyles[geo] || ""}`}>
             {geo}
           </span>
         </div>

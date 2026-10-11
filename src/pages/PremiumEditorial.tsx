@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Paywall from "@/components/Paywall";
 import Footer from "@/components/Footer";
 import RelatedContent from "@/components/RelatedContent";
+import Wordmark from "@/components/brand/Wordmark";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -75,7 +76,7 @@ const PremiumEditorial = () => {
       <div className="min-h-screen bg-background">
         <nav className="relative z-10 flex items-center justify-between px-6 py-6 md:px-16">
           <Link to="/" className="font-display text-lg font-bold text-foreground">
-            AFRI<span className="text-gold">VOGUE</span>
+            <Wordmark />
           </Link>
           <Link to={`/trend/${id}`} className="font-body text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground transition-colors hover:text-gold">
             ← Back to Brief
@@ -99,7 +100,7 @@ const PremiumEditorial = () => {
       {/* Navigation */}
       <nav className="relative z-10 flex items-center justify-between px-6 py-6 md:px-16">
         <Link to="/" className="font-display text-lg font-bold text-foreground">
-          AFRI<span className="text-gold">VOGUE</span>
+          <Wordmark />
         </Link>
         <Link
           to={`/trend/${id}`}
@@ -117,7 +118,7 @@ const PremiumEditorial = () => {
         variants={sectionVariants}
         custom={0}
       >
-        <span className="inline-block rounded-sm border border-gold/30 px-4 py-1.5 font-body text-[10px] font-bold uppercase tracking-[0.25em] text-gold">
+        <span className="inline-block rounded-full border border-gold/30 px-4 py-1.5 font-body text-[10px] font-bold uppercase tracking-[0.25em] text-gold">
           {content.kicker}
         </span>
       </motion.div>
@@ -293,7 +294,7 @@ const PremiumEditorial = () => {
         <span className="font-display text-2xl text-gold/30">◆</span>
         <Link
           to={`/story/${id}`}
-          className="rounded-sm border border-gold/30 px-6 py-2.5 font-body text-xs font-medium uppercase tracking-[0.2em] text-gold transition-all hover:border-gold hover:bg-gold hover:text-primary-foreground"
+          className="rounded-full border border-gold/30 px-6 py-2.5 font-body text-xs font-medium uppercase tracking-[0.2em] text-gold transition-all hover:border-gold hover:bg-gold hover:text-primary-foreground"
         >
           Experience in Story Mode
         </Link>

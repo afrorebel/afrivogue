@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import Wordmark from "@/components/brand/Wordmark";
+import heroImage from "@/assets/hero-fashion.jpg";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -62,22 +64,23 @@ const AuthPage = () => {
   return (
     <div className="flex min-h-screen bg-background">
       {/* Left panel - branding */}
-      <div className="hidden w-1/2 flex-col justify-between bg-foreground p-12 lg:flex">
-        <Link to="/" className="font-display text-3xl font-bold text-background">
-          AFRI<span className="text-gold">VOGUE</span>
-        </Link>
-        <div>
-          <h2 className="font-display text-4xl font-bold leading-tight text-background">
-            Join the<br />
-            <span className="text-gold">Afrivogue Collective</span>
-          </h2>
-          <p className="mt-4 max-w-md font-body text-sm leading-relaxed text-background/60">
-            Unlock premium editorials, earn points for your contributions, and become part of a global community shaping the narrative of African fashion and culture.
-          </p>
+      <div className="hidden w-1/2 p-4 lg:block">
+        <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-3xl p-12">
+          <img src={heroImage} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/30" />
+          <Link to="/" aria-label="Afrivogue home" className="relative">
+            <Wordmark tone="light" className="text-4xl" />
+          </Link>
+          <div className="relative">
+            <h2 className="font-display text-5xl italic leading-[1.02] text-white">
+              Join the <Wordmark tone="light" /> Collective
+            </h2>
+            <p className="mt-5 max-w-md font-body text-base leading-relaxed text-white/75">
+              Unlock premium editorials, earn points for your contributions, and become part of a global community shaping the narrative of African fashion and culture.
+            </p>
+          </div>
+          <p className="relative font-body text-xs text-white/50">© {new Date().getFullYear()} Afrivogue. All rights reserved.</p>
         </div>
-        <p className="font-body text-xs text-background/40">
-          © {new Date().getFullYear()} Afrivogue. All rights reserved.
-        </p>
       </div>
 
       {/* Right panel - form */}
@@ -88,10 +91,10 @@ const AuthPage = () => {
           className="w-full max-w-md space-y-8"
         >
           <div className="text-center lg:text-left">
-            <Link to="/" className="font-display text-2xl font-bold text-foreground lg:hidden">
-              AFRI<span className="text-gold">VOGUE</span>
+            <Link to="/" aria-label="Afrivogue home" className="lg:hidden">
+              <Wordmark className="text-3xl" />
             </Link>
-            <h1 className="mt-4 font-display text-2xl font-bold text-foreground">
+            <h1 className="mt-4 font-display text-4xl italic text-foreground">
               {isLogin ? "Welcome Back" : "Create Account"}
             </h1>
             <p className="mt-1 font-body text-sm text-muted-foreground">

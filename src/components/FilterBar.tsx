@@ -32,7 +32,7 @@ const FilterBar = ({
   const toggle = (key: FilterKey) => setOpen(open === key ? null : key);
 
   const pill = (active: boolean) =>
-    `cursor-pointer rounded-sm border px-3 py-1.5 font-body text-xs font-medium uppercase tracking-wider transition-all duration-200 ${
+    `cursor-pointer rounded-full border px-3 py-1.5 font-body text-xs font-medium uppercase tracking-wider transition-all duration-200 ${
       active
         ? "border-gold bg-gold text-primary-foreground"
         : "border-border bg-transparent text-muted-foreground hover:border-gold/40 hover:text-foreground"
@@ -45,7 +45,7 @@ const FilterBar = ({
     >
       <span>{label}</span>
       {activeValue !== "All" && (
-        <span className="rounded-sm bg-gold/20 px-1.5 py-0.5 text-[10px] text-gold">{activeValue}</span>
+        <span className="rounded-full bg-gold/20 px-1.5 py-0.5 text-[10px] text-gold">{activeValue}</span>
       )}
       <ChevronDown
         className={`h-3 w-3 transition-transform duration-200 ${open === key ? "rotate-180" : ""}`}

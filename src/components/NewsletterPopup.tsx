@@ -147,12 +147,12 @@ const NewsletterPopup = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
                   required
-                  className="w-full rounded-sm border border-border bg-background px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                  className="w-full rounded-full border border-border bg-background px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
                 />
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-sm bg-gold px-4 py-3 font-body text-sm font-bold uppercase tracking-wider text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+                  className="w-full rounded-full bg-gold px-4 py-3 font-body text-sm font-bold uppercase tracking-wider text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
                   {loading ? "Subscribing…" : "Get Insider Access"}
                 </button>

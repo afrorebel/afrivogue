@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, type PanInfo } from "framer-motion";
 import { trends } from "@/lib/trendData";
 import type { Trend } from "@/lib/trendData";
+import Wordmark from "@/components/brand/Wordmark";
 
 const SWIPE_THRESHOLD = 50;
 
@@ -281,7 +282,7 @@ const StoryMode = () => {
           ✕ Close
         </Link>
         <div className="font-display text-sm font-bold text-foreground">
-          AFRI<span className="text-gold">VOGUE</span>
+          <Wordmark />
         </div>
         <span className="font-body text-xs tabular-nums text-muted-foreground">
           {activeIndex + 1} / {totalCards}
@@ -509,7 +510,7 @@ function StoryCard({ card, trend }: { card: StoryCardData; trend: Trend }) {
           className="mt-8 flex flex-col items-center gap-3 sm:mt-10"
         >
           <div className="font-display text-lg font-bold text-foreground">
-            AFRI<span className="text-gold">VOGUE</span>
+            <Wordmark />
           </div>
           <span className="font-body text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
             Afrivogue Feed

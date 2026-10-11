@@ -96,7 +96,7 @@ const SearchDialog = () => {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center justify-center rounded-sm p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+        className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         aria-label="Search"
       >
         <Search className="h-4 w-4" />

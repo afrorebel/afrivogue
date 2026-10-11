@@ -10,6 +10,7 @@ import { LogOut, User, BookOpen, Heart, Star, Award, DollarSign, Settings, PenSq
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import ReferralWidget from "@/components/ReferralWidget";
+import Wordmark from "@/components/brand/Wordmark";
 
 const POINTS_TO_DOLLAR = 0.01; // 1 point = $0.01
 const MIN_WITHDRAWAL = 50; // $50 minimum
@@ -143,7 +144,7 @@ const Dashboard = () => {
       <header className="border-b border-border px-6 py-4 md:px-12">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <Link to="/" className="font-display text-xl font-bold text-foreground">
-            AFRI<span className="text-gold">VOGUE</span>
+            <Wordmark />
           </Link>
           <div className="flex items-center gap-4">
             <Link to="/trivia" className="font-body text-xs text-gold hover:text-gold/80 flex items-center gap-1">

@@ -24,6 +24,7 @@ import AdminCodeInjection from "@/components/admin/AdminCodeInjection";
 import AdminMarketingIntegrations from "@/components/admin/AdminMarketingIntegrations";
 import AdminEmailTemplates from "@/components/admin/AdminEmailTemplates";
 import AdminMediaKit from "@/components/admin/AdminMediaKit";
+import Wordmark from "@/components/brand/Wordmark";
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -68,7 +69,7 @@ const AdminDashboard = () => {
     <div className="flex min-h-screen flex-col bg-background">
       <header className="flex items-center justify-between border-b border-border px-6 py-4 md:px-12">
         <div className="font-display text-xl font-bold text-foreground">
-          AFRI<span className="text-gold">VOGUE</span>
+          <Wordmark />
           <span className="ml-3 font-body text-xs font-normal uppercase tracking-[0.15em] text-muted-foreground">Admin</span>
         </div>
         <div className="flex items-center gap-4">

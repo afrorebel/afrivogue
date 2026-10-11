@@ -1,29 +1,44 @@
 import { Link } from "react-router-dom";
-import { Lock } from "lucide-react";
+import { ArrowUpRight, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { getCategoryImage } from "@/lib/categoryImages";
+import CategoryChip from "@/components/editorial/CategoryChip";
 import type { TrendCardData } from "@/components/TrendCard";
 
 interface EditorialTileProps {
   trend: TrendCardData;
   index: number;
   isPaywalled?: boolean;
-  /** visual weight of the tile within the moodboard grid */
+  /** legacy sizing hint; prefer `aspect` */
   size?: "lead" | "mood" | "tall";
+  /** Tailwind aspect class for the image, e.g. "aspect-[3/4]" */
+  aspect?: string;
+  /** show the two-line excerpt under the headline */
+  showExcerpt?: boolean;
 }
 
 const aspectBySize: Record<string, string> = {
-  lead: "aspect-[3/4]",
+  lead: "aspect-[4/5]",
   mood: "aspect-[4/5]",
-  tall: "aspect-[9/16]",
+  tall: "aspect-[2/3]",
 };
 
-const formatDate = (value?: string) =>
-  value
-    ? new Date(value).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "2-digit" }).toUpperCase()
-    : "";
+/** Varied image ratios give masonry grids their Pinterest rhythm. */
+export const MASONRY_ASPECTS = ["aspect-[3/4]", "aspect-[4/5]", "aspect-square", "aspect-[2/3]", "aspect-[4/5]", "aspect-[3/4]", "aspect-[5/6]"];
 
-const EditorialTile = ({ trend, index, isPaywalled, size = "mood" }: EditorialTileProps) => {
+/** Strips markdown links and bare URLs so card excerpts read as clean prose. */
+export const plainExcerpt = (text: string) =>
+  text
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/\(?https?:\/\/\S+\)?/g, "")
+    .replace(/[*_`]/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+
+const formatDate = (value?: string) =>
+  value ? new Date(value).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "";
+
+const EditorialTile = ({ trend, index, isPaywalled, size = "mood", aspect, showExcerpt = true }: EditorialTileProps) => {
   const image =
     trend.featured_image_url && trend.featured_image_url.trim() !== ""
       ? trend.featured_image_url
@@ -37,13 +52,16 @@ const EditorialTile = ({ trend, index, isPaywalled, size = "mood" }: EditorialTi
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.6, delay: (index % 3) * 0.08 }}
-      className="group flex min-w-0 flex-col"
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.5, delay: (index % 4) * 0.06 }}
+      className="group mb-6 min-w-0 break-inside-avoid"
     >
-      <Link to={href} className="relative mb-6 block overflow-hidden">
+      <Link
+        to={href}
+        className="relative block overflow-hidden rounded-2xl bg-surface shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift"
+      >
         <img
           src={image}
           alt={trend.headline}
@@ -53,48 +71,34 @@ const EditorialTile = ({ trend, index, isPaywalled, size = "mood" }: EditorialTi
             const fallback = getCategoryImage(trend.category);
             if (!e.currentTarget.src.endsWith(fallback)) e.currentTarget.src = fallback;
           }}
-          className={`w-full ${aspectBySize[size]} bg-surface object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105`}
+          className={`w-full ${aspect || aspectBySize[size]} object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]`}
         />
-        <span className="absolute left-4 top-4 bg-gold px-3 py-1 font-body text-[8px] font-bold uppercase tracking-[0.2em] text-primary-foreground">
-          {trend.category}
-        </span>
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/0 to-black/10 opacity-60 transition-opacity duration-500 group-hover:opacity-100" />
+        <CategoryChip category={trend.category} variant="solid" className="absolute left-3 top-3" />
         {isPaywalled && (
-          <span className="absolute right-4 top-4 flex items-center gap-1 bg-background/80 px-2 py-1 font-body text-[8px] uppercase tracking-[0.2em] text-gold backdrop-blur-sm">
+          <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-black/55 px-2.5 py-1 font-body text-[10px] font-semibold uppercase tracking-[0.12em] text-gold backdrop-blur-md">
             <Lock className="h-3 w-3" /> Members
           </span>
         )}
+        <span className="absolute bottom-3 right-3 flex translate-y-2 items-center gap-1 rounded-full bg-white px-3.5 py-1.5 font-body text-xs font-semibold text-neutral-900 opacity-0 shadow-soft transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+          Read story <ArrowUpRight className="h-3.5 w-3.5" />
+        </span>
       </Link>
 
-      <span className="mb-3 font-body text-[9px] uppercase tracking-[0.25em] text-muted-foreground">
-        {formatDate(trend.created_at || trend.timestamp)} &mdash; {trend.urgency}
-      </span>
-
-      <h3
-        className={`break-words font-display italic leading-tight text-foreground transition-colors group-hover:text-gold ${
-          size === "lead" ? "mb-5 text-3xl md:text-4xl" : "mb-4 text-2xl"
-        }`}
-      >
-        <Link to={href}>{trend.headline}</Link>
-      </h3>
-
-      {size !== "lead" && <div className="mb-4 h-px w-8 bg-gold" />}
-
-      <p
-        className={`font-body font-light leading-relaxed text-muted-foreground ${
-          size === "lead" ? "mb-8 max-w-md text-sm" : "text-xs"
-        } line-clamp-3`}
-      >
-        {excerpt}
-      </p>
-
-      {size === "lead" && (
-        <Link
-          to={href}
-          className="w-fit border-b border-border pb-1 font-body text-[9px] uppercase tracking-[0.3em] text-foreground transition-colors hover:border-gold hover:text-gold"
-        >
-          Read Article
-        </Link>
-      )}
+      <div className="px-1 pt-3.5">
+        <h3 className="font-display text-lg leading-snug text-foreground transition-colors line-clamp-3 group-hover:text-gold md:text-xl">
+          <Link to={href}>{trend.headline}</Link>
+        </h3>
+        <p className="mt-1.5 font-body text-xs text-muted-foreground">
+          {formatDate(trend.created_at || trend.timestamp)}
+          {trend.urgency && <> · {trend.urgency}</>}
+        </p>
+        {showExcerpt && excerpt && (
+          <div className="mt-2 hidden sm:block">
+            <p className="font-body text-sm leading-relaxed text-muted-foreground/90 line-clamp-2">{plainExcerpt(excerpt)}</p>
+          </div>
+        )}
+      </div>
     </motion.article>
   );
 };

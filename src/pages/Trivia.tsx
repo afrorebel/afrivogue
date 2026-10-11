@@ -174,8 +174,8 @@ const Trivia = () => {
               Culture Quiz
             </span>
           </div>
-          <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight mb-3">
-            AFRI<span className="text-gold">TRIVIA</span>
+          <h1 className="font-display text-5xl italic tracking-tight mb-3 md:text-6xl">
+            Afri<span className="text-gold">Trivia</span>
           </h1>
           <p className="font-body text-muted-foreground max-w-lg mx-auto text-sm">
             Test your knowledge of African fashion, culture, entertainment and lifestyle — past and present.

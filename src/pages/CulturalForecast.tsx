@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Globe, Clock, Signal, TrendingUp, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Globe, Clock, Signal, TrendingUp, ChevronDown } from "lucide-react";
+import Pager from "@/components/editorial/Pager";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageMasthead from "@/components/editorial/PageMasthead";
@@ -103,21 +104,21 @@ const ForecastCard = ({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.5, delay: (index % PER_PAGE) * 0.05 }}
-      className="group relative flex min-w-0 flex-col overflow-hidden border border-border/60 bg-card transition-colors duration-300 hover:border-gold/40"
+      className="group relative flex min-w-0 flex-col overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-lift"
     >
       {/* top accent line */}
-      <div className="h-[2px] w-full gradient-gold opacity-50 transition-opacity group-hover:opacity-100" />
+      <div className="h-1 w-full gradient-gold opacity-70 transition-opacity group-hover:opacity-100" />
 
       <div className="flex flex-col p-6 sm:p-8">
         {/* meta row */}
         <div className="mb-5 flex flex-wrap items-center gap-2">
           <span
-            className={`flex items-center gap-1.5 border px-2.5 py-1 font-body text-[8px] font-bold uppercase tracking-[0.2em] ${signalBadge[forecast.signalStrength]}`}
+            className={`flex items-center gap-1.5 rounded-full border px-3 py-1 font-body text-[10px] font-semibold uppercase tracking-[0.12em] ${signalBadge[forecast.signalStrength]}`}
           >
             <Signal className="h-2.5 w-2.5" />
             {forecast.signalStrength}
           </span>
-          <span className="flex items-center gap-1.5 border border-border px-2.5 py-1 font-body text-[8px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+          <span className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1 font-body text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
             {horizonIcon[forecast.horizon]}
             {forecast.horizon}
           </span>
@@ -181,7 +182,7 @@ const ForecastCard = ({
           </div>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="font-body text-[9px] uppercase tracking-[0.3em] text-gold transition-colors hover:text-foreground"
+            className="rounded-full bg-gold/10 px-4 py-1.5 font-body text-xs font-semibold text-gold transition-colors hover:bg-gold hover:text-primary-foreground"
           >
             {expanded ? "Collapse" : "Full Analysis"}
           </button>
@@ -248,7 +249,7 @@ const CulturalForecast = () => {
   };
 
   const pill = (active: boolean) =>
-    `cursor-pointer border px-3 py-1.5 font-body text-[9px] uppercase tracking-[0.25em] transition-all duration-200 ${
+    `cursor-pointer rounded-full border px-4 py-2 font-body text-xs font-medium transition-all duration-200 ${
       active
         ? "border-gold bg-gold text-primary-foreground"
         : "border-border bg-transparent text-muted-foreground hover:border-gold/40 hover:text-foreground"
@@ -257,11 +258,11 @@ const CulturalForecast = () => {
   const headerBtn = (key: "category" | "horizon" | "signal", label: string, activeValue: string) => (
     <button
       onClick={() => toggleFilter(key)}
-      className="flex items-center gap-1.5 font-body text-[9px] uppercase tracking-[0.3em] text-foreground/80 transition-colors hover:text-gold"
+      className="flex items-center gap-1.5 rounded-full px-3 py-1.5 font-body text-sm font-medium text-foreground/85 transition-colors hover:bg-muted hover:text-gold"
     >
       <span>{label}</span>
       {activeValue !== "All" && (
-        <span className="bg-gold/20 px-1.5 py-0.5 text-gold">{activeValue}</span>
+        <span className="rounded-full bg-gold/20 px-2 py-0.5 text-xs text-gold">{activeValue}</span>
       )}
       <ChevronDown
         className={`h-3 w-3 transition-transform duration-200 ${openFilter === key ? "rotate-180" : ""}`}
@@ -285,8 +286,8 @@ const CulturalForecast = () => {
       </div>
 
       {/* Filters */}
-      <div className="relative z-10 px-6 md:px-12 lg:px-16">
-        <div className="mx-auto max-w-7xl space-y-2 border-b border-border/60 pb-4">
+      <div className="relative z-10 px-4 md:px-8 lg:px-12">
+        <div className="mx-auto max-w-[1440px] space-y-3 rounded-2xl border border-border/60 bg-card/70 px-5 py-4 backdrop-blur-sm">
         <div className="flex flex-wrap items-center gap-4 md:gap-6">
           {headerBtn("category", "Category", domain)}
           <span className="hidden md:block h-4 w-px bg-border" />
@@ -338,10 +339,10 @@ const CulturalForecast = () => {
       </div>
 
       {/* Cards grid */}
-      <section className="relative z-10 mt-12 px-6 pb-24 md:px-12 lg:px-16">
-        <div className="mx-auto max-w-7xl">
+      <section className="relative z-10 mt-8 px-4 pb-24 md:px-8 lg:px-12">
+        <div className="mx-auto max-w-[1440px]">
         <AnimatePresence mode="popLayout">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
             {paged.map((f, i) => (
               <ForecastCard key={f.id} forecast={f} index={i} />
             ))}
@@ -358,28 +359,7 @@ const CulturalForecast = () => {
             </p>
           </div>
         )}
-
-        {totalPages > 1 && (
-          <div className="mt-24 flex items-center justify-between border-t border-border/60 pt-6">
-            <button
-              disabled={safePage <= 1}
-              onClick={() => goToPage(safePage - 1)}
-              className="inline-flex items-center gap-2 font-body text-[10px] uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold disabled:pointer-events-none disabled:opacity-30"
-            >
-              <ChevronLeft className="h-3 w-3" /> Previous
-            </button>
-            <span className="font-body text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-              {safePage} / {totalPages}
-            </span>
-            <button
-              disabled={safePage >= totalPages}
-              onClick={() => goToPage(safePage + 1)}
-              className="inline-flex items-center gap-2 font-body text-[10px] uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold disabled:pointer-events-none disabled:opacity-30"
-            >
-              Next <ChevronRight className="h-3 w-3" />
-            </button>
-          </div>
-        )}
+        <Pager page={safePage} totalPages={totalPages} onChange={goToPage} />
         </div>
       </section>
 

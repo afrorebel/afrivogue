@@ -148,7 +148,7 @@ const GlobalMoodboard = () => {
   }, [items, activeCategory]);
 
   const pill = (active: boolean) =>
-    `cursor-pointer rounded-sm border px-3 py-1.5 font-body text-xs font-medium uppercase tracking-wider transition-all duration-200 ${
+    `cursor-pointer rounded-full border px-3 py-1.5 font-body text-xs font-medium uppercase tracking-wider transition-all duration-200 ${
       active ? "border-gold bg-gold text-primary-foreground" : "border-border bg-transparent text-muted-foreground hover:border-gold/40 hover:text-foreground"
     }`;
 

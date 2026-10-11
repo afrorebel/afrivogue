@@ -137,10 +137,10 @@ const TrendDetail = () => {
           </Link>
 
           <div className="mb-6 flex flex-wrap items-center gap-3">
-            <span className={`rounded-sm px-2.5 py-1 font-body text-[10px] font-bold uppercase tracking-wider ${urgencyStyles[trend.urgency]}`}>
+            <span className={`rounded-full px-2.5 py-1 font-body text-[10px] font-bold uppercase tracking-wider ${urgencyStyles[trend.urgency]}`}>
               {trend.urgency}
             </span>
-            <span className={`rounded-sm px-2.5 py-1 font-body text-[10px] font-bold uppercase tracking-wider ${geoStyles[trend.geo_relevance]}`}>
+            <span className={`rounded-full px-2.5 py-1 font-body text-[10px] font-bold uppercase tracking-wider ${geoStyles[trend.geo_relevance]}`}>
               {trend.geo_relevance}
             </span>
             <span className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -163,7 +163,7 @@ const TrendDetail = () => {
             <ShareButtons title={trend.headline} />
             <Link
               to={`/story/${trend.id}`}
-              className="flex items-center gap-2 rounded-sm border border-gold/30 px-4 py-2 font-body text-xs font-medium uppercase tracking-[0.15em] text-gold transition-all hover:border-gold hover:bg-gold hover:text-primary-foreground"
+              className="flex items-center gap-2 rounded-full border border-gold/30 px-4 py-2 font-body text-xs font-medium uppercase tracking-[0.15em] text-gold transition-all hover:border-gold hover:bg-gold hover:text-primary-foreground"
             >
               ◆ Story Mode
             </Link>
@@ -224,7 +224,7 @@ const TrendDetail = () => {
 
             {/* Source attribution */}
             {trend.source_name && (
-              <div className="rounded-sm border border-border bg-card/50 px-4 py-3">
+              <div className="rounded-2xl border border-border bg-card/50 px-5 py-4">
                 <p className="font-body text-xs text-muted-foreground">
                   <span className="font-bold uppercase tracking-wider text-gold/70">Source:</span>{" "}
                   {trend.source_url ? (
@@ -286,9 +286,9 @@ const TrendDetail = () => {
                   Filed Under
                 </h4>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <span className="rounded-sm border border-border px-2 py-1 font-body text-[10px] uppercase tracking-wider text-muted-foreground">{trend.category}</span>
-                  <span className="rounded-sm border border-border px-2 py-1 font-body text-[10px] uppercase tracking-wider text-muted-foreground">{trend.geo_relevance}</span>
-                  <span className="rounded-sm border border-border px-2 py-1 font-body text-[10px] uppercase tracking-wider text-muted-foreground">{trend.urgency}</span>
+                  <span className="rounded-full border border-border px-2 py-1 font-body text-[10px] uppercase tracking-wider text-muted-foreground">{trend.category}</span>
+                  <span className="rounded-full border border-border px-2 py-1 font-body text-[10px] uppercase tracking-wider text-muted-foreground">{trend.geo_relevance}</span>
+                  <span className="rounded-full border border-border px-2 py-1 font-body text-[10px] uppercase tracking-wider text-muted-foreground">{trend.urgency}</span>
                 </div>
               </div>
 

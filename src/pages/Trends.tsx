@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import EditorialTile from "@/components/EditorialTile";
+import EditorialTile, { MASONRY_ASPECTS } from "@/components/EditorialTile";
+import Pager from "@/components/editorial/Pager";
 import PageMasthead from "@/components/editorial/PageMasthead";
 import MembershipCTA from "@/components/editorial/MembershipCTA";
 import FeaturedProducts from "@/components/shop/FeaturedProducts";
@@ -10,13 +12,18 @@ import { useTrends } from "@/hooks/useTrends";
 import { trends as fallbackTrends } from "@/lib/trendData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { categoryColor } from "@/lib/categoryColors";
 
 const PER_PAGE = 12;
 
 const Trends = () => {
-  const [activeCategory, setActiveCategory] = useState("All");
+  // The active category lives in the URL (?category=Beauty) so category links elsewhere land pre-filtered.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeCategory = searchParams.get("category") || "All";
   const [page, setPage] = useState(1);
+  const setActiveCategory = (cat: string) => {
+    setSearchParams(cat === "All" ? {} : { category: cat }, { replace: true });
+  };
   const { data: dbTrends, isLoading } = useTrends();
 
   const { data: categories = [] } = useQuery({
@@ -76,39 +83,43 @@ const Trends = () => {
       <Navbar />
 
       <PageMasthead
-        eyebrow="Afrivogue Feed"
+        eyebrow="The feed"
         title="Latest"
         accent="Stories"
         intro="The current record of fashion, culture and lifestyle across Africa and its diaspora — updated as the story moves."
       />
 
-      <main className="px-6 md:px-12 lg:px-16">
-        <div className="mx-auto max-w-7xl">
-          {/* Category rail */}
-          <div className="mb-16 flex flex-wrap items-center gap-x-8 gap-y-3 border-b border-border/60 pb-4">
-            {allCategories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => { setActiveCategory(cat); setPage(1); }}
-                className={`border-b pb-1 font-body text-[9px] uppercase tracking-[0.3em] transition-colors ${
-                  activeCategory === cat
-                    ? "border-gold text-gold"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+      <main className="px-4 md:px-8 lg:px-12">
+        <div className="mx-auto max-w-[1440px]">
+          {/* Category pills */}
+          <div className="-mx-4 mb-10 flex gap-2 overflow-x-auto px-4 pb-2 no-scrollbar md:mx-0 md:flex-wrap md:px-0">
+            {allCategories.map((cat) => {
+              const active = activeCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => { setActiveCategory(cat); setPage(1); }}
+                  className={`flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 font-body text-sm font-medium transition-all ${
+                    active ? "border-transparent text-white shadow-soft" : "border-border bg-card text-muted-foreground hover:text-foreground"
+                  }`}
+                  style={active ? { backgroundColor: cat === "All" ? "hsl(var(--foreground))" : categoryColor(cat), color: cat === "All" ? "hsl(var(--background))" : undefined } : undefined}
+                >
+                  {cat !== "All" && !active && (
+                    <span className="h-2 w-2 rounded-full" style={{ backgroundColor: categoryColor(cat) }} />
+                  )}
+                  {cat}
+                </button>
+              );
+            })}
           </div>
 
           {isLoading ? (
-            <div className="grid grid-cols-1 gap-x-12 gap-y-20 md:grid-cols-2 lg:grid-cols-3">
+            <div className="columns-2 gap-4 md:columns-3 md:gap-6 xl:columns-4">
               {Array.from({ length: 9 }).map((_, i) => (
-                <div key={i} className="space-y-4">
-                  <Skeleton className="aspect-[4/5] w-full" />
-                  <Skeleton className="h-3 w-24" />
-                  <Skeleton className="h-6 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
+                <div key={i} className="mb-6 break-inside-avoid space-y-3">
+                  <Skeleton className={`w-full rounded-2xl ${MASONRY_ASPECTS[i % MASONRY_ASPECTS.length]}`} />
+                  <Skeleton className="h-5 w-4/5 rounded-full" />
+                  <Skeleton className="h-3 w-1/2 rounded-full" />
                 </div>
               ))}
             </div>
@@ -118,39 +129,18 @@ const Trends = () => {
             </p>
           ) : (
             <>
-              <div className="grid grid-cols-1 gap-x-12 gap-y-20 md:grid-cols-2 lg:grid-cols-3">
+              <div className="columns-2 gap-4 md:columns-3 md:gap-6 xl:columns-4">
                 {paged.map((trend, i) => (
                   <EditorialTile
                     key={trend.id}
                     trend={trend as any}
                     index={i}
-                    size="mood"
+                    aspect={MASONRY_ASPECTS[i % MASONRY_ASPECTS.length]}
                     isPaywalled={paywalledCategories.includes(trend.category)}
                   />
                 ))}
               </div>
-
-              {totalPages > 1 && (
-                <div className="mt-24 flex items-center justify-between border-t border-border/60 pt-6">
-                  <button
-                    disabled={safePage <= 1}
-                    onClick={() => setPage(safePage - 1)}
-                    className="inline-flex items-center gap-2 font-body text-[10px] uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold disabled:pointer-events-none disabled:opacity-30"
-                  >
-                    <ChevronLeft className="h-3 w-3" /> Previous
-                  </button>
-                  <span className="font-body text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                    {safePage} / {totalPages}
-                  </span>
-                  <button
-                    disabled={safePage >= totalPages}
-                    onClick={() => setPage(safePage + 1)}
-                    className="inline-flex items-center gap-2 font-body text-[10px] uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold disabled:pointer-events-none disabled:opacity-30"
-                  >
-                    Next <ChevronRight className="h-3 w-3" />
-                  </button>
-                </div>
-              )}
+              <Pager page={safePage} totalPages={totalPages} onChange={(n) => { setPage(n); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
             </>
           )}
         </div>

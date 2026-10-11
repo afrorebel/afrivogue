@@ -94,7 +94,7 @@ const ProductDetail = () => {
             <div className="relative aspect-[3/4] overflow-hidden rounded-lg">
               <img src={imgs[selectedImage]} alt={product.name} className="h-full w-full object-cover" />
               {isFlashActive && (
-                <div className="absolute left-3 top-3 flex items-center gap-1 rounded-sm bg-destructive px-2 py-1">
+                <div className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-destructive px-2 py-1">
                   <Clock className="h-3 w-3 text-destructive-foreground" />
                   <span className="font-body text-[10px] font-bold uppercase text-destructive-foreground">Flash Sale</span>
                 </div>

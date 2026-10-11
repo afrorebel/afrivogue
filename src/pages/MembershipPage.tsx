@@ -132,7 +132,7 @@ const MembershipPage = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-16 mx-auto max-w-lg rounded-lg border-2 border-gold p-10 text-center"
+            className="mt-16 mx-auto max-w-lg rounded-3xl border border-gold/40 bg-sunset p-8 text-center shadow-soft md:p-10"
           >
             <Crown className="mx-auto mb-4 h-12 w-12 text-gold" />
             <h3 className="font-display text-2xl font-bold text-foreground">Become a Founding Member</h3>
@@ -153,7 +153,7 @@ const MembershipPage = () => {
                 Go to Dashboard
               </Button>
             ) : joinSuccess ? (
-              <div className="mt-8 rounded-md border border-gold/30 bg-gold/10 p-5">
+              <div className="mt-8 rounded-2xl border border-gold/30 bg-gold/10 p-5">
                 <p className="font-display text-lg font-bold text-gold">Welcome, Founding Member ✦</p>
                 <p className="mt-2 font-body text-sm text-muted-foreground">
                   You're officially part of the Afrivogue Collective. Check your inbox for next steps.
@@ -170,7 +170,7 @@ const MembershipPage = () => {
                   onChange={(e) => setJoinEmail(e.target.value)}
                   placeholder="your@email.com"
                   required
-                  className="w-full rounded-sm border border-border bg-background px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                  className="w-full rounded-full border border-border bg-background px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
                 />
                 <Button type="submit" disabled={joinLoading} className="w-full bg-gold text-primary-foreground hover:bg-gold/90">
                   {joinLoading ? "Joining…" : "Join as Founding Member"}
@@ -206,7 +206,7 @@ const MembershipPage = () => {
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="relative rounded-lg border-2 border-gold p-8"
+              className="relative rounded-3xl border border-gold/40 bg-sunset p-8 shadow-soft"
             >
               <Badge className="absolute -top-3 right-4 bg-gold text-primary-foreground">Editor's Choice</Badge>
               <h3 className="font-display text-xl font-bold text-foreground">{membership.yearly_label}</h3>
